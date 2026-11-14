@@ -1,0 +1,59 @@
+# Environment and secrets
+.env
+.env.*
+!.env.example
+apps/mobile/.env.local
+apps/mobile/.env.*.local
+
+# Agent/session state
+.opencode/
+
+# Node
+node_modules/
+.pnpm-store/
+dist/
+build/
+coverage/
+.expo/
+.expo-shared/
+*.tsbuildinfo
+
+# Python
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.coverage
+htmlcov/
+
+# OS / editors
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
+
+# Mobile build artifacts and credentials
+*.keystore
+*.jks
+*.p12
+*.mobileprovision
+google-services.json
+GoogleService-Info.plist
+apps/mobile/android/app/build/
+apps/mobile/ios/build/
+
+# Logs and temp
+*.log
+tmp/
+.tmp/
+
+# Large local snapshots (keep manifests and small demo files)
+datasets/snapshots/*.nc
+datasets/snapshots/*.hdf5
+datasets/snapshots/*.tif
+datasets/snapshots/*.tiff
