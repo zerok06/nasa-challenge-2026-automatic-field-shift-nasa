@@ -4,6 +4,15 @@
 **WIP:** máximo 3 specs activas. Se redacta la spec N+2 mientras se implementa la N.  
 **Leyenda de test:** U unitario · I integración · C contrato · P paridad · E E2E Maestro · S smoke · M manual.
 
+## Estado de implementación (14-nov-2026)
+
+- **P0 implementado:** backend FastAPI/PostGIS, app Paper/Expo Go y recorrido demo.
+- **Verde:** 17 pytest (U/I/C/P), 4 tests TS de paridad, `tsc --noEmit`, Maestro 00-05.
+- **Parcial:** 013 NDVI (capa, fecha A/B, leyenda, fallback; falta `map_context` del agente y cache).
+- **No implementado:** 023 offline; Groq real; ingesta POWER en vivo; APK/dev build; validación agronómica.
+- **Desviación:** RNUI → React Native Paper; ver `docs/architecture/adr-0002-paper-fallback.md`.
+- Los estados "escrita" de la tabla son de la fase SDD; el estado real de código está en esta sección.
+
 ## Fundaciones
 
 | ID | Spec | Prioridad | Estado | Depende | Test | Días |

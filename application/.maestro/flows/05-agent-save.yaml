@@ -1,0 +1,47 @@
+appId: host.exp.exponent
+---
+- runFlow:
+    file: setup.yaml
+- scrollUntilVisible:
+    element:
+      id: "dashboard.agent"
+    direction: DOWN
+- tapOn:
+    id: "dashboard.agent"
+- extendedWaitUntil:
+    visible: "Agente Automatic"
+    timeout: 30000
+- scrollUntilVisible:
+    element:
+      id: "agent.input"
+    direction: DOWN
+- tapOn:
+    id: "agent.input"
+- waitForAnimationToEnd
+- inputText: "Compara rotaciones que usen menos agua"
+- waitForAnimationToEnd
+- tapOn:
+    id: "agent.send"
+- extendedWaitUntil:
+    visible: ".*Preparé la comparación.*"
+    timeout: 30000
+- tapOn:
+    id: "agent.input"
+- waitForAnimationToEnd
+- inputText: "Guardar un borrador"
+- waitForAnimationToEnd
+- tapOn:
+    id: "agent.send"
+- scrollUntilVisible:
+    element:
+      id: "agent.save"
+    direction: DOWN
+    timeout: 40000
+- extendedWaitUntil:
+    visible: "Confirmar y guardar borrador"
+    timeout: 30000
+- tapOn:
+    id: "agent.save"
+- extendedWaitUntil:
+    visible: ".*Borrador guardado.*"
+    timeout: 30000

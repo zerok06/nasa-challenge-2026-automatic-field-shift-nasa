@@ -5,11 +5,11 @@
 | Nivel | Herramienta | Qué cubre | Cuándo | Tiempo |
 |---|---|---|---|---|
 | Unitario backend | pytest | Motores puros, schemas, auth, nodos del agente con tools fake | Cada PR | < 30 s |
-| Unitario mobile | Jest + React Native Testing Library | Componentes RNUI, hooks, formateo, cache, multiplicadores | Cada PR | < 60 s |
+| Unitario mobile | `tsx --test` (Node test) | Multiplicadores de escenario, paridad de fixtures; RNTL/componentes queda pendiente | Cada PR | < 10 s |
 | Integración | pytest + Postgres | Repositorios, endpoints, migraciones, IDOR, idempotencia | Cada PR | < 2 min |
 | Contrato | OpenAPI drift + Pydantic/Zod + Postman/Newman | Que API y app hablen el mismo contrato | Cada PR | < 1 min |
 | Paridad | pytest + Jest con fixtures JSON | Que Python y TS den los mismos números | Cada PR | < 30 s |
-| E2E | **Maestro** | Recorrido demo en APK/dev build | Pre-release y pre-demo | 5–8 min |
+| E2E | **Maestro** | Recorrido demo en Expo Go (MVP) o APK/dev build | Pre-release y pre-demo | 4–6 min |
 | Manual | Checklist | Mapa, offline, accesibilidad, pantalla pequeña, túnel | Pre-demo | 20 min |
 
 **Meta:** ≥ 85 % de ramas en motores de cálculo; todos los RF P0 con test o evidencia manual. No perseguir un % global.
@@ -27,11 +27,10 @@
 
 ### Mobile
 
-- Componentes RNUI: `EvidenceBadge`, `ProvenanceSheet`, `RotationTimeline`, `ScenarioPresets`.
-- Formularios: desconocidos, validación, consentimiento.
-- Cliente API: envelope de error, timeout, retry, loading/empty/offline.
-- Cache y multiplicadores offline con fixtures compartidos.
-- Accesibilidad: labels, roles, tamaño táctil.
+- **Implementado:** `application/src/offline/scenario.ts` con `applyScenarioValues`, probado contra
+  `tests/parity/scenario_cases.json` con `tsx --test`; el mismo fixture lo ejecuta pytest.
+- **Pendiente:** componentes Paper, formularios, cliente API con retry/offline, accesibilidad.
+- Los `testID` de la app son estables para Maestro.
 
 **Regla:** los motores reciben `today` como parámetro; no usan `Date.now()` ni red.
 
@@ -44,18 +43,22 @@
 
 ## E2E con Maestro
 
-**Base:** Maestro corre contra un **build instalable**. RNUI ya exige development build, así que no hay conflicto con Expo Go.
+**Base del MVP:** Maestro corre contra **Expo Go 58** (`appId: host.exp.exponent`) porque el
+fallback a Paper es JS puro. Un APK/dev build queda pendiente y no bloquea el recorrido P0.
 
-### Build
+### Preparación
 
 ```bash
-# local con Android Studio
-cd apps/mobile
-npx expo run:android --variant release
-
-# o EAS
-eas build -p android --profile e2e-test
+cd application
+pnpm start -- --localhost
+# en otra terminal
+adb reverse tcp:8000 tcp:8000
+adb reverse tcp:8081 tcp:8081
+maestro test .maestro/flows
 ```
+
+`setup.yaml` abre `exp://127.0.0.1:8081`, cierra el dev menu y carga la parcela demo.
+Si se genera un APK, cambiar `appId` y quitar `openLink`; el resto de selectores se reutiliza.
 
 `eas.json`:
 
@@ -78,11 +81,11 @@ eas build -p android --profile e2e-test
 | `00-launch.yaml` | shell, tabs, tema | 003 |
 | `01-onboarding.yaml` | crear parcela, unknowns, dashboard | 004–006, 011 |
 | `02-map.yaml` | IMERG, leyenda, fecha | 012 |
-| `02b-ndvi.yaml` (P1) | NDVI, fechas, leyenda | 013 |
+| `02b-ndvi.yaml` (P1) | NDVI, fecha A/B, leyenda | 013 (parcial) |
 | `03-compare.yaml` | 3 planes, margen null, fuentes | 016–018 |
 | `04-scenario.yaml` | agua −20 %, precio −15 %, reset | 019 |
-| `05-agent-save.yaml` | preguntar, tool trace, guardar, rechazar | 020–022 |
-| `06-offline.yaml` | cache, banner, `last_updated_at` | 023 |
+| `05-agent-save.yaml` | preguntar, tool trace, guardar, confirmar | 020–022 |
+| `06-offline.yaml` | cache, banner, `last_updated_at` | 023 (pendiente) |
 
 Ejemplo:
 
@@ -99,7 +102,12 @@ appId: com.automatic.app
 
 ### testIDs
 
-`onboarding.start`, `onboarding.continue`, `parcel.create`, `comparison.plan.existing`, `scenario.water.preset20`, `scenario.price.preset15`, `scenario.reset`, `agent.input`, `agent.send`, `agent.save`, `sources.sheet`.
+`onboarding.demo`, `onboarding.name`, `onboarding.area`, `onboarding.create`,
+`dashboard.compare`, `dashboard.map`, `dashboard.agent`, `map.layer.imerg`,
+`map.layer.ndvi`, `map.ndvi.dateA`, `map.ndvi.dateB`, `comparison.create`,
+`comparison.simulate`, `scenario.water.preset20`, `scenario.price.preset15`,
+`scenario.reset`, `agent.input`, `agent.send`, `agent.save`, `nav.home`,
+`nav.map`, `nav.rotations`, `nav.agent`.
 
 ### Datos
 

@@ -1,0 +1,28 @@
+appId: host.exp.exponent
+---
+- runFlow:
+    file: setup.yaml
+- tapOn:
+    id: "dashboard.map"
+- extendedWaitUntil:
+    visible: "Precipitación IMERG"
+    timeout: 30000
+- tapOn:
+    id: "map.layer.ndvi"
+- extendedWaitUntil:
+    visible: "NDVI VIIRS"
+    timeout: 30000
+- scrollUntilVisible:
+    element:
+      id: "map.ndvi.dateB"
+    direction: DOWN
+- tapOn:
+    id: "map.ndvi.dateB"
+- scrollUntilVisible:
+    element:
+      text: ".*2024-09-01.*"
+    direction: DOWN
+- assertVisible: ".*2024-09-01.*"
+- assertVisible: ".*No diagnostica nutrientes.*"
+- tapOn:
+    id: "nav.home"

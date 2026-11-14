@@ -1,8 +1,12 @@
 # ADR-0001 — RNUI con Expo y development build
 
 - **Fecha:** 14-nov-2026
-- **Estado:** aceptada, sujeta a spike
+- **Estado:** histórica / superseded por ADR-0002 (fallback a Paper)
 - **Spec:** 003
+
+> El spike falló en Windows (ProGuard/AGP 9, `wix-react-native-text-size` incompatible
+> con RN 0.88 y rutas CMake > MAX_PATH). La implementación vigente usa React Native
+> Paper + Expo Go; ver `adr-0002-paper-fallback.md`.
 
 ## Contexto
 

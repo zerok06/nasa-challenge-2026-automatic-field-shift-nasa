@@ -1,0 +1,12 @@
+appId: host.exp.exponent
+---
+- launchApp:
+    clearState: false
+- openLink: "exp://127.0.0.1:8081"
+- runFlow:
+    when:
+      visible: "Go home"
+    file: dismiss-devmenu.yaml
+- extendedWaitUntil:
+    visible: "AUTOMATIC"
+    timeout: 60000

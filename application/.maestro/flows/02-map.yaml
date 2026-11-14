@@ -1,0 +1,17 @@
+appId: host.exp.exponent
+---
+- runFlow:
+    file: setup.yaml
+- tapOn:
+    id: "dashboard.map"
+- extendedWaitUntil:
+    visible: "Precipitación IMERG"
+    timeout: 30000
+- scrollUntilVisible:
+    element:
+      text: ".*NASA GIBS.*"
+    direction: DOWN
+- assertVisible: ".*NASA GIBS.*"
+- assertVisible: "No es una.*"
+- tapOn:
+    id: "nav.home"

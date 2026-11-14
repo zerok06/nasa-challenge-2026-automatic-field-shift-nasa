@@ -7,7 +7,7 @@ Una única fuente de verdad para configuración y secretos, sin filtrar claves a
 ```text
 .env                      # raíz, gitignored, valores reales
 .env.example              # versionado, placeholders
-apps/mobile/.env.local    # generado, gitignored, solo EXPO_PUBLIC_*
+application/.env.local    # generado, gitignored, solo EXPO_PUBLIC_*
 docker compose            # lee .env de la raíz
 services/api              # pydantic-settings lee .env (local) o variables (Docker)
 ```
@@ -28,7 +28,7 @@ services/api              # pydantic-settings lee .env (local) o variables (Dock
 | `POSTGRES_DB` | no | compose | sí | `automatic` |
 | `POSTGRES_USER` | no | compose | sí | |
 | `POSTGRES_PASSWORD` | **sí** | compose | sí | no usar `postgres` en demo |
-| `DATABASE_URL` | **sí** | API | sí | `postgresql+asyncpg://...` |
+| `DATABASE_URL` | **sí** | API | sí | `postgresql+psycopg://...` |
 | `JWT_SECRET` | **sí** | API | sí | ≥32 caracteres |
 | `CORS_ORIGINS` | no | API | sí | lista separada por comas |
 | `LLM_PROVIDER` | no | API | sí | `groq`/`fake` |
@@ -60,7 +60,7 @@ services/api              # pydantic-settings lee .env (local) o variables (Dock
 ### `scripts/env/sync.mjs`
 
 - Lee `.env` raíz.
-- Escribe `apps/mobile/.env.local` con **solo** `EXPO_PUBLIC_API_URL` y `EXPO_PUBLIC_DEMO_MODE`.
+- Escribe `application/.env.local` con **solo** `EXPO_PUBLIC_API_URL` y `EXPO_PUBLIC_DEMO_MODE`.
 - Cabecera `# GENERATED — DO NOT EDIT`.
 - Nunca copia secretos; si detecta un prefijo público sobre un secreto, aborta.
 
@@ -76,7 +76,7 @@ services/api              # pydantic-settings lee .env (local) o variables (Dock
 }
 ```
 
-`apps/mobile/package.json` ejecuta `pnpm --dir ../.. env:sync` en `prestart` y `prebuild`.
+`application/package.json` ejecuta `pnpm --dir ../.. env:sync` en `prestart` y `prebuild`.
 
 ## Docker y CI
 
@@ -93,3 +93,4 @@ services/api              # pydantic-settings lee .env (local) o variables (Dock
 4. ⏳ Ejecutar `pnpm env:check`.
 5. ⏳ Rotar `GROQ_API_KEY` si el archivo se compartió o se sincronizó fuera de la laptop.
 6. ⏳ Documentar en `MEMORY.md`.
+

@@ -8,7 +8,25 @@
 - `.env.example` creado con placeholders; pendiente completar variables y rotar la key si el workspace se compartió.
 - Repo listo para implementar 000.
 
+## Estado de implementación (14-nov-2026)
+
+- Backend FastAPI + PostGIS en Docker; `/health`, `/ready`, `/api/v1/ready` responden.
+- Endpoints demo: auth anónima, parcelas, contexto, catálogo, indicadores, comparación, escenario, agente y guardado.
+- Mobile Paper/Expo Go: onboarding, dashboard, mapa IMERG/NDVI, comparador, simulador, agente y fuentes.
+- Tests: **17 pytest** (unitario, integración, contrato, paridad), **4 tests TS** de paridad, `tsc --noEmit` verde.
+- Maestro: `00`, `01`, `02`, `02b`, `03`, `04`, `05` verdes contra Expo Go.
+- Pendiente: APK/dev build, offline 023, Groq real, ingesta POWER real, validación agronómica.
+- Intento de APK: `node-linker=hoisted` acortó rutas, pero Ninja/CMake 3.22 falló por nombres de objeto > 260 caracteres en codegen de gesture-handler; no hay APK validado.
+
 ## Decisiones (append-only)
+
+### 2026-11-14 - Fallback de RNUI a React Native Paper
+
+**Contexto:** el spike de RNUI 10 + `uilib-native` falló en Windows (ProGuard/AGP 9, `wix-react-native-text-size` incompatible con RN 0.88 y rutas CMake > MAX_PATH).  
+**Decisión:** usar React Native Paper (JS puro) y Expo Go para el MVP; documentar en `docs/architecture/adr-0002-paper-fallback.md`.  
+**Consecuencias:** se cumple el recorrido P0 y Maestro 00-05/02b; no se cumple literalmente "RNUI + dev build"; APK queda pendiente.  
+**Spec:** `003`, `027`.
+
 
 ### 2026-11-14 — RNUI + Expo con development build
 

@@ -57,3 +57,6 @@ datasets/snapshots/*.nc
 datasets/snapshots/*.hdf5
 datasets/snapshots/*.tif
 datasets/snapshots/*.tiff
+
+application/.env.local
+application/.env.*.local

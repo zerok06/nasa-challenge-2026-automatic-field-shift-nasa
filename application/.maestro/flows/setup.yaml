@@ -1,0 +1,24 @@
+appId: host.exp.exponent
+---
+- launchApp:
+    clearState: false
+- openLink: "exp://127.0.0.1:8081"
+- runFlow:
+    when:
+      visible: "Go home"
+    file: dismiss-devmenu.yaml
+- extendedWaitUntil:
+    visible: "AUTOMATIC"
+    timeout: 60000
+- runFlow:
+    when:
+      visible:
+        id: "nav.home"
+    file: go-home.yaml
+- runFlow:
+    when:
+      visible: "Cargar parcela demo"
+    file: onboarding-demo.yaml
+- extendedWaitUntil:
+    visible: "Ficha de parcela"
+    timeout: 90000

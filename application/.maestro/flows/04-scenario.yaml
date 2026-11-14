@@ -1,0 +1,33 @@
+appId: host.exp.exponent
+---
+- runFlow:
+    file: setup.yaml
+- tapOn:
+    id: "dashboard.compare"
+- extendedWaitUntil:
+    visible: "Rotación actual"
+    timeout: 30000
+- scrollUntilVisible:
+    element:
+      id: "comparison.simulate"
+    direction: DOWN
+- tapOn:
+    id: "comparison.simulate"
+- extendedWaitUntil:
+    visible: "Laboratorio de escenarios"
+    timeout: 30000
+- tapOn:
+    id: "scenario.water.preset20"
+- extendedWaitUntil:
+    visible: "Resultado simulado"
+    timeout: 30000
+- assertVisible: ".*déficit.*"
+- tapOn:
+    id: "scenario.price.preset15"
+- extendedWaitUntil:
+    visible: "Resultado simulado"
+    timeout: 30000
+- assertVisible: ".*margen.*"
+- tapOn:
+    id: "scenario.reset"
+- assertVisible: "Comparación"

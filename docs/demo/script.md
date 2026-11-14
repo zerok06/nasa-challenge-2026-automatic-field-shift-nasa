@@ -3,7 +3,7 @@
 ## Antes de empezar
 
 - [ ] API `/ready` 200; túnel/LAN funcionando.
-- [ ] Teléfono con dev build/APK; datos seed.
+- [ ] Teléfono con Expo Go y el proyecto abierto; datos seed.
 - [ ] `LLM_PROVIDER=groq` o `fake`; probar ambos.
 - [ ] Video de respaldo descargado.
 - [ ] Diapositiva “qué es real / qué es simulado”.
