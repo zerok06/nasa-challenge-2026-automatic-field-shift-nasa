@@ -27,8 +27,10 @@ appId: host.exp.exponent
     file: go-home.yaml
 - runFlow:
     when:
-      visible: "Cargar parcela demo"
+      visible:
+        id: "onboarding.language.es"
     file: onboarding-demo.yaml
 - extendedWaitUntil:
-    visible: "Ficha de parcela"
+    visible:
+      id: "dashboard.plotCard"
     timeout: 90000

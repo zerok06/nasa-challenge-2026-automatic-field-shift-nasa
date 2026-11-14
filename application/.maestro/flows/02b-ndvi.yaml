@@ -27,6 +27,10 @@ appId: host.exp.exponent
       text: ".*2024-09-01.*"
     direction: DOWN
 - assertVisible: ".*2024-09-01.*"
+- scrollUntilVisible:
+    element:
+      text: ".*No diagnostica nutrientes.*"
+    direction: DOWN
 - assertVisible: ".*No diagnostica nutrientes.*"
 - tapOn:
     id: "nav.home"

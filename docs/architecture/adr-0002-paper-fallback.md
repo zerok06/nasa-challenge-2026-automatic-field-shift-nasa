@@ -1,7 +1,7 @@
 # ADR-0002 - Fallback a React Native Paper y Expo Go para el MVP
 
 - **Fecha:** 14-nov-2026
-- **Estado:** aceptada (supersede el spike de ADR-0001)
+- **Estado:** superseded por ADR-0004 (Anden + gluestack v5); se conserva como decisión histórica
 - **Spec:** 003, 027
 - **Contexto:** build Android local en Windows, Expo SDK 58, RN 0.88.1
 

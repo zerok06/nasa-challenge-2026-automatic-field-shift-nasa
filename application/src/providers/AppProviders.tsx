@@ -4,6 +4,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { AgentProvider } from './AgentProvider';
 import { ComparisonProvider } from './ComparisonProvider';
 import { ParcelProvider, useParcel } from './ParcelProvider';
+import { PreferencesProvider } from './PreferencesProvider';
 import { SessionProvider } from './SessionProvider';
 
 export const queryClient = new QueryClient({
@@ -29,11 +30,13 @@ function ParcelScopedProviders({ children }: { children: React.ReactNode }) {
 export function AppProviders({ children }: { children: React.ReactNode }) {
   return (
     <QueryClientProvider client={queryClient}>
-      <SessionProvider>
-        <ParcelProvider>
-          <ParcelScopedProviders>{children}</ParcelScopedProviders>
-        </ParcelProvider>
-      </SessionProvider>
+      <PreferencesProvider>
+        <SessionProvider>
+          <ParcelProvider>
+            <ParcelScopedProviders>{children}</ParcelScopedProviders>
+          </ParcelProvider>
+        </SessionProvider>
+      </PreferencesProvider>
     </QueryClientProvider>
   );
 }

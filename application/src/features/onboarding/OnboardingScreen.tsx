@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
 import { Check } from 'lucide-react-native';
 import { router } from 'expo-router';
+import { useTranslation } from 'react-i18next';
 
 import { AppAlert } from '@/components/app/AppAlert';
 import { AppButton } from '@/components/app/AppButton';
 import { AppHeader } from '@/components/app/AppHeader';
+import { Disclosure } from '@/components/app/Disclosure';
 import { FormField } from '@/components/app/FormField';
 import { Screen } from '@/components/app/Screen';
 import { SectionCard } from '@/components/app/SectionCard';
@@ -15,18 +17,25 @@ import {
   CheckboxLabel,
 } from '@/components/ui/checkbox';
 import { HStack } from '@/components/ui/hstack';
+import { Pressable } from '@/components/ui/pressable';
 import { Progress, ProgressFilledTrack } from '@/components/ui/progress';
+import { Switch } from '@/components/ui/switch';
 import { Text } from '@/components/ui/text';
 import { VStack } from '@/components/ui/vstack';
+import { colors } from '@/design-system/tokens';
 import { testIDs } from '@/design-system/testIDs';
+import { languageOptions } from '@/i18n';
 import { useParcel } from '@/providers/ParcelProvider';
+import { usePreferences } from '@/providers/PreferencesProvider';
 
 function CheckIcon(props: { size?: number; color?: string }) {
   return <Check {...props} />;
 }
 
 export function OnboardingScreen() {
+  const { t } = useTranslation();
   const { createDemo, createParcel } = useParcel();
+  const { language, reduceMotion, setLanguage, setReduceMotion } = usePreferences();
   const [step, setStep] = useState(0);
   const [name, setName] = useState('Mi parcela');
   const [area, setArea] = useState('1.2');
@@ -77,11 +86,11 @@ export function OnboardingScreen() {
     <Screen
       keyboard
       edges={['top', 'bottom']}
-      header={<AppHeader subtitle="Copiloto de planificación agrícola" />}
+      header={<AppHeader subtitle={t('Copiloto de planificación agrícola')} />}
     >
       <VStack className="gap-2">
         <Text className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-          Paso {step + 1} de 2
+          {t('Paso {{current}} de {{total}}', { current: step + 1, total: 2 })}
         </Text>
         <Progress value={step === 0 ? 50 : 100}>
           <ProgressFilledTrack className="bg-primary" />
@@ -90,33 +99,80 @@ export function OnboardingScreen() {
 
       {step === 0 ? (
         <>
+          <SectionCard title={t('Idioma')} subtitle={t('Elegí tu idioma')}>
+            <HStack className="flex-wrap gap-2">
+              {languageOptions.map((option) => {
+                const selected = language === option.code;
+                return (
+                  <Pressable
+                    key={option.code}
+                    testID={testIDs.onboardingLanguage(option.code)}
+                    onPress={() => setLanguage(option.code)}
+                    accessibilityRole="radio"
+                    accessibilityState={{ selected }}
+                    accessibilityLabel={option.nativeLabel}
+                    className={`min-h-10 w-[48%] flex-row items-center justify-center gap-1 rounded-full border px-3 py-2 ${
+                      selected ? 'border-primary bg-accent' : 'border-border bg-card'
+                    }`}
+                  >
+                    {selected ? <Check size={14} color={colors.primary} /> : null}
+                    <Text
+                      className={`text-sm ${selected ? 'font-semibold text-primary' : 'text-foreground'}`}
+                    >
+                      {option.nativeLabel}
+                    </Text>
+                  </Pressable>
+                );
+              })}
+            </HStack>
+            <Text className="text-xs leading-4 text-muted-foreground">
+              {t('Quechua y aimara están en revisión con hablantes nativos.')}
+            </Text>
+          </SectionCard>
+
+          <Disclosure title={t('Preferencias de accesibilidad')} testID={testIDs.onboardingA11y}>
+            <HStack className="items-center justify-between gap-3">
+              <Text className="flex-1 text-sm text-foreground">{t('Reducir movimiento')}</Text>
+              <Switch
+                value={reduceMotion}
+                onValueChange={setReduceMotion}
+                accessibilityLabel={t('Reducir movimiento')}
+              />
+            </HStack>
+            <Text className="text-xs leading-4 text-muted-foreground">
+              {t('Anden respeta el tamaño de letra de tu teléfono.')}
+            </Text>
+          </Disclosure>
+
           <VStack className="gap-2">
             <Text className="text-3xl font-bold leading-9 tracking-tight text-foreground">
               Tu parcela, tus decisiones, más información.
             </Text>
             <Text className="text-base leading-6 text-muted-foreground">
-              Automatic reúne datos NASA, tu historial y tus restricciones para comparar
+              Anden reúne datos NASA, tu historial y tus restricciones para comparar
               rotaciones con evidencia y sin inventar datos.
             </Text>
           </VStack>
 
           <SectionCard
-            title="Parcela de demostración"
-            subtitle="Datos sintéticos etiquetados: cebolla → zapallo, agua declarada y sin análisis de suelo."
+            title={t('Parcela de demostración')}
+            subtitle={t(
+              'Datos sintéticos etiquetados: cebolla → zapallo, agua declarada y sin análisis de suelo.',
+            )}
           >
             <AppButton
               testID={testIDs.onboardingDemo}
               loading={busy}
               onPress={handleDemo}
             >
-              Cargar parcela demo
+              {t('Cargar parcela demo')}
             </AppButton>
             <AppButton
               testID={testIDs.onboardingNext}
               tone="outline"
               onPress={() => setStep(1)}
             >
-              Crear mi parcela
+              {t('Crear mi parcela')}
             </AppButton>
           </SectionCard>
 
@@ -190,7 +246,7 @@ export function OnboardingScreen() {
 
       {step === 0 && error ? <AppAlert tone="error">{error}</AppAlert> : null}
       <Text className="text-center text-xs leading-4 text-muted-foreground">
-        Automatic · piloto Moquegua · datos abiertos NASA · app gratuita
+        Anden · piloto Moquegua · datos abiertos NASA · app gratuita
       </Text>
     </Screen>
   );

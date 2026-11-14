@@ -1,5 +1,6 @@
 import React from 'react';
 import { router } from 'expo-router';
+import { useTranslation } from 'react-i18next';
 import * as WebBrowser from 'expo-web-browser';
 
 import { AppAlert } from '@/components/app/AppAlert';
@@ -17,6 +18,7 @@ import { formatDate } from '@/lib/format';
 import { useParcel } from '@/providers/ParcelProvider';
 
 export function SourcesScreen() {
+  const { t } = useTranslation();
   const { indicators } = useParcel();
   const source = indicators?.source;
 
@@ -25,34 +27,34 @@ export function SourcesScreen() {
       edges={['top', 'bottom']}
       header={
         <AppHeader
-          title="FUENTES"
-          subtitle="Transparencia y fuentes"
+          title={t('FUENTES')}
+          subtitle={t('Transparencia y fuentes')}
           onBack={() => router.back()}
         />
       }
     >
       <SectionCard
-        title="Snapshot y origen"
-        subtitle="Cada cifra debe poder rastrearse hasta su fuente."
+        title={t('Snapshot y origen')}
+        subtitle={t('Cada cifra debe poder rastrearse hasta su fuente.')}
       >
         <VStack className="gap-2">
-          <MetricRow label="Snapshot" value={source?.snapshot_id ?? 'No disponible'} />
-          <MetricRow label="Fuente" value={source?.source ?? 'NASA POWER'} />
-          <MetricRow label="Resolución" value={source?.resolution ?? 'No disponible'} />
-          <MetricRow label="Calidad" value={source?.quality_flag ?? 'No declarada'} />
-          <MetricRow label="Actualizado" value={formatDate(source?.retrieved_at)} />
+          <MetricRow label="Snapshot" value={source?.snapshot_id ?? t('No disponible')} />
+          <MetricRow label={t('Fuente')} value={source?.source ?? 'NASA POWER'} />
+          <MetricRow label={t('Resolución')} value={source?.resolution ?? t('No disponible')} />
+          <MetricRow label={t('Calidad')} value={source?.quality_flag ?? t('No declarada')} />
+          <MetricRow label={t('Actualizado')} value={formatDate(source?.retrieved_at)} />
         </VStack>
         <HStack className="items-center gap-2">
           <Text size="xs" className="text-muted-foreground">
-            ¿Es simulado?
+            {t('¿Es simulado?')}
           </Text>
-          {source?.is_simulated ? <DemoBadge /> : <Text size="xs">No</Text>}
+          {source?.is_simulated ? <DemoBadge /> : <Text size="xs">{t('No')}</Text>}
         </HStack>
       </SectionCard>
 
       <SectionCard
-        title="Capas satelitales"
-        subtitle="Contexto regional; no miden tu parcela."
+        title={t('Capas satelitales')}
+        subtitle={t('Contexto regional; no miden tu parcela.')}
       >
         <VStack className="gap-3">
           <VStack className="gap-1">
@@ -71,7 +73,7 @@ export function SourcesScreen() {
                 )
               }
             >
-              Abrir referencia GIBS
+              {t('Abrir referencia GIBS')}
             </AppButton>
           </VStack>
           <VStack className="gap-1">
@@ -86,8 +88,8 @@ export function SourcesScreen() {
         </VStack>
       </SectionCard>
 
-      <SectionCard title="Metodología y límites">
-        <Disclosure title="Cómo se calculan los resultados">
+      <SectionCard title={t('Metodología y límites')}>
+        <Disclosure title={t('Cómo se calculan los resultados')}>
           <Text size="sm" className="text-muted-foreground">
             ETo se calcula con FAO-56/Hargreaves a partir de temperatura y radiación. El riego
             neto usa ETc por etapas, lluvia efectiva y eficiencia declarada. El margen usa
@@ -95,7 +97,7 @@ export function SourcesScreen() {
             no el modelo de lenguaje.
           </Text>
         </Disclosure>
-        <Disclosure title="Límites del piloto">
+        <Disclosure title={t('Límites del piloto')}>
           <Text size="sm" className="text-muted-foreground">
             Los datos de demostración son sintéticos y están etiquetados. El catálogo de cultivos
             está pendiente de revisión agronómica local. No es una recomendación certificada ni
@@ -105,11 +107,12 @@ export function SourcesScreen() {
       </SectionCard>
 
       <AppAlert tone="warning">
-        Datos de demostración: el snapshot POWER es sintético. No uses estas cifras para tomar
-        decisiones comerciales sin validación local.
+        {t(
+          'Datos de demostración: el snapshot POWER es sintético. No uses estas cifras para tomar decisiones comerciales sin validación local.',
+        )}
       </AppAlert>
 
-      <SectionCard title="Licencia y atribución">
+      <SectionCard title={t('Licencia y atribución')}>
         <Text size="sm" className="text-foreground">
           Código MIT. Datos NASA POWER/GIBS, FAO-56 y anuario de Moquegua; ver
           docs/data-licenses.md. App gratuita para agricultores; no se venden datos.

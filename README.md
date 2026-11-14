@@ -1,13 +1,14 @@
-# Automatic
+# Anden
 
 Copiloto inteligente de planificación agrícola geoespacial para pequeños productores.
 Proyecto para **NASA Space Apps Challenge 2026 - Field Shift: Adapting Farms with NASA Data**.
-Piloto: **Moquegua, Perú** · 100 agricultores · Android · español.
+Piloto: **Moquegua, Perú** · 100 agricultores · Android · español, quechua, aimara e inglés.
 
 > **Estado (14-nov-2026):** MVP P0 implementado y ejecutándose en local.
 > El recorrido demo (onboarding → dashboard → mapa → comparador → simulador → agente → guardado)
-> funciona contra FastAPI + PostGIS y Expo Go. La UI usa **React Native Paper** por el fallback
-> documentado en `docs/architecture/adr-0002-paper-fallback.md`.
+> funciona contra FastAPI + PostGIS y Expo Go. La UI usa **gluestack v5 + NativeWind 5**,
+> con marca Anden, gráficos accesibles, i18n y preferencias de accesibilidad.
+> Ver `docs/architecture/adr-0004-anden-brand-i18n-charts-a11y.md`.
 > Datos de demo sintéticos y etiquetados; no es una recomendación agronómica validada.
 
 ## Qué hace
@@ -20,13 +21,18 @@ Piloto: **Moquegua, Perú** · 100 agricultores · Android · español.
 - Simula agua −20 % y precio −15 % sin modificar el baseline.
 - Agente con tools deterministas: compara, simula, explica y prepara un borrador con confirmación.
 - Guarda el borrador solo tras confirmación humana.
+- Muestra gráficos de lluvia/ETo, margen y riego por plan, con tabla de datos accesible.
+- Permite elegir español, quechua, aimara o inglés, y ajustar tema/reduce motion.
+- Incluye onboarding de accesibilidad y Ajustes; objetivos WCAG 2.2 AA.
 
 ## Stack
 
 | Capa | Tecnología |
 |---|---|
-| Mobile | Expo SDK 58 · React Native 0.88 · TypeScript · React Native Paper 5 |
-| Runtime MVP | Expo Go 58 (fallback Paper; ver ADR-0002) |
+| Mobile | Expo SDK 58 · React Native 0.88 · TypeScript · gluestack v5 · NativeWind 5 |
+| Runtime MVP | Expo Go 58 (ver ADR-0004) |
+| i18n | i18next · react-i18next · expo-localization |
+| Gráficos | react-native-gifted-charts · expo-linear-gradient · react-native-svg |
 | API | FastAPI · Pydantic v2 · SQLAlchemy 2 |
 | DB | PostgreSQL 16 + PostGIS 3.4 |
 | Agente | Runtime determinista con tools; Groq opcional pendiente |
@@ -85,12 +91,13 @@ Flujos Maestro:
 | `03-compare` | verde |
 | `04-scenario` | verde |
 | `05-agent-save` | verde |
-| `06-offline` | no implementado (P1 023) |
+| `06-settings` | verde (idioma + Ajustes) |
+| `07-offline` | no implementado (P1 023) |
 
 ## Estructura
 
 ```text
-application/       Expo + Paper + cliente API + Maestro flows
+application/       Expo + gluestack v5 + cliente API + Maestro flows
 backend/            FastAPI, modelos, endpoints, tests
 services/           motores puros: agua, economía, rotaciones, escenario
 datasets/demo/      snapshot POWER sintético etiquetado
@@ -104,7 +111,9 @@ docs/               constitución, arquitectura, ADRs, supuestos, demo
 - Constitución: `docs/constitution.md`
 - Catálogo y estado: `specs/README.md`
 - Coherencia: `docs/architecture/coherence-report.md`
-- Fallback de UI: `docs/architecture/adr-0002-paper-fallback.md`
+- UI, marca e i18n: `docs/architecture/adr-0004-anden-brand-i18n-charts-a11y.md`
+- Accesibilidad: `docs/accessibility.md`
+- Fallback histórico: `docs/architecture/adr-0002-paper-fallback.md`
 
 ## Datos y licencia
 
@@ -120,10 +129,12 @@ docs/               constitución, arquitectura, ADRs, supuestos, demo
 
 ## Límites conocidos
 
-- No hay APK/dev build generado; Maestro corre contra Expo Go con Paper.
+- No hay APK/dev build generado; Maestro corre contra Expo Go con gluestack v5.
   Se intentó `assembleDebug`; falló por el límite de 260 caracteres de Ninja/CMake en el
   codegen de RN 0.88 en Windows (ver ADR-0002). `application/.npmrc` usa `node-linker=hoisted`
   para acortar rutas.
 - Offline (spec 023) y Groq real (spec 021) no están implementados en este MVP.
 - El snapshot NASA es sintético para el demo; la ingesta POWER real queda como siguiente paso.
 - El catálogo de cultivos está `needs_review` hasta validación agronómica local.
+- Quechua y aimara están en borrador (`review_pending`) hasta revisión de hablantes nativos.
+- El modo oscuro y el escalado de fuente 2.0× requieren QA visual continuo.

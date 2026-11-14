@@ -1,5 +1,5 @@
 import React from 'react';
-import { ArrowLeft, FileText } from 'lucide-react-native';
+import { ArrowLeft, FileText, Settings } from 'lucide-react-native';
 
 import { AppIconButton } from '@/components/app/AppButton';
 import { DemoBadge } from '@/components/app/StatusBadge';
@@ -9,17 +9,19 @@ import { VStack } from '@/components/ui/vstack';
 import { testIDs } from '@/design-system/testIDs';
 
 export function AppHeader({
-  title = 'AUTOMATIC',
+  title = 'ANDEN',
   subtitle,
   isSimulated = false,
   onBack,
   onSources,
+  onSettings,
 }: {
   title?: string;
   subtitle?: string;
   isSimulated?: boolean;
   onBack?: () => void;
   onSources?: () => void;
+  onSettings?: () => void;
 }) {
   return (
     <HStack testID="brand.header" className="items-center gap-2 border-b border-border bg-card px-4 py-3">
@@ -47,6 +49,15 @@ export function AppHeader({
           label="Ver fuentes"
           onPress={onSources}
           testID={testIDs.dashboardSources}
+          tone="muted"
+        />
+      ) : null}
+      {onSettings ? (
+        <AppIconButton
+          icon={Settings}
+          label="Ajustes"
+          onPress={onSettings}
+          testID={testIDs.navSettings}
           tone="muted"
         />
       ) : null}

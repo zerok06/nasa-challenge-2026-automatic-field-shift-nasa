@@ -7,14 +7,18 @@ Piloto: **100 agricultores**, Android, conectividad intermitente, español.
 
 Stack real del MVP:
 
-- Mobile: Expo SDK 58 + React Native 0.88 + TypeScript + **React Native Paper**
+- Mobile: Expo SDK 58 + React Native 0.88 + TypeScript + **gluestack v5 + NativeWind 5**
+- i18n: i18next + expo-localization (es-PE default; qu-PE/ay-PE en borrador; en)
+- Gráficos: react-native-gifted-charts + tablas de datos accesibles
 - API: FastAPI + SQLAlchemy 2 + Pydantic v2
 - DB: PostgreSQL 16 + PostGIS 3.4
 - Agente: runtime determinista con tools; Groq queda como integración opcional pendiente
 - Infra: Docker Compose local
 - Tests: pytest (unitario/integración/contrato/paridad) + paridad TS + Maestro E2E
 
-El fallback de RNUI a Paper está en `docs/architecture/adr-0002-paper-fallback.md`.
+La decisión de UI, marca, i18n, gráficos y accesibilidad está en
+`docs/architecture/adr-0004-anden-brand-i18n-charts-a11y.md`. Paper queda como
+decisión histórica (ADR-0002, superseded).
 
 ## Estructura
 
@@ -57,6 +61,10 @@ maestro test application/.maestro/flows
 - No calcular cifras en el LLM; usar los motores.
 - Registrar decisiones en `MEMORY.md` y ADRs.
 - UI/docs en español; código/DB en inglés.
+- i18n: no hardcodear copy nuevo sin clave/traducción; quechua/aimara son
+  `review_pending` hasta revisión nativa.
+- Accesibilidad: targets ≥48 dp, labels en iconos, gráficos con tabla de datos
+  y respetar reduce motion. Ver `docs/accessibility.md`.
 - Cada tarea termina con tests o evidencia manual; sin eso no se marca.
 - Si un test E2E falla, revisar el artefacto de Maestro (jerarquía + screenshot) antes de cambiar el flujo.
 

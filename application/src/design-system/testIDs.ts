@@ -9,6 +9,8 @@ export const testIDs = {
   onboardingCreate: 'onboarding.create',
   onboardingNext: 'onboarding.next',
   onboardingConsent: 'onboarding.consent',
+  onboardingLanguage: (code: string) => `onboarding.language.${code}`,
+  onboardingA11y: 'onboarding.a11y',
 
   dashboardSources: 'dashboard.sources',
   dashboardCompare: 'dashboard.compare',
@@ -41,6 +43,12 @@ export const testIDs = {
   navMap: 'nav.map',
   navRotations: 'nav.rotations',
   navAgent: 'nav.agent',
+  navSettings: 'nav.settings',
+  settingsLanguage: (code: string) => `settings.language.${code}`,
+  settingsTheme: (theme: string) => `settings.theme.${theme}`,
+  settingsReduceMotion: 'settings.reduceMotion',
+  settingsSources: 'settings.sources',
+  settingsAbout: 'settings.about',
 } as const;
 
 export type TestIDKey = keyof typeof testIDs;

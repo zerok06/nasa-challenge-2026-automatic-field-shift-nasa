@@ -34,6 +34,8 @@ export function AppAlert({
       variant={tone === 'error' ? 'destructive' : 'default'}
       className={toneClass[tone]}
       testID={testID}
+      accessibilityLiveRegion="polite"
+      accessibilityRole="alert"
     >
       <AlertText className={textClass[tone]}>{children}</AlertText>
     </Alert>

@@ -70,7 +70,7 @@ export function AppButton({
   return (
     <Button
       variant={toneVariant[tone]}
-      className={[toneClass[tone], className].filter(Boolean).join(' ')}
+      className={['min-h-12', toneClass[tone], className].filter(Boolean).join(' ')}
       isDisabled={isDisabled || loading}
       {...props}
     >

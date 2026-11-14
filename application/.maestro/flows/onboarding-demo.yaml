@@ -1,4 +1,9 @@
 appId: host.exp.exponent
 ---
+- scrollUntilVisible:
+    element:
+      id: "onboarding.demo"
+    direction: DOWN
+    timeout: 15000
 - tapOn:
     id: "onboarding.demo"

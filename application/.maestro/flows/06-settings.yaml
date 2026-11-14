@@ -1,0 +1,33 @@
+appId: host.exp.exponent
+---
+- runFlow:
+    file: setup.yaml
+- tapOn:
+    id: "nav.settings"
+- extendedWaitUntil:
+    visible:
+      id: "settings.language.es-PE"
+    timeout: 15000
+# Reset to Spanish first so this flow is repeatable after a previous run.
+- tapOn:
+    id: "settings.language.es-PE"
+- extendedWaitUntil:
+    visible: "Ajustes"
+    timeout: 15000
+- assertVisible: "Idioma"
+- tapOn:
+    id: "settings.language.en"
+- extendedWaitUntil:
+    visible: "Settings"
+    timeout: 15000
+- tapOn:
+    id: "settings.language.es-PE"
+- extendedWaitUntil:
+    visible: "Ajustes"
+    timeout: 15000
+- tapOn:
+    id: "nav.back"
+- extendedWaitUntil:
+    visible:
+      id: "dashboard.plotCard"
+    timeout: 15000

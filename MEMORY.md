@@ -1,24 +1,34 @@
-# MEMORY — Automatic
+# MEMORY — Anden (ex Automatic)
 
 ## Estado actual
 
 - Specs redactadas: **000–027** (28 specs × 3 archivos) en `specs/`.
-- Documentos de arquitectura: `docs/architecture/` (env, testing, data-model, api-surface, water-economics, map-layers, agent, security, deploy-local, ADR RNUI).
+- Documentos de arquitectura: `docs/architecture/` (env, testing, data-model, api-surface, water-economics, map-layers, agent, security, deploy-local, ADRs).
 - `.env` raíz contiene `GROQ_API_KEY`; `.gitignore` creado y verificado: `.env` está ignorado y no trackeado.
 - `.env.example` creado con placeholders; pendiente completar variables y rotar la key si el workspace se compartió.
-- Repo listo para implementar 000.
 
 ## Estado de implementación (14-nov-2026)
 
 - Backend FastAPI + PostGIS en Docker; `/health`, `/ready`, `/api/v1/ready` responden.
 - Endpoints demo: auth anónima, parcelas, contexto, catálogo, indicadores, comparación, escenario, agente y guardado.
-- Mobile Paper/Expo Go: onboarding, dashboard, mapa IMERG/NDVI, comparador, simulador, agente y fuentes.
-- Tests: **17 pytest** (unitario, integración, contrato, paridad), **4 tests TS** de paridad, `tsc --noEmit` verde.
-- Maestro: `00`, `01`, `02`, `02b`, `03`, `04`, `05` verdes contra Expo Go.
-- Pendiente: APK/dev build, offline 023, Groq real, ingesta POWER real, validación agronómica.
+- Mobile **Anden** con Expo Go: gluestack v5 + NativeWind 5, onboarding con idioma/accesibilidad, dashboard, mapa IMERG/NDVI, comparador, simulador, agente, fuentes y **Ajustes**.
+- i18n: `es-PE` default, `qu-PE`/`ay-PE` en borrador (`review_pending`), `en`; selector persistido en SecureStore.
+- Gráficos: `react-native-gifted-charts` (barras y línea) con resumen accesible + “Ver datos”.
+- Branding: paleta blanco/verde, wordmark ANDEN, icono/splash de terrazas y hoja.
+- Tests: **17 pytest** (unitario, integración, contrato, paridad), **4 tests TS** de paridad, `pnpm typecheck`, `pnpm lint` verdes.
+- Maestro: `00`, `01`, `02`, `02b`, `03`, `04`, `05`, `06` verdes contra Expo Go.
+- Pendiente: APK/dev build, offline 023, Groq real, ingesta POWER real, validación agronómica, revisión nativa de quechua/aimara, QA visual de modo oscuro.
 - Intento de APK: `node-linker=hoisted` acortó rutas, pero Ninja/CMake 3.22 falló por nombres de objeto > 260 caracteres en codegen de gesture-handler; no hay APK validado.
 
 ## Decisiones (append-only)
+
+### 2026-11-14 — Anden: gluestack v5, i18n, gráficos y accesibilidad
+
+**Contexto:** el MVP Paper no tenía la identidad ni la preparación de producto para el piloto; se migró a gluestack v5 + NativeWind 5 y se cerró una pasada de producto.  
+**Decisión:** marca **Anden** con blanco/verde; `react-native-gifted-charts` con tablas accesibles; `i18next` + `expo-localization` con es-PE default, qu-PE/ay-PE en borrador y en; onboarding de accesibilidad + Ajustes (idioma, tema, reduce motion); WCAG 2.2 AA como objetivo. Paper se elimina.  
+**Consecuencias:** 8 flujos Maestro verdes; quechua/aimara requieren revisión nativa; no hay APK; el modo oscuro necesita QA visual.  
+**Docs:** `docs/architecture/adr-0004-anden-brand-i18n-charts-a11y.md`, `docs/accessibility.md`.  
+**Spec:** `003`, `027`.
 
 ### 2026-11-14 - Fallback de RNUI a React Native Paper
 

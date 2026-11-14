@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useRef } from 'react';
 import { FlatList, type ListRenderItem } from 'react-native';
 import { router } from 'expo-router';
+import { useTranslation } from 'react-i18next';
 
 import { AppAlert } from '@/components/app/AppAlert';
 import { AppButton } from '@/components/app/AppButton';
@@ -27,6 +28,7 @@ const suggestedPrompts = [
 ];
 
 function ChatBubble({ message }: { message: AgentChatMessage }) {
+  const { t } = useTranslation();
   const isUser = message.role === 'user';
   return (
     <HStack
@@ -47,7 +49,7 @@ function ChatBubble({ message }: { message: AgentChatMessage }) {
           </Text>
         </Box>
         {message.trace?.length ? (
-          <Disclosure title="Trazabilidad de herramientas">
+          <Disclosure title={t('Trazabilidad de herramientas')}>
             {message.trace.map((trace) => (
               <Text
                 key={`${trace.tool}-${trace.summary}`}
@@ -60,7 +62,9 @@ function ChatBubble({ message }: { message: AgentChatMessage }) {
         ) : null}
         {message.actions?.length ? (
           <Text size="xs" className="text-muted-foreground">
-            Acciones: {message.actions.map((action) => action.action).join(', ')}
+            {t('Acciones: {{actions}}', {
+              actions: message.actions.map((action) => action.action).join(', '),
+            })}
           </Text>
         ) : null}
       </VStack>
@@ -69,14 +73,16 @@ function ChatBubble({ message }: { message: AgentChatMessage }) {
 }
 
 function EmptyChat({ onPrompt }: { onPrompt: (prompt: string) => void }) {
+  const { t } = useTranslation();
   return (
     <VStack className="flex-1 items-center justify-center gap-3 py-8">
       <Text className="text-center text-lg font-semibold text-foreground">
-        Preguntale al agente
+        {t('Preguntale al agente')}
       </Text>
       <Text className="max-w-[300px] text-center text-sm leading-5 text-muted-foreground">
-        Puede comparar rotaciones, simular agua o precio, explicar una recomendación y preparar un
-        borrador con confirmación humana.
+        {t(
+          'Puede comparar rotaciones, simular agua o precio, explicar una recomendación y preparar un borrador con confirmación humana.',
+        )}
       </Text>
       <VStack className="w-full gap-2 pt-2">
         {suggestedPrompts.map((prompt) => (
@@ -86,7 +92,7 @@ function EmptyChat({ onPrompt }: { onPrompt: (prompt: string) => void }) {
             size="sm"
             onPress={() => onPrompt(prompt)}
           >
-            {prompt}
+            {t(prompt)}
           </AppButton>
         ))}
       </VStack>
@@ -95,6 +101,7 @@ function EmptyChat({ onPrompt }: { onPrompt: (prompt: string) => void }) {
 }
 
 export function AgentScreen() {
+  const { t } = useTranslation();
   const { parcel } = useParcel();
   const {
     messages,
@@ -127,7 +134,7 @@ export function AgentScreen() {
       keyboard
       header={
         <AppHeader
-          subtitle={parcel?.name ?? 'Agente Automatic'}
+          subtitle={parcel?.name ?? t('Agente Anden')}
           isSimulated={parcel?.is_simulated}
           onSources={() => router.push('/sources')}
         />
@@ -152,7 +159,7 @@ export function AgentScreen() {
             <HStack className="items-center gap-2 py-2">
               <Spinner size="small" />
               <Text size="xs" className="text-muted-foreground">
-                El agente está pensando…
+                {t('El agente está pensando…')}
               </Text>
             </HStack>
           ) : undefined
@@ -164,8 +171,8 @@ export function AgentScreen() {
         {savedMessage ? <AppAlert tone="success">{savedMessage}</AppAlert> : null}
         {proposalId ? (
           <SectionCard
-            title="Borrador listo"
-            subtitle="El agente necesita tu confirmación antes de guardar."
+            title={t('Borrador listo')}
+            subtitle={t('El agente necesita tu confirmación antes de guardar.')}
             className="p-3"
           >
             <AppButton
@@ -173,7 +180,7 @@ export function AgentScreen() {
               loading={sending}
               onPress={confirmSave}
             >
-              Confirmar y guardar borrador
+              {t('Confirmar y guardar borrador')}
             </AppButton>
           </SectionCard>
         ) : null}
@@ -187,7 +194,7 @@ export function AgentScreen() {
                 onSubmitEditing={() => void send()}
                 returnKeyType="send"
                 blurOnSubmit
-                placeholder="Escribí tu pregunta"
+                placeholder={t('Escribí tu pregunta')}
                 className="text-base text-foreground"
               />
             </Input>
@@ -199,7 +206,7 @@ export function AgentScreen() {
             onPress={() => void send()}
             className="h-12"
           >
-            Enviar
+            {t('Enviar')}
           </AppButton>
         </HStack>
       </VStack>

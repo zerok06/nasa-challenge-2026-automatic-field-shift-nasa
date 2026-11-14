@@ -1,6 +1,7 @@
 import React from 'react';
 import { Redirect, Tabs } from 'expo-router';
 import { ArrowLeftRight, CloudOff, Home, Map, MessageSquare } from 'lucide-react-native';
+import { useTranslation } from 'react-i18next';
 
 import { AppButton } from '@/components/app/AppButton';
 import { Screen } from '@/components/app/Screen';
@@ -14,12 +15,13 @@ function resolvedColor(color: unknown): string {
 }
 
 export default function TabsLayout() {
+  const { t } = useTranslation();
   const { parcel, loading, error, refresh } = useParcel();
 
   if (loading && !parcel) {
     return (
       <Screen scroll={false} edges={['top', 'bottom']}>
-        <StateView loading title="Cargando tu parcela" description="Iniciando sesión y leyendo datos." />
+        <StateView loading title={t('Cargando parcela')} description={t('Leyendo contexto y datos NASA.')} />
       </Screen>
     );
   }
@@ -29,9 +31,9 @@ export default function TabsLayout() {
       <Screen scroll={false} edges={['top', 'bottom']}>
         <StateView
           icon={CloudOff}
-          title="No pudimos cargar la parcela"
+          title={t('No pudimos cargar la parcela')}
           description={error}
-          action={<AppButton onPress={() => void refresh()}>Reintentar</AppButton>}
+          action={<AppButton onPress={() => void refresh()}>{t('Reintentar')}</AppButton>}
         />
       </Screen>
     );
@@ -62,7 +64,7 @@ export default function TabsLayout() {
       <Tabs.Screen
         name="index"
         options={{
-          title: 'Inicio',
+          title: t('Inicio'),
           tabBarButtonTestID: testIDs.navHome,
           tabBarIcon: ({ color }) => <Home size={22} color={resolvedColor(color)} />,
         }}
@@ -70,7 +72,7 @@ export default function TabsLayout() {
       <Tabs.Screen
         name="map"
         options={{
-          title: 'Mapa',
+          title: t('Mapa'),
           tabBarButtonTestID: testIDs.navMap,
           tabBarIcon: ({ color }) => <Map size={22} color={resolvedColor(color)} />,
         }}
@@ -78,7 +80,7 @@ export default function TabsLayout() {
       <Tabs.Screen
         name="comparison"
         options={{
-          title: 'Rotaciones',
+          title: t('Rotaciones'),
           tabBarButtonTestID: testIDs.navRotations,
           tabBarIcon: ({ color }) => <ArrowLeftRight size={22} color={resolvedColor(color)} />,
         }}
@@ -86,7 +88,7 @@ export default function TabsLayout() {
       <Tabs.Screen
         name="agent"
         options={{
-          title: 'Agente',
+          title: t('Agente'),
           tabBarButtonTestID: testIDs.navAgent,
           tabBarIcon: ({ color }) => <MessageSquare size={22} color={resolvedColor(color)} />,
         }}
