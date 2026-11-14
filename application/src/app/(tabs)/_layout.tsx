@@ -1,4 +1,5 @@
 import React from 'react';
+import { useColorScheme } from 'react-native';
 import { Redirect, Tabs } from 'expo-router';
 import { ArrowLeftRight, CloudOff, Home, Map, MessageSquare } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
@@ -6,7 +7,7 @@ import { useTranslation } from 'react-i18next';
 import { AppButton } from '@/components/app/AppButton';
 import { Screen } from '@/components/app/Screen';
 import { StateView } from '@/components/app/StateView';
-import { colors } from '@/design-system/tokens';
+import { colors, darkColors } from '@/design-system/tokens';
 import { testIDs } from '@/design-system/testIDs';
 import { useParcel } from '@/providers/ParcelProvider';
 
@@ -16,6 +17,8 @@ function resolvedColor(color: unknown): string {
 
 export default function TabsLayout() {
   const { t } = useTranslation();
+  const scheme = useColorScheme();
+  const dark = scheme === 'dark';
   const { parcel, loading, error, refresh } = useParcel();
 
   if (loading && !parcel) {
@@ -47,12 +50,12 @@ export default function TabsLayout() {
     <Tabs
       screenOptions={{
         headerShown: false,
-        tabBarActiveTintColor: colors.primary,
-        tabBarInactiveTintColor: colors.muted,
+        tabBarActiveTintColor: dark ? darkColors.primary : colors.primary,
+        tabBarInactiveTintColor: dark ? darkColors.muted : colors.muted,
         tabBarHideOnKeyboard: true,
         tabBarStyle: {
-          backgroundColor: colors.surface,
-          borderTopColor: colors.border,
+          backgroundColor: dark ? darkColors.surface : colors.surface,
+          borderTopColor: dark ? darkColors.border : colors.border,
           borderTopWidth: 1,
           height: 64,
           paddingTop: 6,

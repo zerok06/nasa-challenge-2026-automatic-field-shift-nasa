@@ -1,8 +1,8 @@
 import React from 'react';
-import { KeyboardAvoidingView, ScrollView, View } from 'react-native';
+import { KeyboardAvoidingView, ScrollView, useColorScheme, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { colors, spacing } from '@/design-system/tokens';
+import { colors, darkColors, spacing } from '@/design-system/tokens';
 
 type ScrollViewRef = React.ComponentRef<typeof ScrollView>;
 
@@ -27,6 +27,9 @@ export function Screen({
   testID?: string;
   scrollRef?: React.RefObject<ScrollViewRef | null>;
 }) {
+  const scheme = useColorScheme();
+  const background = scheme === 'dark' ? darkColors.background : colors.background;
+
   const body = scroll ? (
     <ScrollView
       ref={scrollRef}
@@ -53,10 +56,7 @@ export function Screen({
   );
 
   return (
-    <SafeAreaView
-      style={{ flex: 1, backgroundColor: colors.background }}
-      edges={edges}
-    >
+    <SafeAreaView style={{ flex: 1, backgroundColor: background }} edges={edges}>
       {header}
       {keyboard ? (
         <KeyboardAvoidingView style={{ flex: 1 }} behavior="padding">

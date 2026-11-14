@@ -17,7 +17,7 @@
         "backgroundColor": "#F1F8F2",
         "foregroundImage": "./assets/images/anden-adaptive-foreground.png",
         "backgroundImage": "./assets/images/anden-adaptive-background.png",
-        "monochromeImage": "./assets/images/android-icon-monochrome.png"
+        "monochromeImage": "./assets/images/anden-monochrome.png"
       },
       "predictiveBackGestureEnabled": false
     },
