@@ -1,11 +1,10 @@
 import { Stack } from 'expo-router';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
-import { PaperProvider } from 'react-native-paper';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { StatusBar } from 'expo-status-bar';
 
 import { GluestackUIProvider } from '@/components/ui/gluestack-ui-provider';
-import { paperTheme } from '../theme';
+import { AppProviders } from '@/providers/AppProviders';
 import '../../global.css';
 
 export default function RootLayout() {
@@ -13,10 +12,15 @@ export default function RootLayout() {
     <GestureHandlerRootView style={{ flex: 1 }}>
       <SafeAreaProvider>
         <GluestackUIProvider mode="light">
-          <PaperProvider theme={paperTheme}>
+          <AppProviders>
             <StatusBar style="dark" />
-            <Stack screenOptions={{ headerShown: false }} />
-          </PaperProvider>
+            <Stack screenOptions={{ headerShown: false }}>
+              <Stack.Screen name="(tabs)" />
+              <Stack.Screen name="onboarding" options={{ animation: 'fade' }} />
+              <Stack.Screen name="scenario" />
+              <Stack.Screen name="sources" />
+            </Stack>
+          </AppProviders>
         </GluestackUIProvider>
       </SafeAreaProvider>
     </GestureHandlerRootView>

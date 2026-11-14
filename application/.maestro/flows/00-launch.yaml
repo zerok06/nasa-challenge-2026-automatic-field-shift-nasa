@@ -7,6 +7,11 @@ appId: host.exp.exponent
     when:
       visible: "Go home"
     file: dismiss-devmenu.yaml
+- runFlow:
+    when:
+      visible: "Development servers"
+    file: open-project.yaml
 - extendedWaitUntil:
-    visible: "AUTOMATIC"
+    visible:
+      id: "brand.header"
     timeout: 60000

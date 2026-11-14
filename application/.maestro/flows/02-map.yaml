@@ -2,11 +2,17 @@ appId: host.exp.exponent
 ---
 - runFlow:
     file: setup.yaml
+- scrollUntilVisible:
+    element:
+      id: "dashboard.map"
+    direction: DOWN
 - tapOn:
     id: "dashboard.map"
 - extendedWaitUntil:
-    visible: "Precipitación IMERG"
+    visible: "IMERG"
     timeout: 30000
+- assertVisible:
+    id: "map.layer.imerg"
 - scrollUntilVisible:
     element:
       text: ".*NASA GIBS.*"

@@ -1,0 +1,6 @@
+appId: host.exp.exponent
+---
+# Expo Go sometimes lands on the dev-server list instead of the project.
+# Tap the recent project tile to reopen the bundle.
+- tapOn:
+    text: ".*(Automatic|Anden).*"

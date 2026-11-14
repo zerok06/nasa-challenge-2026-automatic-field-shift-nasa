@@ -2,19 +2,11 @@ appId: host.exp.exponent
 ---
 - runFlow:
     file: setup.yaml
-- scrollUntilVisible:
-    element:
-      id: "dashboard.agent"
-    direction: DOWN
 - tapOn:
-    id: "dashboard.agent"
+    id: "nav.agent"
 - extendedWaitUntil:
-    visible: "Agente Automatic"
+    visible: "Preguntale al agente"
     timeout: 30000
-- scrollUntilVisible:
-    element:
-      id: "agent.input"
-    direction: DOWN
 - tapOn:
     id: "agent.input"
 - waitForAnimationToEnd
@@ -32,13 +24,8 @@ appId: host.exp.exponent
 - waitForAnimationToEnd
 - tapOn:
     id: "agent.send"
-- scrollUntilVisible:
-    element:
-      id: "agent.save"
-    direction: DOWN
-    timeout: 40000
 - extendedWaitUntil:
-    visible: "Confirmar y guardar borrador"
+    visible: "Borrador listo"
     timeout: 30000
 - tapOn:
     id: "agent.save"

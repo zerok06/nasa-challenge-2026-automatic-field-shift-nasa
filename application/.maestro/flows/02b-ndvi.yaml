@@ -2,15 +2,19 @@ appId: host.exp.exponent
 ---
 - runFlow:
     file: setup.yaml
+- scrollUntilVisible:
+    element:
+      id: "dashboard.map"
+    direction: DOWN
 - tapOn:
     id: "dashboard.map"
 - extendedWaitUntil:
-    visible: "Precipitación IMERG"
+    visible: "IMERG"
     timeout: 30000
 - tapOn:
     id: "map.layer.ndvi"
 - extendedWaitUntil:
-    visible: "NDVI VIIRS"
+    visible: "NDVI"
     timeout: 30000
 - scrollUntilVisible:
     element:

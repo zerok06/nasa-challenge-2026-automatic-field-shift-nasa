@@ -2,10 +2,14 @@ appId: host.exp.exponent
 ---
 - runFlow:
     file: setup.yaml
+- scrollUntilVisible:
+    element:
+      id: "dashboard.compare"
+    direction: DOWN
 - tapOn:
     id: "dashboard.compare"
 - extendedWaitUntil:
-    visible: "Rotación actual"
+    visible: "Comparación"
     timeout: 30000
 - scrollUntilVisible:
     element:
