@@ -4,16 +4,20 @@ import { PaperProvider } from 'react-native-paper';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { StatusBar } from 'expo-status-bar';
 
+import { GluestackUIProvider } from '@/components/ui/gluestack-ui-provider';
 import { paperTheme } from '../theme';
+import '../../global.css';
 
 export default function RootLayout() {
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <SafeAreaProvider>
-        <PaperProvider theme={paperTheme}>
-          <StatusBar style="dark" />
-          <Stack screenOptions={{ headerShown: false }} />
-        </PaperProvider>
+        <GluestackUIProvider mode="light">
+          <PaperProvider theme={paperTheme}>
+            <StatusBar style="dark" />
+            <Stack screenOptions={{ headerShown: false }} />
+          </PaperProvider>
+        </GluestackUIProvider>
       </SafeAreaProvider>
     </GestureHandlerRootView>
   );
