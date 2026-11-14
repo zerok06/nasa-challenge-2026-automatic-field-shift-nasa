@@ -1,17 +1,19 @@
+import i18n from '@/i18n';
+
 export function formatNumber(
   value: number | null | undefined,
   unit = '',
   digits = 2,
 ): string {
   if (value === null || value === undefined || Number.isNaN(value)) {
-    return 'No disponible';
+    return i18n.t('No disponible');
   }
   return `${Number(value).toFixed(digits)}${unit ? ` ${unit}` : ''}`;
 }
 
 export function formatMoney(value: number | null | undefined): string {
   if (value === null || value === undefined || Number.isNaN(value)) {
-    return 'No calculable';
+    return i18n.t('No calculable');
   }
   return `S/ ${Number(value).toFixed(2)}`;
 }
@@ -25,7 +27,7 @@ export function formatDate(value: string | null | undefined): string {
   if (!value) return '—';
   const date = new Date(value);
   if (Number.isNaN(date.getTime())) return value;
-  return new Intl.DateTimeFormat('es-PE', {
+  return new Intl.DateTimeFormat(i18n.language === 'en' ? 'en-US' : 'es-PE', {
     year: 'numeric',
     month: 'short',
     day: '2-digit',
@@ -45,23 +47,38 @@ const missingLabels: Record<string, string> = {
 
 export function formatMissing(values: string[] | null | undefined): string {
   if (!values || values.length === 0) return '';
-  return values.map((value) => missingLabels[value] ?? value.replaceAll('_', ' ')).join(', ');
+  return values
+    .map((value) => i18n.t(missingLabels[value] ?? value.replaceAll('_', ' ')))
+    .join(', ');
 }
 
+const cropLabels: Record<string, string> = {
+  onion: 'cebolla',
+  pumpkin: 'zapallo',
+  chili: 'ají',
+};
+
 export function formatCropSequence(sequence: string[]): string {
-  return sequence.join(' → ');
+  return sequence.map((crop) => i18n.t(cropLabels[crop] ?? crop)).join(' → ');
 }
 
 export function formatFeasibility(value: string): string {
-  if (value === 'sufficient') return 'Suficiente';
-  if (value === 'deficit') return 'Déficit';
-  if (value === 'unknown') return 'Sin datos';
+  if (value === 'sufficient') return i18n.t('Suficiente');
+  if (value === 'deficit') return i18n.t('Déficit');
+  if (value === 'unknown') return i18n.t('Sin datos');
   return value;
 }
 
 export function formatSoilStatus(value: string): string {
-  if (value === 'not_measured') return 'Por verificar';
-  if (value === 'declared') return 'Declarado';
-  if (value === 'measured') return 'Medido';
+  if (value === 'not_measured') return i18n.t('Por verificar');
+  if (value === 'declared') return i18n.t('Declarado');
+  if (value === 'measured') return i18n.t('Medido');
   return value;
+}
+
+export function formatCompleteness(value: string | null | undefined): string {
+  if (value === 'ready') return i18n.t('Listo');
+  if (value === 'partial') return i18n.t('Parcial');
+  if (value === 'missing') return i18n.t('Pendiente');
+  return value ?? i18n.t('Sin datos');
 }

@@ -16,7 +16,7 @@ import { StateView } from '@/components/app/StateView';
 import { Progress, ProgressFilledTrack } from '@/components/ui/progress';
 import { Text } from '@/components/ui/text';
 import { VStack } from '@/components/ui/vstack';
-import { formatMissing, formatNumber } from '@/lib/format';
+import { formatCompleteness, formatMissing, formatNumber } from '@/lib/format';
 import { chartColors, colors } from '@/design-system/tokens';
 import { testIDs } from '@/design-system/testIDs';
 import { useComparison } from '@/providers/ComparisonProvider';
@@ -102,9 +102,9 @@ export function DashboardScreen() {
           <MetricRow label={t('Distrito')} value={parcel.district ?? t('No disponible')} />
           <MetricRow
             label={t('Comparación')}
-            value={context?.completeness.comparison ?? t('Sin datos')}
+            value={formatCompleteness(context?.completeness.comparison)}
           />
-          <MetricRow label={t('Agua')} value={context?.completeness.water ?? t('Sin datos')} />
+          <MetricRow label={t('Agua')} value={formatCompleteness(context?.completeness.water)} />
         </VStack>
         <VStack className="gap-1 pt-1">
           <Text size="xs" className="text-muted-foreground">
