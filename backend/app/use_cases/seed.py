@@ -76,6 +76,101 @@ CROPS = [
         "source_refs": {"fao56": "FAO-56", "local": "review_pending"},
         "review_status": "needs_review",
     },
+    {
+        "id": "potato",
+        "local_name": "Papa",
+        "scientific_name": "Solanum tuberosum",
+        "family": "Solanaceae",
+        "duration_days": 140,
+        "windows_json": {"sowing": [{"start": "2027-01-01", "end": "2027-12-31"}]},
+        "kc_json": {
+            "stages": [
+                {"name": "initial", "days": 25, "kc": 0.5},
+                {"name": "development", "days": 35, "kc": 0.8},
+                {"name": "mid", "days": 60, "kc": 1.15},
+                {"name": "late", "days": 20, "kc": 0.75},
+            ]
+        },
+        "risks_json": {"frost": True, "water": "medium"},
+        "source_refs": {"fao56": "FAO-56", "local": "review_pending"},
+        "review_status": "needs_review",
+    },
+    {
+        "id": "corn",
+        "local_name": "Maíz",
+        "scientific_name": "Zea mays",
+        "family": "Poaceae",
+        "duration_days": 150,
+        "windows_json": {"sowing": [{"start": "2027-01-01", "end": "2027-12-31"}]},
+        "kc_json": {
+            "stages": [
+                {"name": "initial", "days": 20, "kc": 0.3},
+                {"name": "development", "days": 35, "kc": 0.7},
+                {"name": "mid", "days": 70, "kc": 1.2},
+                {"name": "late", "days": 25, "kc": 0.5},
+            ]
+        },
+        "risks_json": {"frost": True, "water": "high"},
+        "source_refs": {"fao56": "FAO-56", "local": "review_pending"},
+        "review_status": "needs_review",
+    },
+    {
+        "id": "haba",
+        "local_name": "Haba",
+        "scientific_name": "Vicia faba",
+        "family": "Fabaceae",
+        "duration_days": 150,
+        "windows_json": {"sowing": [{"start": "2027-01-01", "end": "2027-12-31"}]},
+        "kc_json": {
+            "stages": [
+                {"name": "initial", "days": 30, "kc": 0.5},
+                {"name": "development", "days": 40, "kc": 0.8},
+                {"name": "mid", "days": 60, "kc": 1.15},
+                {"name": "late", "days": 20, "kc": 0.3},
+            ]
+        },
+        "risks_json": {"frost": True, "water": "medium", "nitrogen_fixing": True},
+        "source_refs": {"fao56": "FAO-56", "local": "review_pending"},
+        "review_status": "needs_review",
+    },
+    {
+        "id": "tomato",
+        "local_name": "Tomate",
+        "scientific_name": "Solanum lycopersicum",
+        "family": "Solanaceae",
+        "duration_days": 150,
+        "windows_json": {"sowing": [{"start": "2027-01-01", "end": "2027-12-31"}]},
+        "kc_json": {
+            "stages": [
+                {"name": "initial", "days": 25, "kc": 0.6},
+                {"name": "development", "days": 40, "kc": 0.8},
+                {"name": "mid", "days": 65, "kc": 1.15},
+                {"name": "late", "days": 20, "kc": 0.8},
+            ]
+        },
+        "risks_json": {"frost": True, "water": "high"},
+        "source_refs": {"fao56": "FAO-56", "local": "review_pending"},
+        "review_status": "needs_review",
+    },
+    {
+        "id": "alfalfa",
+        "local_name": "Alfalfa",
+        "scientific_name": "Medicago sativa",
+        "family": "Fabaceae",
+        "duration_days": 240,
+        "windows_json": {"sowing": [{"start": "2027-01-01", "end": "2027-12-31"}]},
+        "kc_json": {
+            "stages": [
+                {"name": "initial", "days": 30, "kc": 0.4},
+                {"name": "development", "days": 50, "kc": 0.8},
+                {"name": "mid", "days": 120, "kc": 0.95},
+                {"name": "late", "days": 40, "kc": 0.9},
+            ]
+        },
+        "risks_json": {"frost": True, "water": "medium", "nitrogen_fixing": True, "forage": True},
+        "source_refs": {"fao56": "FAO-56", "local": "review_pending"},
+        "review_status": "needs_review",
+    },
 ]
 
 
@@ -149,6 +244,13 @@ def seed_reference_data(db: Session) -> None:
     db.commit()
 
 
+def _tag_demo_snapshot(db: Session, parcel: Parcel) -> None:
+    snapshot = db.get(DatasetSnapshot, "power_moquegua_2024_demo")
+    if snapshot is not None:
+        snapshot.metadata_json = {**snapshot.metadata_json, "parcel_id": parcel.id}
+        db.commit()
+
+
 def seed_demo_parcel(db: Session, user: User) -> Parcel:
     existing = db.scalar(
         select(Parcel).where(Parcel.owner_user_id == user.id, Parcel.name == "Parcela demo")
@@ -163,6 +265,7 @@ def seed_demo_parcel(db: Session, user: User) -> Parcel:
         if water is not None and float(water.volume_m3 or 0) < 10000:
             water.volume_m3 = 13200
             db.commit()
+        _tag_demo_snapshot(db, existing)
         return existing
 
     point = {"type": "Point", "coordinates": [-70.93, -17.19]}
@@ -219,4 +322,5 @@ def seed_demo_parcel(db: Session, user: User) -> Parcel:
     )
     db.commit()
     db.refresh(parcel)
+    _tag_demo_snapshot(db, parcel)
     return parcel

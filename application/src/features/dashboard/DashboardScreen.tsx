@@ -1,45 +1,88 @@
 import React from 'react';
-import { RefreshControl } from 'react-native';
+import { RefreshControl, ScrollView } from 'react-native';
 import { router } from 'expo-router';
-import { MapPinOff } from 'lucide-react-native';
+import { CloudSun, Sprout } from 'lucide-react-native';
+import { useQuery } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 
 import { AppAlert } from '@/components/app/AppAlert';
 import { AppButton } from '@/components/app/AppButton';
 import { AppHeader } from '@/components/app/AppHeader';
-import { MetricRow } from '@/components/app/Metric';
+import { CropThumb } from '@/components/app/CropThumb';
+import { Disclosure } from '@/components/app/Disclosure';
+import { HeroCard } from '@/components/app/HeroCard';
+import { MetricTile } from '@/components/app/Metric';
 import { Screen } from '@/components/app/Screen';
-import { AndenBarChart, AndenLineChart } from '@/components/charts/AndenCharts';
-import { ChartCard } from '@/components/charts/ChartCard';
 import { SectionCard } from '@/components/app/SectionCard';
 import { StateView } from '@/components/app/StateView';
-import { Progress, ProgressFilledTrack } from '@/components/ui/progress';
+import { ToolTile } from '@/components/app/ToolTile';
+import { Illustration } from '@/components/illustrations/Illustration';
+import { HStack } from '@/components/ui/hstack';
+import { Pressable } from '@/components/ui/pressable';
 import { Text } from '@/components/ui/text';
 import { VStack } from '@/components/ui/vstack';
-import { formatCompleteness, formatMissing, formatNumber } from '@/lib/format';
-import { chartColors, colors } from '@/design-system/tokens';
+import { colors } from '@/design-system/tokens';
 import { testIDs } from '@/design-system/testIDs';
+import { formatDate, formatMoney, formatNumber } from '@/lib/format';
 import { useComparison } from '@/providers/ComparisonProvider';
+import { useOffline } from '@/providers/OfflineProvider';
 import { useParcel } from '@/providers/ParcelProvider';
+import { useProfile } from '@/providers/ProfileProvider';
+import { getCrops, getSavedPlans, type Crop, type Parcel } from '@/services/api';
+import { profileProgress } from '@/features/parcel/profileStatus';
 
-function completenessValue(value?: string): number {
-  if (value === 'ready') return 100;
-  if (value === 'partial') return 60;
-  return 30;
+type CropEconomics = {
+  yield_kg_ha?: number | null;
+  price_pen_kg?: number | null;
+  costs_pen?: number | null;
+};
+
+function parcelLocation(parcel: Parcel): string {
+  const coordinates = parcel.geometry?.coordinates;
+  if (!Array.isArray(coordinates) || coordinates.length < 2) return '';
+  if (parcel.geometry.type === 'Point') {
+    return `${Number(coordinates[1]).toFixed(4)}, ${Number(coordinates[0]).toFixed(4)}`;
+  }
+  if (parcel.geometry.type === 'Polygon' && Array.isArray(coordinates[0])) {
+    const ring = coordinates[0] as number[][];
+    const points =
+      ring.length > 1 && ring[0][0] === ring[ring.length - 1][0] ? ring.slice(0, -1) : ring;
+    if (points.length === 0) return '';
+    const lat = points.reduce((sum, point) => sum + point[1], 0) / points.length;
+    const lon = points.reduce((sum, point) => sum + point[0], 0) / points.length;
+    return `${lat.toFixed(4)}, ${lon.toFixed(4)}`;
+  }
+  return '';
 }
 
 export function DashboardScreen() {
   const { t } = useTranslation();
-  const { parcel, context, indicators, loading, error, refresh } = useParcel();
-  const { createComparison, busy } = useComparison();
+  const { parcel, parcels, context, indicators, loading, error, refresh, selectParcel } = useParcel();
+  const { comparison, createComparison, busy } = useComparison();
+  const { online, bundle } = useOffline();
+  const { profile } = useProfile();
+  const cropsQuery = useQuery({
+    queryKey: ['crops'],
+    queryFn: getCrops,
+    staleTime: 60 * 60 * 1000,
+  });
+  const savedPlansQuery = useQuery({
+    queryKey: ['saved-plans', parcel?.id],
+    queryFn: getSavedPlans,
+    enabled: Boolean(parcel),
+  });
+
+  const displayName =
+    profile?.display_name && profile.display_name !== 'Agricultor' ? profile.display_name : null;
+  const greeting = displayName ? t('Hola, {{name}}', { name: displayName }) : t('Hola');
 
   if (!parcel && loading) {
     return (
-      <Screen header={<AppHeader subtitle={t('Copiloto de planificación agrícola')} />}>
+      <Screen header={<AppHeader subtitle={t('Inicio')} />}>
         <StateView
           loading
           title={t('Cargando parcela')}
-          description={t('Leyendo contexto y datos NASA.')}
+          description={t('Leyendo tus datos.')}
         />
       </Screen>
     );
@@ -47,27 +90,89 @@ export function DashboardScreen() {
 
   if (!parcel) {
     return (
-      <Screen header={<AppHeader subtitle={t('Copiloto de planificación agrícola')} />}>
-        <StateView
-          icon={MapPinOff}
-          title={t('No hay una parcela activa')}
-          description={t('Creá una parcela o cargá la demo para empezar.')}
-          action={
-            <AppButton onPress={() => router.replace('/onboarding')}>{t('Ir al inicio')}</AppButton>
-          }
-        />
+      <Screen header={<AppHeader subtitle={t('Inicio')} onSettings={() => router.push('/settings')} />}>
+        {error ? <AppAlert tone="error">{error}</AppAlert> : null}
+        <HeroCard
+          eyebrow={greeting}
+          title={t('Bienvenido a Anden')}
+          description={t('Crea tu primera parcela para comparar qué sembrar con tus datos reales.')}
+          illustration="empty"
+        >
+          <AppButton
+            tone="surface"
+            onPress={() => router.push('/parcel-new')}
+            className="min-h-14"
+            testID={testIDs.dashboardParcel}
+          >
+            {t('Crear mi parcela')}
+          </AppButton>
+        </HeroCard>
+        <SectionCard title={t('Cómo funciona')} subtitle={t('Tres pasos, sin complicaciones')}>
+          <VStack className="gap-3">
+            <HStack className="items-start gap-3">
+              <Illustration name="onboarding-location" size={40} />
+              <Text className="flex-1 text-base leading-6 text-foreground">
+                {t('1. Marca el punto de tu parcela.')}
+              </Text>
+            </HStack>
+            <HStack className="items-start gap-3">
+              <Illustration name="compare" size={40} />
+              <Text className="flex-1 text-base leading-6 text-foreground">
+                {t('2. Compara 3 planes con tu agua, suelo y precios.')}
+              </Text>
+            </HStack>
+            <HStack className="items-start gap-3">
+              <Illustration name="success" size={40} />
+              <Text className="flex-1 text-base leading-6 text-foreground">
+                {t('3. Guarda el plan que te sirva.')}
+              </Text>
+            </HStack>
+          </VStack>
+        </SectionCard>
+        <Text className="text-center text-sm leading-5 text-muted-foreground">
+          {t('Es una ayuda para decidir. No reemplaza la visita de un agrónomo.')}
+        </Text>
       </Screen>
     );
   }
 
-  const indicatorList = indicators?.indicators ?? [];
-  const firstIndicator = indicatorList[0];
-  const completeness = completenessValue(context?.completeness.comparison);
+  const firstIndicator = indicators?.indicators?.[0];
+  const latestPlan = (savedPlansQuery.data ?? []).find((plan) => plan.parcel_id === parcel.id);
+  const fichaProgress = profileProgress(parcel, context);
+  const location = parcelLocation(parcel);
+  const economics = (parcel.preferences?.economics ?? {}) as Record<string, CropEconomics>;
+  const cropMap = new Map<string, Crop>(
+    (cropsQuery.data?.crops ?? []).map((crop) => [crop.id, crop]),
+  );
+  const priceRows = Object.entries(economics)
+    .filter(([, value]) => value && (value.price_pen_kg != null || value.yield_kg_ha != null))
+    .slice(0, 3);
+  const completePrices = Object.values(economics).filter(
+    (value) =>
+      value?.yield_kg_ha != null && value?.price_pen_kg != null && value?.costs_pen != null,
+  ).length;
+  const priceLabel =
+    priceRows.length > 0
+      ? t('{{done}} de {{total}} cultivos con precios', {
+          done: completePrices,
+          total: Object.keys(economics).length,
+        })
+      : t('Sin precios declarados');
+  const waterReady = context?.completeness.water === 'ready';
 
   const handleCompare = async () => {
     try {
-      await createComparison();
+      if (!comparison) await createComparison();
       router.push('/comparison');
+    } catch {
+      // The provider exposes the error through the alert below.
+    }
+  };
+
+  const handleScenario = async () => {
+    try {
+      if (!comparison) await createComparison();
+      router.push('/scenario');
     } catch {
       // The provider exposes the error through the alert below.
     }
@@ -77,8 +182,7 @@ export function DashboardScreen() {
     <Screen
       header={
         <AppHeader
-          subtitle={parcel.name}
-          isSimulated={parcel.is_simulated}
+          subtitle={`${parcel.name} · ${parcel.district ?? t('Moquegua')}`}
           onSources={() => router.push('/sources')}
           onSettings={() => router.push('/settings')}
         />
@@ -87,143 +191,246 @@ export function DashboardScreen() {
         <RefreshControl refreshing={loading} onRefresh={refresh} tintColor={colors.primary} />
       }
     >
-      {error ? <AppAlert tone="error">{error}</AppAlert> : null}
-
-      <SectionCard
-        title={t('Ficha de parcela')}
-        subtitle={t('Lo que sabemos y lo que falta')}
-        testID="dashboard.plotCard"
-      >
-        <VStack className="gap-2">
-          <MetricRow
-            label={t('Superficie')}
-            value={parcel.area_ha ? `${parcel.area_ha} ha` : t('No disponible')}
-          />
-          <MetricRow label={t('Distrito')} value={parcel.district ?? t('No disponible')} />
-          <MetricRow
-            label={t('Comparación')}
-            value={formatCompleteness(context?.completeness.comparison)}
-          />
-          <MetricRow label={t('Agua')} value={formatCompleteness(context?.completeness.water)} />
-        </VStack>
-        <VStack className="gap-1 pt-1">
-          <Text size="xs" className="text-muted-foreground">
-            {t('Completitud del análisis')}
-          </Text>
-          <Progress value={completeness}>
-            <ProgressFilledTrack className="bg-primary" />
-          </Progress>
-        </VStack>
-        {context?.missing_inputs?.length ? (
-          <AppAlert tone="warning">
-            {t('Falta: {{missing}}', { missing: formatMissing(context.missing_inputs) })}.{' '}
-            {t('Los resultados se muestran como no disponibles hasta completar esos datos.')}
-          </AppAlert>
-        ) : null}
-      </SectionCard>
-
-      <SectionCard
-        title={t('Contexto NASA')}
-        subtitle={t('NASA POWER · datos modelados de reanálisis')}
-      >
-        <VStack className="gap-2">
-          <MetricRow label={t('Lluvia')} value={formatNumber(firstIndicator?.precip_mm, 'mm')} />
-          <MetricRow label="Tmin" value={formatNumber(firstIndicator?.tmin_c, '°C')} />
-          <MetricRow label="Tmax" value={formatNumber(firstIndicator?.tmax_c, '°C')} />
-          <MetricRow label="ETo" value={formatNumber(firstIndicator?.eto_mm, 'mm')} />
-        </VStack>
-        <Text size="xs" className="text-muted-foreground">
-          {indicators?.source?.source ?? 'NASA POWER'} ·{' '}
-          {indicators?.source?.resolution ?? 'resolución no disponible'} ·{' '}
-          {indicators?.source?.quality_flag ?? 'calidad no declarada'}
-        </Text>
-        <AppButton tone="outline" onPress={() => router.push('/sources')}>
-          {t('Ver ficha de fuentes')}
-        </AppButton>
-      </SectionCard>
-
-      {firstIndicator ? (
-        <ChartCard
-          title={t('Lluvia y ETo')}
-          subtitle={t('NASA POWER · periodo analizado')}
-          summary={`${t('Lluvia')} ${formatNumber(firstIndicator.precip_mm, 'mm')}; ETo ${formatNumber(
-            firstIndicator.eto_mm,
-            'mm',
-          )}.`}
-          columns={[t('Indicador'), 'mm']}
-          rows={[
-            { label: t('Lluvia'), values: [formatNumber(firstIndicator.precip_mm, 'mm')] },
-            { label: 'ETo', values: [formatNumber(firstIndicator.eto_mm, 'mm')] },
-          ]}
-          testID="dashboard.chart.climate"
-        >
-          <AndenBarChart
-            data={[
-              {
-                label: t('Lluvia'),
-                value: firstIndicator.precip_mm,
-                color: chartColors.water,
-              },
-              { label: 'ETo', value: firstIndicator.eto_mm, color: chartColors.primary },
-            ]}
-            formatValue={(value) => `${value.toFixed(1)}`}
-          />
-        </ChartCard>
+      {error && online ? <AppAlert tone="error">{error}</AppAlert> : null}
+      {!online ? (
+        <AppAlert tone="info">
+          {bundle
+            ? t('Sin conexión: usando los datos guardados de esta parcela.')
+            : t('Sin conexión: descarga los datos de tu parcela cuando tengas señal.')}
+        </AppAlert>
       ) : null}
 
-      {indicatorList.length > 1 ? (
-        <ChartCard
-          title={t('Tendencia mensual')}
-          subtitle={t('Lluvia y ETo por mes')}
-          summary={`${t('Serie de {{count}} meses de lluvia y ETo.', { count: indicatorList.length })}`}
-          columns={[t('Mes'), t('Lluvia'), 'ETo']}
-          rows={indicatorList.map((indicator) => ({
-            label: indicator.month,
-            values: [
-              formatNumber(indicator.precip_mm, 'mm'),
-              formatNumber(indicator.eto_mm, 'mm'),
-            ],
-          }))}
-          testID="dashboard.chart.trend"
+      {parcels.length > 1 ? (
+        <ScrollView
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          contentContainerStyle={{ gap: 8, paddingRight: 8 }}
+          testID={testIDs.dashboardParcels}
         >
-          <AndenLineChart
-            data={indicatorList.map((indicator) => ({
-              label: indicator.month.slice(5),
-              value: indicator.eto_mm,
-            }))}
-            formatValue={(value) => `${value.toFixed(0)}`}
-          />
-        </ChartCard>
+          {parcels.map((item) => {
+            const selected = item.id === parcel.id;
+            return (
+              <Pressable
+                key={item.id}
+                onPress={() => selectParcel(item)}
+                accessibilityRole="radio"
+                accessibilityState={{ selected }}
+                accessibilityLabel={`${item.name}. ${item.district ?? t('Moquegua')}`}
+                className={`min-h-11 flex-row items-center gap-2 rounded-full border px-3 ${
+                  selected ? 'border-primary bg-accent' : 'border-border bg-card'
+                }`}
+              >
+                <Illustration name="parcel" size={24} />
+                <Text className="max-w-[160px] text-sm font-semibold text-foreground" numberOfLines={1}>
+                  {item.name}
+                </Text>
+              </Pressable>
+            );
+          })}
+        </ScrollView>
       ) : null}
 
-      <SectionCard title={t('¿Qué querés hacer ahora?')} subtitle={t('Tres caminos, una sola parcela')}>
+      <HeroCard
+        eyebrow={greeting}
+        title={comparison ? t('Tu comparación está lista') : t('¿Qué sembrar?')}
+        description={
+          comparison
+            ? t('Revisa agua, suelo y ganancia en tus 3 planes.')
+            : t('Compara con tu agua, tu suelo y tus precios.')
+        }
+        illustration="field"
+        testID={testIDs.dashboardHero}
+      >
         <AppButton
           testID={testIDs.dashboardCompare}
           loading={busy}
-          onPress={handleCompare}
+          onPress={() => void handleCompare()}
+          tone="surface"
+          className="min-h-14"
         >
-          {t('Comparar rotaciones')}
+          {comparison ? t('Ver comparación') : t('Comparar ahora')}
         </AppButton>
-        <AppButton
-          testID={testIDs.dashboardMap}
-          tone="water"
-          onPress={() => router.push('/map')}
+        <HStack className="flex-wrap gap-2">
+          <Text className="rounded-full bg-primary-foreground/15 px-2.5 py-1 text-sm text-primary-foreground">
+            {waterReady ? t('Agua lista') : t('Agua pendiente')}
+          </Text>
+          <Text className="rounded-full bg-primary-foreground/15 px-2.5 py-1 text-sm text-primary-foreground">
+            {t('Ficha {{progress}}%', { progress: fichaProgress })}
+          </Text>
+          <Text className="rounded-full bg-primary-foreground/15 px-2.5 py-1 text-sm text-primary-foreground">
+            {priceLabel}
+          </Text>
+        </HStack>
+      </HeroCard>
+
+      {latestPlan ? (
+        <SectionCard
+          title={t('Tu campaña')}
+          subtitle={t('La decisión que guardaste')}
+          action={
+            <AppButton tone="ghost" size="sm" onPress={() => router.push('/parcel')}>
+              {t('Ver plan')}
+            </AppButton>
+          }
         >
-          {t('Ver mapa')}
-        </AppButton>
-        <AppButton
-          testID={testIDs.dashboardAgent}
-          tone="earth"
-          onPress={() => router.push('/agent')}
+          <HStack className="items-center gap-3">
+            <Illustration name="success" size={56} />
+            <VStack className="flex-1">
+              <Text className="text-base font-semibold text-foreground">{latestPlan.name}</Text>
+              <Text className="text-sm text-muted-foreground">
+                {latestPlan.created_at ? formatDate(latestPlan.created_at) : t('Guardado')}
+              </Text>
+            </VStack>
+          </HStack>
+        </SectionCard>
+      ) : null}
+
+      <VStack className="gap-2">
+        <Text className="text-lg font-bold text-foreground">{t('¿Qué necesitas?')}</Text>
+        <HStack className="flex-wrap gap-3">
+          <ToolTile
+            illustration="prices"
+            title={t('Precios')}
+            subtitle={t('Tu precio, costo y margen')}
+            onPress={() => router.push('/parcel-economics')}
+            testID={testIDs.dashboardPrices}
+            badge={priceLabel}
+          />
+          <ToolTile
+            illustration="water"
+            title={t('Riego')}
+            subtitle={t('Lluvia y demanda de 7 días')}
+            onPress={() => router.push('/parcel-irrigation')}
+            testID={testIDs.dashboardIrrigation}
+          />
+          <ToolTile
+            illustration="scenario"
+            title={t('Probar un cambio')}
+            subtitle={t('Menos agua o menor precio')}
+            onPress={() => void handleScenario()}
+            testID={testIDs.dashboardScenario}
+          />
+          <ToolTile
+            illustration="agent"
+            title={t('Preguntar')}
+            subtitle={t('Respuestas con tus datos')}
+            onPress={() => router.push('/agent')}
+            testID={testIDs.dashboardAgent}
+          />
+        </HStack>
+      </VStack>
+
+      {priceRows.length > 0 ? (
+        <SectionCard
+          title={t('Tus precios')}
+          subtitle={t('Lo que declaraste para calcular tu margen')}
+          testID={testIDs.dashboardPrices}
+          action={
+            <AppButton tone="ghost" size="sm" onPress={() => router.push('/parcel-economics')}>
+              {t('Editar')}
+            </AppButton>
+          }
         >
-          {t('Hablar con el agente')}
-        </AppButton>
+          <VStack className="gap-2">
+            {priceRows.map(([cropId, value]) => (
+              <HStack
+                key={cropId}
+                className="min-h-12 items-center gap-3 rounded-xl bg-muted/60 px-3 py-2"
+              >
+                <CropThumb cropId={cropId} size={36} />
+                <VStack className="flex-1">
+                  <Text className="text-base font-semibold text-foreground">
+                    {cropMap.get(cropId)?.local_name ?? cropId}
+                  </Text>
+                  <Text className="text-sm text-muted-foreground">
+                    {value.price_pen_kg != null
+                      ? `${formatMoney(value.price_pen_kg)} / kg`
+                      : t('Falta precio')}
+                  </Text>
+                </VStack>
+                <Text className="text-sm text-muted-foreground">
+                  {value.yield_kg_ha != null
+                    ? `${formatNumber(value.yield_kg_ha, 'kg/ha', 0)}`
+                    : t('Falta rendimiento')}
+                </Text>
+              </HStack>
+            ))}
+            <AppButton tone="outline" onPress={() => router.push('/parcel-economics')}>
+              {t('Completar precios')}
+            </AppButton>
+          </VStack>
+        </SectionCard>
+      ) : null}
+
+      <SectionCard
+        title={t('Tu parcela')}
+        subtitle={`${parcel.name} · ${parcel.district ?? t('Moquegua')}`}
+        testID={testIDs.dashboardParcel}
+      >
+        <HStack className="items-start gap-3">
+          <Illustration name="parcel" size={64} />
+          <VStack className="flex-1">
+            <Text className="text-sm leading-5 text-muted-foreground">
+              {parcel.area_ha ? formatNumber(parcel.area_ha, t('ha'), 2) : t('Superficie no disponible')}
+              {location ? ` · ${location}` : ''}
+            </Text>
+            <Text className="mt-1 text-sm leading-5 text-muted-foreground">
+              {t('Ficha {{progress}}% completa', { progress: fichaProgress })}
+            </Text>
+            <AppButton
+              tone="outline"
+              size="sm"
+              onPress={() => router.push(fichaProgress === 100 ? '/parcel' : '/parcel-profile')}
+            >
+              {fichaProgress === 100 ? t('Revisar ficha') : t('Completar ficha')}
+            </AppButton>
+          </VStack>
+        </HStack>
       </SectionCard>
 
-      <Text className="text-center text-[10px] text-muted-foreground">
-        {t(
-          'Comparación de apoyo a decisiones bajo supuestos. No es una recomendación agronómica validada.',
-        )}
+      {context?.missing_inputs?.length ? (
+        <AppAlert tone="warning">
+          {t('Faltan datos: {{missing}}. Los números que dependen de ellos se muestran como no disponibles.', {
+            missing: context.missing_inputs.join(', '),
+          })}
+        </AppAlert>
+      ) : null}
+
+      {firstIndicator ? (
+        <SectionCard
+          title={t('Clima de tu zona')}
+          subtitle={t('Datos estimados por NASA')}
+          testID={testIDs.dashboardClimate}
+        >
+          <HStack className="gap-4">
+            <MetricTile
+              label={t('Lluvia')}
+              value={formatNumber(firstIndicator.precip_mm, 'mm', 1)}
+              tone="water"
+              icon={<CloudSun size={18} color={colors.water} />}
+            />
+            <MetricTile
+              label={t('Agua que evapora')}
+              value={formatNumber(firstIndicator.eto_mm, 'mm', 1)}
+              tone="primary"
+              icon={<Sprout size={18} color={colors.primary} />}
+            />
+          </HStack>
+          <Disclosure title={t('¿Qué significan estos datos?')}>
+            <Text className="text-sm leading-5 text-muted-foreground">
+              {t(
+                'La lluvia es el agua que cae en tu zona. La ETo es el agua que el sol y el viento hacen evaporar. Son datos estimados de NASA, no una medición de tu parcela.',
+              )}
+            </Text>
+            <AppButton tone="outline" size="sm" onPress={() => router.push('/sources')}>
+              {t('Ver de dónde vienen')}
+            </AppButton>
+          </Disclosure>
+        </SectionCard>
+      ) : null}
+
+      <Text className="text-center text-sm leading-5 text-muted-foreground">
+        {t('Es una ayuda para decidir. No reemplaza la visita de un agrónomo.')}
       </Text>
     </Screen>
   );

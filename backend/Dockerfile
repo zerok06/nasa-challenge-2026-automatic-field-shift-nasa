@@ -18,7 +18,7 @@ COPY backend/app /app/backend/app
 COPY datasets /app/datasets
 
 WORKDIR /app/backend
-RUN uv sync --frozen
+RUN uv sync --frozen --extra gemini
 
 RUN useradd -m appuser && chown -R appuser /app
 USER appuser

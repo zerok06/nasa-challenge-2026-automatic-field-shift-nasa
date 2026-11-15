@@ -1,5 +1,9 @@
 # Despliegue local y túnel
 
+> Actualización 2026-11-14: el demo también corre en GCP (VM `e2-small` +
+> PostGIS + Gemini 3.5 Flash). Ver `deploy-gcp.md`. Este documento queda como
+> guía local y de respaldo.
+
 ## Decisión
 
 Demo con **Docker Compose en la laptop** + **Cloudflare Tunnel** para que el teléfono llegue por HTTPS. Sin cloud en la primera semana. APK opcional para entrega/E2E.
@@ -56,7 +60,7 @@ adb reverse tcp:8000 tcp:8000
 
 ## APK (pendiente)
 
-El MVP corre en Expo Go con Paper. Para un APK:
+El MVP corre en Expo Go con gluestack v5 + NativeWind 5. Para un APK:
 
 ```bash
 cd application
@@ -64,8 +68,10 @@ npx expo prebuild --clean
 npx expo run:android --variant release
 ```
 
-- El mapa usa WebView + Leaflet/GIBS; no requiere `GOOGLE_MAPS_API_KEY`.
-- El APK apunta a `EXPO_PUBLIC_API_URL`; si el túnel cambia, rebuild o usa un túnel nombrado.
+- No hay mapas ni WebView desde Spec 028; no se requiere `GOOGLE_MAPS_API_KEY`.
+- El APK apunta a `EXPO_PUBLIC_API_URL`; para un teléfono en la misma Wi-Fi debe
+  ser `http://<ip-lan>:8000`, no `localhost`.
+- En Expo Go, Metro debe arrancar en modo LAN (`pnpm start -- --lan`).
 - Instalar en un dispositivo limpio antes del demo.
 - No se generó ni validó un APK en esta entrega; no afirmarlo en el pitch.
 

@@ -6,9 +6,11 @@ import {
   getComparison,
   sendAgentMessage,
   type AgentAction,
+  type AgentNextStep,
   type AgentToolTrace,
 } from '@/services/api';
 import { useComparison } from './ComparisonProvider';
+import { useOffline } from './OfflineProvider';
 import { useParcel } from './ParcelProvider';
 
 export type AgentChatMessage = {
@@ -17,6 +19,7 @@ export type AgentChatMessage = {
   text: string;
   trace?: AgentToolTrace[];
   actions?: AgentAction[];
+  nextStep?: AgentNextStep | null;
 };
 
 type AgentState = {
@@ -41,6 +44,7 @@ function nextId(prefix: string) {
 
 export function AgentProvider({ children }: { children: React.ReactNode }) {
   const { parcel } = useParcel();
+  const { online, bundle } = useOffline();
   const { setComparison } = useComparison();
   const [threadId, setThreadId] = useState<string | null>(null);
   const [messages, setMessages] = useState<AgentChatMessage[]>([]);
@@ -70,6 +74,49 @@ export function AgentProvider({ children }: { children: React.ReactNode }) {
         ...current,
         { id: nextId('user'), role: 'user', text },
       ]);
+      if (!online) {
+        const lower = text.toLowerCase();
+        let answer: string;
+        if (lower.includes('compar') || lower.includes('rotac')) {
+          if (bundle) {
+            setComparison(bundle.comparison);
+            answer = bundle.comparison.plans
+              .map(
+                (plan) =>
+                  `${plan.label}: ganancia ${plan.economics.margin_pen ?? 'sin dato'} soles, ` +
+                  `agua que necesitas ${plan.water.gross_irrigation_mm ?? 'sin dato'} mm`,
+              )
+              .join('. ');
+            answer = `Sin conexión, con tus datos guardados. ${answer}`;
+          } else {
+            answer =
+              'No hay datos guardados para esta parcela. Conéctate una vez y descárgalos para usarlos sin internet.';
+          }
+        } else if (lower.includes('agua') || lower.includes('riego')) {
+          answer =
+            'Sin conexión puedo usar tus datos guardados. Abre “Comparar” y toca “Probar un cambio” para probar menos agua; el resultado se marcará como estimación sin internet.';
+        } else if (lower.includes('guardar') || lower.includes('borrador')) {
+          answer =
+            'Para guardar un borrador necesitas conexión. Puedes seguir comparando y probando cambios con tus datos guardados.';
+        } else if (lower.includes('paquete') || lower.includes('datos')) {
+          answer = bundle
+            ? `Tus datos guardados tienen ${bundle.climate.length} meses de clima y ${bundle.comparison.plans.length} planes, y vencen el ${bundle.expires_at.slice(0, 10)}.`
+            : 'No hay datos guardados. Conéctate y descárgalos desde “Mi parcela”.';
+        } else {
+          answer =
+            'Estoy sin conexión. Puedo comparar planes con tus datos guardados, explicarlos o indicarte cómo probar agua y precio.';
+        }
+        setMessages((current) => [
+          ...current,
+          {
+            id: nextId('assistant-offline'),
+            role: 'assistant',
+            text: answer,
+          },
+        ]);
+        setSending(false);
+        return;
+      }
       try {
         const id = await ensureThread();
         const response = await sendAgentMessage(id, text);
@@ -81,6 +128,7 @@ export function AgentProvider({ children }: { children: React.ReactNode }) {
             text: response.answer,
             trace: response.tool_trace,
             actions: response.ui_actions,
+            nextStep: response.next_step,
           },
         ]);
         const saveAction = response.ui_actions.find(
@@ -104,30 +152,34 @@ export function AgentProvider({ children }: { children: React.ReactNode }) {
           {
             id: nextId('assistant-error'),
             role: 'assistant',
-            text: 'No pude completar la consulta. Revisá la conexión e intentá de nuevo.',
+            text: 'No pude completar la consulta. Revisa la conexión e intenta de nuevo.',
           },
         ]);
       } finally {
         setSending(false);
       }
     },
-    [ensureThread, input, parcel, sending, setComparison],
+    [bundle, ensureThread, input, online, parcel, sending, setComparison],
   );
 
   const confirmSave = useCallback(async () => {
     if (!proposalId) return;
+    if (!online) {
+      setError('Sin conexión no se puede guardar el borrador');
+      return;
+    }
     setSending(true);
     setError(null);
     try {
       await confirmAction(proposalId, true);
-      setSavedMessage('Borrador guardado con estado draft.');
+      setSavedMessage('Borrador guardado. Lo encuentras en “Mi parcela”.');
       setProposalId(null);
     } catch (cause) {
       setError(cause instanceof Error ? cause.message : 'No se pudo guardar');
     } finally {
       setSending(false);
     }
-  }, [proposalId]);
+  }, [online, proposalId]);
 
   const value = useMemo<AgentState>(
     () => ({

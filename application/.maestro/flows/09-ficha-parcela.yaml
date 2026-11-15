@@ -1,0 +1,56 @@
+appId: com.anden.app
+---
+- runFlow:
+    file: setup.yaml
+- tapOn:
+    id: "nav.parcel"
+- extendedWaitUntil:
+    visible:
+      id: "parcel.summary"
+    timeout: 30000
+- scrollUntilVisible:
+    element:
+      id: "parcel.profile"
+    direction: DOWN
+- tapOn:
+    id: "parcel.profile"
+- extendedWaitUntil:
+    visible:
+      id: "parcel.profile.form"
+    timeout: 30000
+- assertVisible: "Tu historial"
+- scrollUntilVisible:
+    element:
+      id: "parcel.profile.crop.onion"
+    direction: DOWN
+- tapOn:
+    id: "parcel.profile.crop.onion"
+- tapOn:
+    id: "parcel.profile.next"
+- extendedWaitUntil:
+    visible: "Todo el año"
+    timeout: 20000
+- tapOn:
+    id: "parcel.profile.next"
+- extendedWaitUntil:
+    visible: "No tengo"
+    timeout: 20000
+- tapOn:
+    id: "parcel.profile.next"
+- extendedWaitUntil:
+    visible: "Elige hasta 3 prioridades"
+    timeout: 20000
+- tapOn:
+    id: "parcel.profile.priority.water"
+- tapOn:
+    id: "parcel.profile.next"
+- extendedWaitUntil:
+    visible: "Resumen"
+    timeout: 20000
+- assertVisible: "Historial de cultivos"
+- tapOn: "Terminar ficha"
+- extendedWaitUntil:
+    visible:
+      id: "parcel.summary"
+    timeout: 30000
+- assertVisible: "Ficha de parcela"

@@ -1,9 +1,12 @@
 # Spec 013 — NDVI multitemporal (P1)
 
+> **Estado: superseded por Spec 028 (14-nov-2026).** La app ya no muestra mapas ni
+> capas NDVI. Este documento queda como referencia histórica.
+
 | Campo | Valor |
 |---|---|
 | ID | 013 |
-| Estado | Borrador |
+| Estado | Superseded |
 | Prioridad | P1 |
 | Dependencias | 012 |
 | Versión | 0.1 |

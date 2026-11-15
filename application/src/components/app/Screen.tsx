@@ -9,6 +9,7 @@ type ScrollViewRef = React.ComponentRef<typeof ScrollView>;
 export function Screen({
   children,
   header,
+  footer,
   scroll = true,
   keyboard = false,
   edges = ['top'],
@@ -19,6 +20,7 @@ export function Screen({
 }: {
   children: React.ReactNode;
   header?: React.ReactNode;
+  footer?: React.ReactNode;
   scroll?: boolean;
   keyboard?: boolean;
   edges?: ('top' | 'bottom' | 'left' | 'right')[];
@@ -29,6 +31,8 @@ export function Screen({
 }) {
   const scheme = useColorScheme();
   const background = scheme === 'dark' ? darkColors.background : colors.background;
+  const surface = scheme === 'dark' ? darkColors.surface : colors.surface;
+  const border = scheme === 'dark' ? darkColors.border : colors.border;
 
   const body = scroll ? (
     <ScrollView
@@ -65,6 +69,21 @@ export function Screen({
       ) : (
         body
       )}
+      {footer ? (
+        <View
+          style={{
+            borderTopWidth: 1,
+            borderTopColor: border,
+            backgroundColor: surface,
+            paddingHorizontal: spacing.lg,
+            paddingTop: spacing.md,
+            paddingBottom: edges.includes('bottom') ? spacing.md : spacing.lg,
+            gap: spacing.sm,
+          }}
+        >
+          {footer}
+        </View>
+      ) : null}
     </SafeAreaView>
   );
 }

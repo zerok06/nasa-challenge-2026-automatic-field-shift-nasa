@@ -1,18 +1,17 @@
-appId: host.exp.exponent
+appId: com.anden.app
 ---
 - runFlow:
     file: setup.yaml
-- scrollUntilVisible:
-    element:
-      id: "dashboard.compare"
-    direction: DOWN
 - tapOn:
     id: "dashboard.compare"
+- extendedWaitUntil:
+    visible: "Tu comparación"
+    timeout: 30000
 - scrollUntilVisible:
     element:
-      text: "Rotación actual"
+      text: "Tu plan actual"
     direction: DOWN
-- assertVisible: "Rotación actual"
+- assertVisible: "Tu plan actual"
 - scrollUntilVisible:
     element:
       text: "Alternativa B"
@@ -22,9 +21,9 @@ appId: host.exp.exponent
     element:
       text: "Alternativa C"
     direction: DOWN
-- assertVisible: "No viable"
+- assertVisible: "Alternativa C"
 - scrollUntilVisible:
     element:
       id: "comparison.simulate"
     direction: DOWN
-- assertVisible: "Simular cambios"
+- assertVisible: "Probar un cambio"

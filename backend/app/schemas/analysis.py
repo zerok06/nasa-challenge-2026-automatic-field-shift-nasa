@@ -18,7 +18,7 @@ class ComparisonRequest(BaseModel):
 class PlanOut(BaseModel):
     plan_id: str
     label: str
-    kind: Literal["existing", "candidate"]
+    kind: Literal["existing", "candidate", "example"]
     status: Literal["draft", "eligible", "needs_review", "invalid", "saved"]
     crop_sequence: list[str]
     horizon: dict[str, date]

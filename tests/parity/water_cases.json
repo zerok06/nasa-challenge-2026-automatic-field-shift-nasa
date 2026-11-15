@@ -1,0 +1,75 @@
+[
+  {
+    "name": "effective-rain-10",
+    "op": "effective_rain",
+    "input": 10,
+    "expected": 9.84
+  },
+  {
+    "name": "effective-rain-300",
+    "op": "effective_rain",
+    "input": 300,
+    "expected": 155.0
+  },
+  {
+    "name": "etc-stages",
+    "op": "etc_from_stages",
+    "input": {
+      "stages": [
+        {
+          "days": 20,
+          "kc": 0.7
+        },
+        {
+          "days": 30,
+          "kc": 0.85
+        }
+      ],
+      "eto": 5
+    },
+    "expected": 197.5
+  },
+  {
+    "name": "available-mm",
+    "op": "available_mm",
+    "input": {
+      "area_ha": 1.2,
+      "volume_m3": 13200,
+      "mm": null
+    },
+    "expected": 1100.0
+  },
+  {
+    "name": "water-balance-deficit",
+    "op": "water_balance",
+    "input": {
+      "etc_mm": 500,
+      "rain_effective_mm": 20,
+      "available": 300,
+      "efficiency": 0.7,
+      "area_ha": 1.2,
+      "volume_m3": null
+    },
+    "expected": {
+      "net_irrigation_mm": 480.0,
+      "gross_irrigation_mm": 685.714,
+      "deficit_mm": 385.714,
+      "available_mm": 300.0,
+      "feasibility": "deficit",
+      "missing_inputs": [],
+      "assumptions": [],
+      "method_version": "water-v0.1"
+    }
+  },
+  {
+    "name": "eto-hargreaves",
+    "op": "eto_hargreaves",
+    "input": {
+      "tmax_c": 24,
+      "tmin_c": 12,
+      "lat": -17.19,
+      "day": "2025-01-15"
+    },
+    "expected": 4.807
+  }
+]

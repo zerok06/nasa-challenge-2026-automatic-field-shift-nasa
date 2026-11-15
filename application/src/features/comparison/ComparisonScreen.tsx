@@ -1,93 +1,215 @@
-import React, { memo } from 'react';
-import { router, useIsFocused } from 'expo-router';
+import React, { memo, useEffect, useRef, useState } from 'react';
+import { router } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 
 import { AppAlert } from '@/components/app/AppAlert';
 import { AppButton } from '@/components/app/AppButton';
 import { AppHeader } from '@/components/app/AppHeader';
-import { MetricRow } from '@/components/app/Metric';
+import { Disclosure } from '@/components/app/Disclosure';
+import { HeroCard } from '@/components/app/HeroCard';
+import { MetricRow, MetricTile } from '@/components/app/Metric';
 import { Screen } from '@/components/app/Screen';
 import { SectionCard } from '@/components/app/SectionCard';
 import { StateView } from '@/components/app/StateView';
 import { StatusBadge } from '@/components/app/StatusBadge';
-import { Card } from '@/components/ui/card';
-import { Disclosure } from '@/components/app/Disclosure';
-import { AndenBarChart, AndenLineChart } from '@/components/charts/AndenCharts';
+import { AndenBarChart, useChartPalette } from '@/components/charts/AndenCharts';
 import { ChartCard } from '@/components/charts/ChartCard';
-import { chartColors } from '@/design-system/tokens';
 import { HStack } from '@/components/ui/hstack';
+import { Pressable } from '@/components/ui/pressable';
 import { Text } from '@/components/ui/text';
 import { VStack } from '@/components/ui/vstack';
 import { testIDs } from '@/design-system/testIDs';
 import {
   formatCropSequence,
+  formatDate,
   formatFeasibility,
   formatMissing,
   formatMoney,
   formatNumber,
-  formatSoilStatus,
 } from '@/lib/format';
+import { useAgentSheet } from '@/providers/AgentSheetProvider';
 import { useComparison } from '@/providers/ComparisonProvider';
+import { useOffline } from '@/providers/OfflineProvider';
 import { useParcel } from '@/providers/ParcelProvider';
-import type { Plan } from '@/services/api';
+import { sendFeedback, type Plan } from '@/services/api';
+
+function FeedbackPrompt({ parcelId, online }: { parcelId: string; online: boolean }) {
+  const { t } = useTranslation();
+  const [sent, setSent] = useState(false);
+  const [busy, setBusy] = useState(false);
+
+  const submit = async (rating: number) => {
+    if (!online || busy) return;
+    setBusy(true);
+    try {
+      await sendFeedback({
+        parcelId,
+        kind: 'comparison',
+        rating,
+        context: { screen: 'comparison' },
+      });
+      setSent(true);
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const options = [
+    { label: t('Sí, me ayudó'), rating: 5, testID: testIDs.comparisonFeedbackHelpful },
+    { label: t('No me ayudó'), rating: 2, testID: testIDs.comparisonFeedbackNotHelpful },
+    { label: t('No entendí'), rating: 1, testID: testIDs.comparisonFeedbackConfusing },
+  ];
+
+  return (
+    <SectionCard title={t('¿Te sirvió esta comparación?')} testID={testIDs.comparisonFeedback}>
+      {sent ? (
+        <Text className="text-sm leading-5 text-muted-foreground">
+          {t('Gracias. Tu respuesta nos ayuda a mejorar Anden.')}
+        </Text>
+      ) : (
+        <>
+          <Text className="text-sm leading-5 text-muted-foreground">
+            {online
+              ? t('Una respuesta corta nos ayuda a entender si la app se entiende.')
+              : t('Sin conexión: podrás responder cuando vuelvas a tener señal.')}
+          </Text>
+          <HStack className="flex-wrap gap-2">
+            {options.map((option) => (
+              <Pressable
+                key={option.rating}
+                testID={option.testID}
+                disabled={!online || busy}
+                onPress={() => void submit(option.rating)}
+                accessibilityRole="button"
+                className="min-h-11 rounded-full border border-border bg-card px-3 py-2"
+              >
+                <Text className="text-sm font-semibold text-foreground">{option.label}</Text>
+              </Pressable>
+            ))}
+          </HStack>
+        </>
+      )}
+    </SectionCard>
+  );
+}
 
 const PlanCard = memo(function PlanCard({ plan, index }: { plan: Plan; index: number }) {
   const { t } = useTranslation();
+  const { open: openAgent } = useAgentSheet();
+  const isCurrent = index === 0;
+  const isExample = plan.kind === 'example';
+  const marginMissing = plan.economics.margin_pen === null;
+  const economicsMissing = plan.economics.missing_inputs ?? [];
+  const otherMissing = plan.missing_inputs.filter(
+    (value) => value !== 'crop_economics' && !value.startsWith('economics.'),
+  );
+
   return (
-    <Card
-      className="gap-3 rounded-2xl border border-border bg-card p-4"
+    <SectionCard
+      title={
+        isExample
+          ? t('Plan de ejemplo')
+          : isCurrent
+            ? t('Tu plan actual')
+            : t(plan.label)
+      }
+      subtitle={formatCropSequence(plan.crop_sequence)}
+      action={<StatusBadge status={plan.status} />}
       testID={testIDs.comparisonPlan(index)}
     >
-      <HStack className="items-start justify-between gap-3">
-        <VStack className="flex-1 gap-1">
-          <Text className="text-base font-semibold text-foreground">{t(plan.label)}</Text>
-          <Text size="sm" className="text-primary">
-            {formatCropSequence(plan.crop_sequence)}
-          </Text>
-        </VStack>
-        <StatusBadge status={plan.status} />
-      </HStack>
-
       <VStack className="gap-2">
+        <HStack className="gap-3">
+          <MetricTile
+            label={t('Agua que falta')}
+            value={
+              plan.water.deficit_mm !== null && plan.water.deficit_mm <= 0
+                ? t('No falta')
+                : formatNumber(plan.water.deficit_mm, 'mm', 0)
+            }
+            tone="water"
+          />
+          <MetricTile
+            label={t('Ganancia estimada')}
+            value={marginMissing ? t('Falta dato') : formatMoney(plan.economics.margin_pen)}
+            tone="primary"
+          />
+        </HStack>
+
+        {marginMissing ? (
+          <VStack className="gap-2 rounded-xl border border-warning/40 bg-warning/5 p-3">
+            <Text className="text-sm font-semibold text-warning">
+              {t('Todavía no podemos estimar la ganancia')}
+            </Text>
+            <Text className="text-sm leading-5 text-muted-foreground">
+              {economicsMissing.length > 0
+                ? t('Falta: {{missing}}.', { missing: formatMissing(economicsMissing, 4) })
+                : t('Falta el precio, el rendimiento o el costo de algún cultivo.')}
+            </Text>
+            <HStack className="flex-wrap gap-2">
+              <AppButton
+                size="sm"
+                tone="outline"
+                onPress={() => router.push('/parcel-economics')}
+              >
+                {t('Agregar precios y costos')}
+              </AppButton>
+              <AppButton
+                size="sm"
+                tone="ghost"
+                onPress={() =>
+                  openAgent(
+                    '¿Por qué no se calcula la ganancia estimada de mi plan? Explícame qué dato falta.',
+                  )
+                }
+              >
+                {t('Preguntar por qué')}
+              </AppButton>
+            </HStack>
+          </VStack>
+        ) : null}
         <MetricRow
-          label={t('Riego bruto')}
-          value={formatNumber(plan.water.gross_irrigation_mm, 'mm')}
+          label={t('¿Alcanza el agua?')}
+          value={formatFeasibility(plan.water.feasibility)}
+          valueClassName={
+            plan.water.feasibility === 'deficit' ? 'text-warning' : undefined
+          }
         />
-        <MetricRow label={t('Déficit')} value={formatNumber(plan.water.deficit_mm, 'mm')} />
-        <MetricRow label={t('Factibilidad')} value={formatFeasibility(plan.water.feasibility)} />
-        <MetricRow label={t('Margen')} value={formatMoney(plan.economics.margin_pen)} />
-        <MetricRow label={t('Suelo')} value={formatSoilStatus(plan.soil.fertility_status)} />
       </VStack>
 
-      {plan.missing_inputs.length > 0 ? (
-        <AppAlert tone="warning">
-          {t('Falta: {{missing}}', { missing: formatMissing(plan.missing_inputs) })}
-        </AppAlert>
+      {otherMissing.length > 0 ? (
+        <Text className="text-sm leading-5 text-warning">
+          {t('Falta: {{missing}}', { missing: formatMissing(otherMissing) })}
+        </Text>
       ) : null}
 
       <Disclosure title={t('¿Por qué este plan?')}>
-        <Text size="sm" className="text-muted-foreground">
+        <Text className="text-sm leading-5 text-muted-foreground">
           {plan.why_this_plan.length > 0
             ? plan.why_this_plan.join(' ')
-            : t('Sin explicación adicional declarada.')}
+            : t('No hay una explicación adicional.')}
         </Text>
       </Disclosure>
-      <Disclosure title={t('Tradeoffs')}>
-        <Text size="sm" className="text-muted-foreground">
+      <Disclosure title={t('Lo que ganas y lo que pierdes')}>
+        <Text className="text-sm leading-5 text-muted-foreground">
           {plan.tradeoffs.length > 0
             ? plan.tradeoffs.join(' ')
-            : t('Sin tradeoffs adicionales declarados.')}
+            : t('No hay más ventajas o desventajas declaradas.')}
         </Text>
       </Disclosure>
-    </Card>
+    </SectionCard>
   );
 });
 
 export function ComparisonScreen() {
   const { t } = useTranslation();
+  const palette = useChartPalette();
   const { parcel } = useParcel();
-  const { comparison, busy, error, createComparison } = useComparison();
-  const isFocused = useIsFocused();
+  const { online } = useOffline();
+  const { comparison, comparisonOrigin, stale, busy, error, createComparison } = useComparison();
+  const hasMargins = Boolean(
+    comparison?.plans.some((plan) => plan.economics.margin_pen !== null),
+  );
+  const autoRefreshAttempted = useRef(false);
 
   const handleCreate = async () => {
     try {
@@ -97,128 +219,188 @@ export function ComparisonScreen() {
     }
   };
 
+  useEffect(() => {
+    if (!stale) {
+      autoRefreshAttempted.current = false;
+      return;
+    }
+    if (!parcel || !comparison || busy || autoRefreshAttempted.current) return;
+    autoRefreshAttempted.current = true;
+    void handleCreate();
+    // handleCreate intentionally only depends on the provider callbacks.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [busy, comparison, parcel, stale]);
+
+  if (!parcel) {
+    return (
+      <Screen header={<AppHeader subtitle={t('Comparar')} />}>
+        <StateView
+          illustration="empty"
+          title={t('Primero crea tu parcela')}
+          description={t('Necesitamos tu ubicación y superficie para comparar planes.')}
+          action={
+            <AppButton onPress={() => router.push('/parcel-new')}>
+              {t('Crear mi parcela')}
+            </AppButton>
+          }
+        />
+      </Screen>
+    );
+  }
+
   return (
     <Screen
-      key={`comparison-${isFocused ? 'focused' : 'blurred'}-${comparison?.comparison_id ?? 'empty'}`}
       header={
         <AppHeader
-          subtitle={parcel?.name ?? t('Rotaciones')}
-          isSimulated={parcel?.is_simulated}
+          subtitle={parcel?.name ?? t('Comparar')}
           onSources={() => router.push('/sources')}
         />
       }
+      footer={
+        comparison ? (
+          <>
+            <AppButton
+              testID={testIDs.comparisonSimulate}
+              onPress={() => router.push('/scenario')}
+            >
+              {t('Probar un cambio')}
+            </AppButton>
+            <Text className="text-center text-sm leading-5 text-muted-foreground">
+              {stale
+                ? t('Actualizando con los cambios de tu ficha…')
+                : t('Se actualiza sola cuando cambias tu ficha.')}
+            </Text>
+          </>
+        ) : undefined
+      }
     >
       {error ? <AppAlert tone="error">{error}</AppAlert> : null}
+      {error && stale && comparison && !busy ? (
+        <AppButton
+          onPress={() => {
+            autoRefreshAttempted.current = false;
+            void handleCreate();
+          }}
+        >
+          {t('Reintentar actualización')}
+        </AppButton>
+      ) : null}
+      {comparisonOrigin === 'bundle' || (!online && comparison) ? (
+        <AppAlert tone="info">
+          {t('Sin conexión: usando los datos guardados de esta parcela.')}
+        </AppAlert>
+      ) : null}
+      {comparison?.plans[0]?.kind === 'example' ? (
+        <AppAlert tone="warning">
+          {t(
+            'No registraste tu historial. La primera fila es una rotación de ejemplo, no tu plan actual.',
+          )}
+        </AppAlert>
+      ) : null}
 
       {!comparison ? (
-        <SectionCard
-          title={t('Comparador de rotaciones')}
-          subtitle={t('Tres estrategias en el mismo horizonte: la actual y dos alternativas.')}
-        >
-          <Text className="text-sm leading-5 text-muted-foreground">
-            {t(
-              'El motor estima agua, suelo y margen. Si falta un dato, lo muestra como no disponible en lugar de inventarlo.',
+        <>
+          <HeroCard
+            eyebrow={t('Antes de sembrar')}
+            title={t('Compara 3 planes para tu parcela')}
+            description={t(
+              'Verás cuánta agua falta, cuánto podrías ganar y si el agua alcanza. Si falta un dato, lo decimos.',
             )}
-          </Text>
-          <AppButton
-            testID={testIDs.comparisonCreate}
-            loading={busy}
-            onPress={handleCreate}
+            illustration="compare"
           >
-            {t('Comparar ahora')}
-          </AppButton>
-        </SectionCard>
+            <AppButton
+              testID={testIDs.comparisonCreate}
+              loading={busy}
+              tone="surface"
+              className="min-h-14"
+              onPress={() => void handleCreate()}
+            >
+              {t('Comparar ahora')}
+            </AppButton>
+          </HeroCard>
+          {busy ? (
+            <StateView
+              loading
+              title={t('Calculando tus planes')}
+              description={t('Estamos revisando agua, suelo y ganancia.')}
+            />
+          ) : null}
+        </>
       ) : (
         <>
-          <VStack className="gap-1">
-            <Text className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-              {t('Comparación')}
-            </Text>
-            <Text className="text-sm text-foreground">
-              {comparison.analysis_period.start} → {comparison.analysis_period.end}
-            </Text>
-            <Text size="xs" className="text-muted-foreground">
-              {t('Fuente: {{source}}', {
-                source: comparison.source_snapshots.join(', ') || 'sin snapshot',
-              })}
-            </Text>
-          </VStack>
-
-          <ChartCard
-            title={t('Margen por plan')}
-            subtitle={t('PEN · periodo analizado')}
-            summary={comparison.plans
-              .map((plan) => `${plan.label}: ${formatMoney(plan.economics.margin_pen)}`)
-              .join('; ')}
-            columns={[t('Plan'), t('Margen')]}
-            rows={comparison.plans.map((plan) => ({
-              label: t(plan.label),
-              values: [formatMoney(plan.economics.margin_pen)],
-            }))}
-            testID="comparison.chart.margin"
+          <SectionCard
+            title={t('Tu comparación')}
+            subtitle={`${formatDate(comparison.analysis_period.start)} → ${formatDate(comparison.analysis_period.end)}`}
+            testID={testIDs.comparisonSummary}
           >
-            <AndenLineChart
-              data={comparison.plans.map((plan, index) => ({
-                label: index === 0 ? t('Actual') : plan.label.replace('Alternativa ', ''),
-                value: plan.economics.margin_pen,
-              }))}
-              formatValue={(value) =>
-                value >= 1000 ? `${(value / 1000).toFixed(1)}k` : value.toFixed(0)
-              }
-            />
-          </ChartCard>
-
-          <ChartCard
-            title={t('Riego bruto por plan')}
-            subtitle={t('mm · periodo analizado')}
-            summary={comparison.plans
-              .map((plan) => `${plan.label}: ${formatNumber(plan.water.gross_irrigation_mm, 'mm')}`)
-              .join('; ')}
-            columns={[t('Plan'), t('Riego bruto')]}
-            rows={comparison.plans.map((plan) => ({
-              label: t(plan.label),
-              values: [formatNumber(plan.water.gross_irrigation_mm, 'mm')],
-            }))}
-            testID="comparison.chart.water"
-          >
-            <AndenBarChart
-              data={comparison.plans.map((plan, index) => ({
-                label: index === 0 ? t('Actual') : plan.label.replace('Alternativa ', ''),
-                value: plan.water.gross_irrigation_mm,
-                color:
-                  index === 0
-                    ? chartColors.primary
-                    : index === 1
-                      ? chartColors.secondary
-                      : chartColors.tertiary,
-              }))}
-              formatValue={(value) => `${Math.round(value)}`}
-            />
-          </ChartCard>
+            <Text className="text-sm leading-5 text-muted-foreground">
+              {t('Tres caminos para la misma parcela. Revisa el que más te sirva.')}
+            </Text>
+          </SectionCard>
 
           {comparison.plans.map((plan, index) => (
             <PlanCard key={plan.plan_id} plan={plan} index={index} />
           ))}
 
-          <Text className="text-xs leading-4 text-muted-foreground">{comparison.disclaimer}</Text>
+          {hasMargins ? (
+            <ChartCard
+              title={t('Ganancia por plan')}
+              subtitle={t('Soles estimados para el periodo')}
+              summary={comparison.plans
+                .map((plan) => `${plan.label}: ${formatMoney(plan.economics.margin_pen)}`)
+                .join('; ')}
+              columns={[t('Plan'), t('Ganancia')]}
+              rows={comparison.plans.map((plan, index) => ({
+                label: index === 0 ? t('Tu plan actual') : t(plan.label),
+                values: [formatMoney(plan.economics.margin_pen)],
+              }))}
+              testID="comparison.chart.margin"
+            >
+              <AndenBarChart
+                data={comparison.plans.map((plan, index) => ({
+                  label: index === 0 ? t('Actual') : plan.label.replace('Alternativa ', ''),
+                  value: plan.economics.margin_pen,
+                  color:
+                    index === 0
+                      ? palette.primary
+                      : index === 1
+                        ? palette.secondary
+                        : palette.tertiary,
+                }))}
+                formatValue={(value) =>
+                  value >= 1000 ? `${(value / 1000).toFixed(1)}k` : value.toFixed(0)
+                }
+              />
+            </ChartCard>
+          ) : (
+            <SectionCard
+              title={t('Ganancia por plan')}
+              subtitle={t('Todavía no hay margen para comparar')}
+            >
+              <AppAlert tone="warning">
+                {t(
+                  'Para calcular la ganancia necesitamos el precio, el rendimiento y el costo de los cultivos de cada plan.',
+                )}
+              </AppAlert>
+              <AppButton tone="outline" onPress={() => router.push('/parcel-economics')}>
+                {t('Agregar precios y costos')}
+              </AppButton>
+            </SectionCard>
+          )}
 
-          <AppButton
-            testID={testIDs.comparisonSimulate}
-            tone="water"
-            onPress={() => router.push('/scenario')}
-          >
-            {t('Simular cambios')}
-          </AppButton>
+          <FeedbackPrompt parcelId={parcel.id} online={online} />
+
+          <Text className="text-sm leading-5 text-muted-foreground">
+            {comparison.disclaimer}
+          </Text>
+          <HStack className="items-center gap-2">
+            <Text className="text-sm text-muted-foreground">{t('Fuente:')}</Text>
+            <Text className="text-sm text-foreground">
+              {comparison.source_snapshots.join(', ') || t('Sin datos de origen')}
+            </Text>
+          </HStack>
         </>
       )}
-
-      {!comparison && busy ? (
-        <StateView
-          loading
-          title={t('Generando comparación')}
-          description={t('El motor está calculando los planes.')}
-        />
-      ) : null}
     </Screen>
   );
 }

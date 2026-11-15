@@ -18,18 +18,18 @@ export const colors = {
   primary800: '#1B5E20',
   primary900: '#123F16',
   earth: '#8D6E63',
-  water: '#1565C0',
-  background: '#FAFBF8',
+  water: '#6D4C41',
+  background: '#FAF7F0',
   surface: '#FFFFFF',
-  text: '#132017',
-  muted: '#5C6B60',
+  text: '#1E231E',
+  muted: '#5F6B60',
   subtle: '#8A968C',
-  border: '#E2E8E0',
+  border: '#E3DDD1',
   success: '#2E7D32',
-  warning: '#B45309',
-  warningHighlight: '#EF6C00',
-  error: '#C62828',
-  unknown: '#6B7280',
+  warning: '#7A3B2E',
+  warningHighlight: '#8D6E63',
+  error: '#6E2F24',
+  unknown: '#6B6F66',
   white: '#FFFFFF',
 } as const;
 
@@ -42,20 +42,29 @@ export const darkColors = {
   border: '#2B382D',
   primary: '#7CC47F',
   primarySoft: '#1F2E21',
-  water: '#6FA8F5',
+  water: '#C4A79C',
   earth: '#C4A79C',
-  warning: '#FFB74D',
-  error: '#F28B82',
+  warning: '#E0B4A4',
+  error: '#F0B8A8',
 } as const;
 
 export const chartColors = {
   primary: '#1B5E20',
   secondary: '#3C9453',
   tertiary: '#63B176',
-  water: '#1565C0',
+  water: '#6D4C41',
   earth: '#8D6E63',
-  warning: '#EF6C00',
+  warning: '#7A3B2E',
 } as const;
+
+export const darkChartColors: Record<keyof typeof chartColors, string> = {
+  primary: '#7CC47F',
+  secondary: '#63B176',
+  tertiary: '#94CCA0',
+  water: '#C4A79C',
+  earth: '#C4A79C',
+  warning: '#E0B4A4',
+};
 
 /** 4 px base scale used across the app. */
 export const spacing = {
@@ -85,7 +94,7 @@ export const typography = {
   body: 'text-base leading-6',
   label: 'text-sm font-medium',
   caption: 'text-xs leading-4',
-  overline: 'text-[11px] font-semibold uppercase tracking-wider',
+  overline: 'text-sm font-semibold uppercase tracking-wider',
 } as const;
 
 export const touchTarget = {
@@ -98,10 +107,10 @@ export const statusMeta: Record<
   string,
   { label: string; variant: StatusTone; className?: string; textClassName?: string }
 > = {
-  eligible: { label: 'Elegible', variant: 'default' },
-  invalid: { label: 'No viable', variant: 'destructive' },
+  eligible: { label: 'Se puede', variant: 'default' },
+  invalid: { label: 'No conviene', variant: 'destructive' },
   needs_review: {
-    label: 'Revisar',
+    label: 'Falta revisar',
     variant: 'outline',
     className: 'border-warning',
     textClassName: 'text-warning',
@@ -111,13 +120,13 @@ export const statusMeta: Record<
 };
 
 export const feasibilityLabel: Record<string, string> = {
-  sufficient: 'Suficiente',
-  deficit: 'Déficit',
-  unknown: 'Sin datos',
+  sufficient: 'Sí alcanza',
+  deficit: 'Falta agua',
+  unknown: 'No se sabe',
 };
 
 export const qualityLabel: Record<string, string> = {
-  modeled_reanalysis: 'Reanálisis modelado',
+  modeled_reanalysis: 'Estimado por NASA',
   satellite_estimate: 'Estimación satelital',
   estimated: 'Estimado',
   measured: 'Medido',

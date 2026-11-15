@@ -67,6 +67,7 @@ def build_plan_drafts(
         current_seq = existing_sequence[:2]
     else:
         current_seq = [h.get("crop_id") for h in history[-2:] if h.get("crop_id")]
+    has_history = bool(current_seq)
     if not current_seq:
         current_seq = ["onion", "pumpkin"]
 
@@ -76,12 +77,20 @@ def build_plan_drafts(
     ]
 
     drafts: list[PlanDraft] = []
-    for idx, (sequence, label) in enumerate([(current_seq, "Rotación actual")] + candidates):
+    for idx, (sequence, label) in enumerate(
+        [
+            (
+                current_seq,
+                "Rotación actual" if has_history else "Rotación de ejemplo",
+            )
+        ]
+        + candidates
+    ):
         steps, too_long = _steps_for_sequence(sequence, crops, horizon_start, horizon_end)
         draft = PlanDraft(
             plan_id="existing" if idx == 0 else f"candidate_{idx}",
             label=label,
-            kind="existing" if idx == 0 else "candidate",
+            kind=("existing" if has_history else "example") if idx == 0 else "candidate",
             crop_sequence=[s["crop_id"] for s in steps] or sequence,
             steps=steps,
         )
@@ -95,8 +104,13 @@ def build_plan_drafts(
             draft.status = "needs_review"
             draft.reasons.append("review_pending")
 
-        if idx == 0:
+        if idx == 0 and has_history:
             draft.why.append("Es la rotación registrada por el agricultor.")
+        elif idx == 0:
+            draft.why.append(
+                "No registraste historial; esta es una rotación de ejemplo, no tu plan actual."
+            )
+            draft.reasons.append("history_missing_example")
         elif idx == 1:
             draft.why.append("Diversifica la familia respecto de la campaña anterior.")
             draft.tradeoffs.append("Puede requerir otra ventana de siembra.")

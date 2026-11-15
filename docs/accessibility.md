@@ -11,9 +11,12 @@ todas las pantallas.
 2. **Nada solo por gesto.** Toda acción tiene un botón alternativo.
 3. **El dato faltante se dice.** `null` se muestra como “Sin datos” o “No
    disponible”, nunca como 0.
-4. **Lenguaje simple.** Evitar jerga; explicar términos agronómicos en contexto.
+4. **Lenguaje simple.** Español peruano con tuteo; evitar jerga y explicar los
+   términos agronómicos en disclosures o en Fuentes.
 5. **El sistema manda en tamaño de texto.** Anden respeta el escalado de fuente
-   de Android y evita alturas fijas.
+   de Android y evita alturas fijas. Mínimo 14 en texto secundario y 16 en cuerpo.
+6. **Una pantalla = una decisión.** Título en forma de pregunta, un número grande
+   y una acción principal; el detalle va en “Ver más”.
 
 ## Preferencias en onboarding
 

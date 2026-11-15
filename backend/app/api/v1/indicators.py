@@ -10,6 +10,8 @@ from app.api.deps import get_current_user, get_parcel_or_404
 from app.db.session import get_db
 from app.models.entities import DataSource, DatasetSnapshot, User
 from app.schemas.analysis import SourceOut
+from app.use_cases.climate import ensure_power_snapshot
+from app.use_cases.snapshots import snapshot_for_parcel
 from services.indicators import monthly_indicators
 
 router = APIRouter(tags=["indicators"])
@@ -24,12 +26,6 @@ GIBS_NDVI = (
 )
 
 
-def _latest_snapshot(db: Session) -> DatasetSnapshot | None:
-    return db.scalars(
-        select(DatasetSnapshot).order_by(DatasetSnapshot.retrieved_at.desc()).limit(1)
-    ).first()
-
-
 @router.get("/parcels/{parcel_id}/indicators")
 def indicators(
     parcel_id: str,
@@ -38,8 +34,8 @@ def indicators(
     user: User = Depends(get_current_user),
     db: Session = Depends(get_db),
 ) -> dict:
-    get_parcel_or_404(db, user, parcel_id)
-    snapshot = _latest_snapshot(db)
+    parcel = get_parcel_or_404(db, user, parcel_id)
+    snapshot = ensure_power_snapshot(db, parcel)
     if snapshot is None:
         return {
             "parcel_id": parcel_id,
@@ -114,8 +110,8 @@ def layer_stats(
     user: User = Depends(get_current_user),
     db: Session = Depends(get_db),
 ) -> dict:
-    get_parcel_or_404(db, user, parcel_id)
-    snapshot = _latest_snapshot(db)
+    parcel = get_parcel_or_404(db, user, parcel_id)
+    snapshot = ensure_power_snapshot(db, parcel)
     months = monthly_indicators(snapshot.metadata_json) if snapshot else []
     key = "precip_mm" if layer_id == "IMERG_Precipitation_Rate" else "eto_mm"
     values = [m[key] for m in months if m.get(key) is not None]

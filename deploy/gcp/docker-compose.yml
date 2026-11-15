@@ -1,0 +1,87 @@
+name: anden
+
+services:
+  db:
+    image: postgis/postgis:16-3.4
+    env_file: .env
+    command:
+      - postgres
+      - -c
+      - shared_buffers=128MB
+      - -c
+      - work_mem=4MB
+      - -c
+      - maintenance_work_mem=32MB
+      - -c
+      - max_connections=20
+      - -c
+      - effective_cache_size=512MB
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    shm_size: 128mb
+    mem_limit: 700m
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+    restart: unless-stopped
+
+  migrate:
+    image: ${API_IMAGE}
+    env_file: .env
+    command:
+      - sh
+      - -c
+      - ".venv/bin/python -m app.db.init && .venv/bin/python -m app.seed"
+    depends_on:
+      db:
+        condition: service_healthy
+    mem_limit: 512m
+    restart: "no"
+
+  api:
+    image: ${API_IMAGE}
+    env_file: .env
+    # Google DNS resolves the reachable Open-Meteo edge; the VM resolver
+    # can return an edge that is not routable from GCP.
+    dns:
+      - 8.8.8.8
+      - 1.1.1.1
+    depends_on:
+      db:
+        condition: service_healthy
+      migrate:
+        condition: service_completed_successfully
+    mem_limit: 512m
+    restart: unless-stopped
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - ".venv/bin/python -c \"import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/api/v1/health')\""
+      interval: 15s
+      timeout: 5s
+      start_period: 30s
+      retries: 6
+
+  caddy:
+    image: caddy:2-alpine
+    environment:
+      DOMAIN: ${DOMAIN}
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    depends_on:
+      api:
+        condition: service_healthy
+    mem_limit: 128m
+    restart: unless-stopped
+
+volumes:
+  pgdata:
+  caddy_data:
+  caddy_config:

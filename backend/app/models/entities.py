@@ -29,6 +29,10 @@ class User(Base, TimestampMixin):
     locale: Mapped[str] = mapped_column(String(10), default="es-PE", nullable=False)
     consent_version: Mapped[str | None] = mapped_column(String(20), nullable=True)
     consent_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+    profile_json: Mapped[dict[str, Any]] = mapped_column(JSONB, default=dict, nullable=False)
+    onboarding_completed_at: Mapped[datetime | None] = mapped_column(
+        DateTime(timezone=True), nullable=True
+    )
     deleted_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
 
     parcels: Mapped[list[Parcel]] = relationship(back_populates="owner")
@@ -47,6 +51,7 @@ class Parcel(Base, TimestampMixin):
     district: Mapped[str | None] = mapped_column(String(120), nullable=True)
     timezone: Mapped[str] = mapped_column(String(40), default="America/Lima", nullable=False)
     preferences_json: Mapped[dict[str, Any]] = mapped_column(JSONB, default=dict, nullable=False)
+    terrain_json: Mapped[dict[str, Any]] = mapped_column(JSONB, default=dict, nullable=False)
     is_simulated: Mapped[bool] = mapped_column(Boolean, default=True, nullable=False)
     deleted_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
 
@@ -255,6 +260,23 @@ class ActionProposal(Base):
     status: Mapped[str] = mapped_column(String(20), default="pending", nullable=False)
     idempotency_key: Mapped[str | None] = mapped_column(String(120), unique=True, nullable=True)
     expires_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow, nullable=False)
+
+
+class Feedback(Base):
+    __tablename__ = "feedback"
+
+    id: Mapped[str] = mapped_column(String(36), primary_key=True, default=new_id)
+    user_id: Mapped[str] = mapped_column(
+        String(36), ForeignKey("users.id", ondelete="CASCADE"), index=True, nullable=False
+    )
+    parcel_id: Mapped[str | None] = mapped_column(
+        String(36), ForeignKey("parcels.id", ondelete="SET NULL"), nullable=True
+    )
+    kind: Mapped[str] = mapped_column(String(40), default="comparison", nullable=False)
+    rating: Mapped[int | None] = mapped_column(Integer, nullable=True)
+    comment: Mapped[str | None] = mapped_column(Text, nullable=True)
+    context_json: Mapped[dict[str, Any]] = mapped_column(JSONB, default=dict, nullable=False)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow, nullable=False)
 
 

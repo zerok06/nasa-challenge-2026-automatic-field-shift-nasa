@@ -31,6 +31,8 @@ Base: `/api/v1` · JSON UTF-8 · Bearer JWT · `X-Request-ID` · `Idempotency-Ke
 | Método | Ruta | Descripción |
 |---|---|---|
 | POST | `/auth/anonymous` | crea usuario anónimo + JWT |
+| GET | `/auth/me` | perfil, locale, consentimiento y onboarding |
+| PATCH | `/auth/me` | actualiza nombre, locale, `profile_json` y consentimiento |
 | GET | `/me` | perfil, consentimiento |
 | POST | `/auth/refresh` | renueva token |
 | POST | `/auth/upgrade` | P2: vincular email |
@@ -42,9 +44,10 @@ Base: `/api/v1` · JSON UTF-8 · Bearer JWT · `X-Request-ID` · `Idempotency-Ke
 | GET | `/parcels` | lista propia |
 | POST | `/parcels` | crear (punto/polígono, área opcional) |
 | GET | `/parcels/{id}` | detalle |
-| PATCH | `/parcels/{id}` | editar |
+| PATCH | `/parcels/{id}` | editar; `preferences` se mergea (prioridades, restricciones, economía) |
 | DELETE | `/parcels/{id}` | soft delete |
 | GET | `/parcels/{id}/context` | ficha + clima + suelo + faltantes |
+| GET | `/parcels/{id}/irrigation` | pronóstico Open-Meteo 7 días + SRTM + agua declarada |
 
 ## Historial, agua y suelo
 

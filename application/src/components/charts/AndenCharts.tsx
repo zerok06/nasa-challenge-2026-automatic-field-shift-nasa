@@ -1,11 +1,15 @@
 import React from 'react';
-import { useWindowDimensions, View } from 'react-native';
-import { BarChart, LineChart } from 'react-native-gifted-charts';
+import { View, useColorScheme } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
+import { HStack } from '@/components/ui/hstack';
 import { Text } from '@/components/ui/text';
-import { chartColors, colors } from '@/design-system/tokens';
-import { usePreferences } from '@/providers/PreferencesProvider';
+import { VStack } from '@/components/ui/vstack';
+import { chartColors, darkChartColors, darkColors, colors } from '@/design-system/tokens';
+
+export function useChartPalette() {
+  return useColorScheme() === 'dark' ? darkChartColors : chartColors;
+}
 
 export type AndenBarDatum = {
   label: string;
@@ -13,121 +17,66 @@ export type AndenBarDatum = {
   color?: string;
 };
 
+/**
+ * Lightweight horizontal bar chart built with plain Views.
+ *
+ * The previous gifted-charts implementation pulled in a large JS chart engine
+ * and animations for three bars. This version renders instantly, works offline
+ * and keeps the accessible value labels.
+ */
 export function AndenBarChart({
   data,
-  height = 180,
   formatValue = (value) => String(Math.round(value)),
 }: {
   data: AndenBarDatum[];
-  height?: number;
   formatValue?: (value: number) => string;
 }) {
   const { t } = useTranslation();
-  const { reduceMotion } = usePreferences();
-  const { width } = useWindowDimensions();
-
+  const dark = useColorScheme() === 'dark';
+  const palette = dark ? darkChartColors : chartColors;
+  const track = dark ? darkColors.border : colors.border;
   const clean = data.filter(
     (item): item is { label: string; value: number; color?: string } =>
       item.value !== null && Number.isFinite(item.value),
   );
+
   if (clean.length === 0) {
     return (
-      <View className="h-32 items-center justify-center">
+      <View className="h-24 items-center justify-center">
         <Text className="text-sm text-muted-foreground">{t('Sin datos')}</Text>
       </View>
     );
   }
 
-  const maxValue = Math.max(...clean.map((item) => item.value), 1) * 1.2;
-  const chartWidth = Math.max(240, width - 88);
-  const barWidth = clean.length <= 2 ? 48 : clean.length === 3 ? 38 : 28;
+  const max = Math.max(...clean.map((item) => Math.abs(item.value)), 1);
 
   return (
-    <BarChart
-      data={clean.map((item) => ({
-        value: item.value,
-        label: item.label,
-        frontColor: item.color ?? chartColors.primary,
-      }))}
-      width={chartWidth}
-      height={height}
-      barWidth={barWidth}
-      spacing={Math.max(18, (chartWidth - clean.length * barWidth) / (clean.length + 1))}
-      initialSpacing={16}
-      barBorderRadius={8}
-      showValuesAsTopLabel
-      topLabelTextStyle={{ color: colors.text, fontSize: 10, fontWeight: '600' }}
-      maxValue={maxValue}
-      noOfSections={4}
-      yAxisThickness={0}
-      xAxisThickness={1}
-      xAxisColor={colors.border}
-      rulesColor={colors.border}
-      yAxisTextStyle={{ color: colors.muted, fontSize: 10 }}
-      xAxisLabelTextStyle={{ color: colors.muted, fontSize: 10 }}
-      formatYLabel={(value: string) => formatValue(Number(value))}
-      isAnimated={!reduceMotion}
-      animationDuration={350}
-      disableScroll
-    />
-  );
-}
-
-export function AndenLineChart({
-  data,
-  height = 160,
-  formatValue = (value) => String(Math.round(value)),
-}: {
-  data: AndenBarDatum[];
-  height?: number;
-  formatValue?: (value: number) => string;
-}) {
-  const { t } = useTranslation();
-  const { reduceMotion } = usePreferences();
-  const { width } = useWindowDimensions();
-
-  const clean = data.filter(
-    (item): item is { label: string; value: number; color?: string } =>
-      item.value !== null && Number.isFinite(item.value),
-  );
-  if (clean.length === 0) {
-    return (
-      <View className="h-32 items-center justify-center">
-        <Text className="text-sm text-muted-foreground">{t('Sin datos')}</Text>
-      </View>
-    );
-  }
-
-  const chartWidth = Math.max(240, width - 88);
-  const maxValue = Math.max(...clean.map((item) => item.value), 1) * 1.2;
-
-  return (
-    <LineChart
-      data={clean.map((item) => ({ value: item.value, label: item.label }))}
-      width={chartWidth}
-      height={height}
-      color={chartColors.primary}
-      thickness={3}
-      curved
-      areaChart
-      startFillColor={chartColors.primary}
-      endFillColor={chartColors.primary}
-      startOpacity={0.16}
-      endOpacity={0.02}
-      dataPointsColor={chartColors.secondary}
-      dataPointsRadius={4}
-      maxValue={maxValue}
-      noOfSections={4}
-      yAxisThickness={0}
-      xAxisThickness={1}
-      xAxisColor={colors.border}
-      rulesColor={colors.border}
-      yAxisTextStyle={{ color: colors.muted, fontSize: 10 }}
-      xAxisLabelTextStyle={{ color: colors.muted, fontSize: 10 }}
-      formatYLabel={(value: string) => formatValue(Number(value))}
-      isAnimated={!reduceMotion}
-      animationDuration={350}
-      disableScroll
-    />
+    <VStack className="gap-3">
+      {clean.map((item) => {
+        const width = Math.max(2, Math.round((Math.abs(item.value) / max) * 100));
+        return (
+          <VStack key={item.label} className="gap-1">
+            <HStack className="items-center justify-between gap-3">
+              <Text className="flex-1 text-sm font-medium text-foreground">{item.label}</Text>
+              <Text className="text-sm font-semibold text-foreground">
+                {formatValue(item.value)}
+              </Text>
+            </HStack>
+            <View
+              style={{ backgroundColor: track }}
+              className="h-3 w-full overflow-hidden rounded-full"
+            >
+              <View
+                style={{
+                  width: `${width}%`,
+                  backgroundColor: item.color ?? palette.primary,
+                }}
+                className="h-3 rounded-full"
+              />
+            </View>
+          </VStack>
+        );
+      })}
+    </VStack>
   );
 }

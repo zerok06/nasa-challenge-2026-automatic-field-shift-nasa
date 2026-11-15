@@ -22,6 +22,8 @@
 | locale | text | `es-PE` |
 | consent_version | text | versión aceptada |
 | consent_at | timestamptz | |
+| profile_json | jsonb | audio, experiencia y ubicación base |
+| onboarding_completed_at | timestamptz | perfil completo |
 | created_at / deleted_at | timestamptz | soft delete |
 
 ### `parcels`
@@ -35,7 +37,8 @@
 | area_ha | numeric(10,4) null | calculada o declarada |
 | district | text null | |
 | timezone | text | `America/Lima` |
-| preferences_json | jsonb | pesos agua/suelo/margen, restricciones |
+| preferences_json | jsonb | pesos agua/suelo/margen, prioridades (agua/suelo/ganancia/plagas/forraje/mercado), restricciones, economía y supuestos de precio |
+| terrain_json | jsonb | caché de elevación/pendiente (SRTM o Copernicus) con fuente y fecha |
 | is_simulated | bool | true en demo |
 | created_at / updated_at | timestamptz | |
 

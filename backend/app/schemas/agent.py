@@ -25,12 +25,15 @@ class ToolTrace(BaseModel):
 class UiAction(BaseModel):
     action: Literal[
         "open_comparison",
-        "focus_map_layer",
         "open_scenario",
         "show_sources",
         "save_plan_draft",
     ]
     payload: dict[str, Any] = Field(default_factory=dict)
+
+
+class NextStep(BaseModel):
+    phase: Literal["datos", "comparar", "probar", "guardar", "listo"]
 
 
 class AgentMessageOut(BaseModel):
@@ -42,6 +45,7 @@ class AgentMessageOut(BaseModel):
     ui_actions: list[UiAction] = Field(default_factory=list)
     warnings: list[str] = Field(default_factory=list)
     analysis_run_id: str | None = None
+    next_step: NextStep | None = None
 
 
 class ProposalOut(BaseModel):
@@ -70,3 +74,4 @@ class SavedPlanOut(BaseModel):
     status: str
     rotation_plan_id: str | None = None
     analysis_run_id: str | None = None
+    created_at: datetime | None = None

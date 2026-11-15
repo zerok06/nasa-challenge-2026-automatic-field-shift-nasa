@@ -79,6 +79,7 @@ def list_saved(
             status=row.status,
             rotation_plan_id=row.rotation_plan_id,
             analysis_run_id=row.analysis_run_id,
+            created_at=row.created_at,
         )
         for row in rows
     ]
@@ -108,4 +109,5 @@ def save_plan(
         status=row.status,
         rotation_plan_id=row.rotation_plan_id,
         analysis_run_id=row.analysis_run_id,
+        created_at=row.created_at,
     )

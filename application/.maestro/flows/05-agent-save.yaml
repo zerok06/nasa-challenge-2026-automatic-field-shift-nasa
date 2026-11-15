@@ -1,12 +1,12 @@
-appId: host.exp.exponent
+appId: com.anden.app
 ---
 - runFlow:
     file: setup.yaml
 - tapOn:
     id: "nav.agent"
 - extendedWaitUntil:
-    visible: "Preguntale al agente"
-    timeout: 30000
+    visible: "¿Qué quieres saber?"
+    timeout: 90000
 - tapOn:
     id: "agent.input"
 - waitForAnimationToEnd
@@ -15,8 +15,10 @@ appId: host.exp.exponent
 - tapOn:
     id: "agent.send"
 - extendedWaitUntil:
-    visible: ".*Preparé la comparación.*"
-    timeout: 30000
+    visible: ".*plan actual.*"
+    timeout: 90000
+- assertVisible:
+    id: "agent.nextStep"
 - tapOn:
     id: "agent.input"
 - waitForAnimationToEnd
@@ -26,9 +28,9 @@ appId: host.exp.exponent
     id: "agent.send"
 - extendedWaitUntil:
     visible: "Borrador listo"
-    timeout: 30000
+    timeout: 90000
 - tapOn:
     id: "agent.save"
 - extendedWaitUntil:
     visible: ".*Borrador guardado.*"
-    timeout: 30000
+    timeout: 90000

@@ -6,11 +6,13 @@
 
 ## Estado de implementación (14-nov-2026)
 
-- **P0 implementado:** backend FastAPI/PostGIS, app Paper/Expo Go y recorrido demo.
-- **Verde:** 17 pytest (U/I/C/P), 4 tests TS de paridad, `tsc --noEmit`, Maestro 00-05.
-- **Parcial:** 013 NDVI (capa, fecha A/B, leyenda, fallback; falta `map_context` del agente y cache).
-- **No implementado:** 023 offline; Groq real; ingesta POWER en vivo; APK/dev build; validación agronómica.
-- **Desviación:** RNUI → React Native Paper; ver `docs/architecture/adr-0002-paper-fallback.md`.
+- **P0 implementado:** backend FastAPI/PostGIS, app Anden/Expo Go, Gemini en
+  Vertex AI y demo público en GCP.
+- **Verde:** 52 pytest (U/I/C/P), 18 tests TS, `tsc --noEmit`, `eslint`.
+- **Parcial:** Maestro requiere dispositivo; 013 NDVI fuera de la UI 028.
+- **No implementado:** 023 offline; APK/dev build; validación agronómica;
+  revisión nativa de quechua/aimara.
+- **Desviación:** RNUI → gluestack v5 + NativeWind 5; ver ADR-0004.
 - Los estados "escrita" de la tabla son de la fase SDD; el estado real de código está en esta sección.
 
 ## Fundaciones
@@ -53,6 +55,14 @@
 | 018 | UI comparador | P0 | ✅ escrita | 017, 003 | U, E | 1,5 |
 | 019 | UI simulador | P0 | ✅ escrita | 017, 018 | U, E | 1 |
 
+## Producto y experiencia
+
+| ID | Spec | Prioridad | Estado | Depende | Test | Días |
+|---|---|---|---|---|---|---|
+| 028 | Rediseño UI agricultor y retiro de mapas | P0 | implementado | 003, 018 | U, E, M | 1,5 |
+| 030 | Perfil, onboarding con ubicación y parcela | P0 | implementado (E2E pendiente) | 004, 005, 028 | U, I, E | 1,5 |
+| 031 | Ficha de parcela | P0 | implementado (E2E pendiente) | 007, 030 | U, I, E | 1 |
+
 ## Agente
 
 | ID | Spec | Prioridad | Estado | Depende | Test | Días |
@@ -60,6 +70,7 @@
 | 020 | Tools del agente | P0 | ✅ escrita | 017–019 | U, I | 1 |
 | 021 | Grafo LangGraph + Groq | P0 | ✅ escrita | 020 | U, I | 1,5 |
 | 022 | Chat, UI actions y guardado | P0 | ✅ escrita | 021, 018 | U, E | 1 |
+| 029 | Gemini en Vertex AI + despliegue GCP | P0 | ✅ implementado | 020–022, 028 | U, I, S | 1 |
 
 ## Resiliencia y extras
 
@@ -71,7 +82,8 @@
 | 026 | Campaña y precios | P2 | ✅ escrita | 015, 019 | U, I | 2 |
 | 027 | Release y entrega | P0 | ✅ escrita | todos P0 | E, S, M | 1 |
 
-**P0:** 000–012 + 014–022 + 027 (**23 specs**). **P1:** 013, 023. **P2:** 024–026.
+**P0:** 000–012 + 014–022 + 027 + 029 (**24 specs**). **P1:** 013, 023.
+**P2:** 024–026.
 
 ## Backlog P2 sin spec (no entra en la primera semana)
 
@@ -98,7 +110,7 @@ Cada spec usa:
 |---|---|---|---|
 | UI | React Native sin librería fija | **RNUI + development build** | decisión del equipo; Android Studio disponible |
 | Build | Expo | Dev build; Expo Go no soporta `uilib-native` | RNUI nativo |
-| Deploy | Cloud Run/Supabase | **Docker local + Cloudflare Tunnel** | cero costo y control; cloud queda P2 |
+| Deploy | Cloud Run/Supabase | **Docker local + VM GCP `e2-small`** | demo público con Gemini; Cloud Run queda P2 |
 | Rotaciones | 2 mínimo / 3 objetivo | **3 siempre** (actual + 2) | comparación justa |
 | ETo | “POWER entrega ETo” | **calcular FAO-56/Hargreaves** | POWER no expone ET0 (verificado) |
 | IMERG | capa por parcela | **GIBS regional, zoom ≤ 6** | resolución 0,1° |
@@ -111,7 +123,7 @@ Cada spec usa:
 
 ## Chequeo de coherencia
 
-- [x] 28 specs, cada una con `spec.md`, `plan.md`, `tasks.md`.
+- [x] 29 specs, cada una con `spec.md`, `plan.md`, `tasks.md`.
 - [x] RF únicos por spec y matriz de pruebas.
 - [x] Endpoints unificados en `docs/architecture/api-surface.md`.
 - [x] Enums y tablas en `docs/architecture/data-model.md`.

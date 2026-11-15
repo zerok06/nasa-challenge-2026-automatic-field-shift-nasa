@@ -1,51 +1,47 @@
 from __future__ import annotations
 
-from datetime import date, datetime, timedelta, timezone
+import logging
+from datetime import UTC, datetime, timedelta
 
-from sqlalchemy import select
 from sqlalchemy.orm import Session
 
-from app.models.entities import ActionProposal, AgentThread, AnalysisRun, Parcel, User
-from app.schemas.agent import AgentMessageOut, ToolTrace, UiAction
-from app.use_cases.comparison import create_comparison, get_comparison, simulate
-from app.use_cases.context import get_context
+from app.agent.guardrails import match_guardrail, next_step_for
+from app.agent.llm import run_gemini_turn
+from app.agent.tools import AgentTools, ensure_comparison
+from app.agent.validation import (
+    fallback_answer,
+    shorten_answer,
+    simplify_answer,
+    validate_answer,
+)
+from app.core.config import settings
+from app.models.entities import ActionProposal, AgentThread, Parcel, User
+from app.schemas.agent import AgentMessageOut, NextStep, ToolTrace, UiAction
 from app.schemas.analysis import ScenarioRequest
+from app.use_cases.comparison import get_comparison, simulate
+from app.use_cases.context import get_context
 
-
-def _latest_comparison(db: Session, parcel_id: str) -> AnalysisRun | None:
-    return db.scalars(
-        select(AnalysisRun)
-        .where(AnalysisRun.parcel_id == parcel_id, AnalysisRun.kind == "comparison")
-        .order_by(AnalysisRun.created_at.desc())
-        .limit(1)
-    ).first()
+logger = logging.getLogger("automatic.agent")
 
 
 def _ensure_comparison(db: Session, user: User, parcel: Parcel) -> tuple[str, list[ToolTrace]]:
-    existing = _latest_comparison(db, parcel.id)
-    if existing is not None:
-        return existing.id, [
-            ToolTrace(
-                tool="compare_rotations",
-                status="ok",
-                latency_ms=0,
-                summary="Se reutiliza la comparación más reciente.",
-            )
-        ]
-    start = date(date.today().year + 1, 1, 1)
-    end = date(date.today().year + 1, 12, 31)
-    comparison = create_comparison(db, user, parcel, start, end)
+    comparison, created = ensure_comparison(db, user, parcel)
+    summary = (
+        f"{len(comparison.plans)} planes generados."
+        if created
+        else "Se reutiliza la comparación más reciente."
+    )
     return comparison.comparison_id, [
         ToolTrace(
             tool="compare_rotations",
             status="ok",
             latency_ms=0,
-            summary=f"{len(comparison.plans)} planes generados.",
+            summary=summary,
         )
     ]
 
 
-def run_agent(
+def _run_fake(
     db: Session,
     user: User,
     thread: AgentThread,
@@ -55,6 +51,16 @@ def run_agent(
     parcel = db.get(Parcel, thread.parcel_id)
     if parcel is None or parcel.owner_user_id != user.id:
         raise LookupError("parcel_not_found")
+    guardrail = match_guardrail(message)
+    if guardrail is not None:
+        thread.last_message_at = datetime.now(UTC)
+        db.commit()
+        return AgentMessageOut(
+            thread_id=thread.id,
+            status="completed",
+            answer=guardrail.answer,
+            next_step=NextStep(phase=guardrail.phase),
+        )
     text = message.lower()
     trace: list[ToolTrace] = []
     actions: list[UiAction] = []
@@ -62,8 +68,60 @@ def run_agent(
     warnings: list[str] = []
     analysis_run_id: str | None = None
     answer = ""
+    phase = "comparar"
 
-    if "compara" in text or "rotaci" in text or "siembro" in text:
+    if (
+        "cuánta agua" in text
+        or "cuanta agua" in text
+        or "agua me falta" in text
+        or ("agua" in text and "falta" in text)
+    ):
+        analysis_run_id, t = _ensure_comparison(db, user, parcel)
+        trace.extend(t)
+        comparison = get_comparison(db, user, analysis_run_id)
+        evidence.extend(comparison.source_snapshots)
+        plan = comparison.plans[0] if comparison.plans else None
+        water = plan.water if plan is not None else None
+        if water is None or water.feasibility == "unknown" or water.deficit_mm is None:
+            answer = (
+                "A tu plan actual no le puedo calcular el agua: falta el dato de "
+                "disponibilidad."
+            )
+        elif water.deficit_mm > 0:
+            answer = f"A tu plan actual le faltan {water.deficit_mm:.0f} mm de agua."
+        else:
+            answer = "A tu plan actual le alcanza el agua disponible."
+        phase = "probar"
+    elif "ganar" in text or "ganancia" in text:
+        analysis_run_id, t = _ensure_comparison(db, user, parcel)
+        trace.extend(t)
+        comparison = get_comparison(db, user, analysis_run_id)
+        evidence.extend(comparison.source_snapshots)
+        plan = comparison.plans[0] if comparison.plans else None
+        margin = plan.economics.margin_pen if plan is not None else None
+        if margin is None:
+            answer = (
+                "No puedo calcular la ganancia estimada: faltan precio, rendimiento o costos."
+            )
+        else:
+            answer = f"La ganancia estimada es S/ {margin:,.2f}."
+        phase = "probar"
+    elif "datos faltan" in text or "qué datos" in text or "que datos" in text:
+        context = get_context(db, parcel)
+        trace.append(
+            ToolTrace(
+                tool="get_parcel_context",
+                status="ok",
+                latency_ms=0,
+                summary=f"Faltantes: {', '.join(context.missing_inputs) or 'ninguno'}",
+            )
+        )
+        if context.missing_inputs:
+            answer = f"Te faltan estos datos: {', '.join(context.missing_inputs)}."
+        else:
+            answer = "Te faltan estos datos: ninguno para comparar."
+        phase = "datos"
+    elif "compara" in text or "rotaci" in text or "siembro" in text:
         analysis_run_id, t = _ensure_comparison(db, user, parcel)
         trace.extend(t)
         comparison = get_comparison(db, user, analysis_run_id)
@@ -72,9 +130,10 @@ def run_agent(
             UiAction(action="open_comparison", payload={"comparison_id": analysis_run_id})
         )
         answer = (
-            "Preparé la comparación con la rotación actual y dos alternativas. "
-            "Revisá agua, suelo y margen: si falta un dato, la app lo marca como no disponible."
+            "Comparé tu plan actual con dos alternativas. Revisa el agua, el suelo y la "
+            "ganancia: si falta un dato, la app lo marca como no disponible."
         )
+        phase = "probar"
     elif "menos agua" in text or "sequ" in text or ("agua" in text and "simula" in text):
         analysis_run_id, t = _ensure_comparison(db, user, parcel)
         trace.extend(t)
@@ -83,9 +142,10 @@ def run_agent(
             UiAction(action="open_scenario", payload={"comparison_id": scenario.comparison_id})
         )
         answer = (
-            "Simulé 20 % menos agua disponible. Los planes con déficit se marcan como inviables; "
-            "el resto queda sujeto a revisión."
+            "Probé con 20 % menos agua. Los planes que no alcanzan se marcan como no viables; "
+            "los demás quedan para revisar."
         )
+        phase = "guardar"
     elif "precio" in text and ("baja" in text or "simula" in text):
         analysis_run_id, t = _ensure_comparison(db, user, parcel)
         trace.extend(t)
@@ -94,9 +154,10 @@ def run_agent(
             UiAction(action="open_scenario", payload={"comparison_id": scenario.comparison_id})
         )
         answer = (
-            "Simulé un precio 15 % menor. El margen solo cambia si hay precio, rendimiento y "
-            "costos registrados; si faltan, sigue como no calculable."
+            "Probé con un precio 15 % menor. La ganancia solo cambia si tienes precio, "
+            "rendimiento y costos; si falta algo, sigue como no calculable."
         )
+        phase = "guardar"
     elif "por qu" in text or "explica" in text:
         analysis_run_id, t = _ensure_comparison(db, user, parcel)
         trace.extend(t)
@@ -104,31 +165,18 @@ def run_agent(
         evidence.extend(comparison.source_snapshots)
         plan = comparison.plans[1] if len(comparison.plans) > 1 else comparison.plans[0]
         water = plan.water
+        feasibility = {
+            "sufficient": "sí alcanza",
+            "deficit": "falta agua",
+            "unknown": "no se sabe",
+        }.get(water.feasibility, water.feasibility)
         answer = (
-            f"La alternativa B usa {plan.crop_sequence}. "
-            f"Riego bruto estimado: {water.gross_irrigation_mm if water.gross_irrigation_mm is not None else 'no disponible'} mm; "
-            f"factibilidad hídrica: {water.feasibility}. "
+            f"La opción B usa {plan.crop_sequence}. "
+            f"Agua que necesitas: {water.gross_irrigation_mm if water.gross_irrigation_mm is not None else 'no disponible'} mm; "
+            f"¿alcanza el agua? {feasibility}. "
             "Las cifras vienen del motor, no del modelo de lenguaje."
         )
-    elif "mapa" in text or "lluvia" in text or "ndvi" in text:
-        trace.append(
-            ToolTrace(
-                tool="get_map_layers",
-                status="ok",
-                latency_ms=0,
-                summary="IMERG maxZ=6; NDVI maxZ=7.",
-            )
-        )
-        actions.append(
-            UiAction(
-                action="focus_map_layer",
-                payload={"layer_id": "IMERG_Precipitation_Rate", "date": "2024-06-01"},
-            )
-        )
-        answer = (
-            "La capa IMERG es contexto regional (~11 km) y solo se muestra hasta zoom 6. "
-            "No es una medición de tu parcela."
-        )
+        phase = "probar"
     elif "guard" in text:
         analysis_run_id, t = _ensure_comparison(db, user, parcel)
         trace.extend(t)
@@ -144,7 +192,7 @@ def run_agent(
                 "name": "Borrador desde el agente",
             },
             status="pending",
-            expires_at=datetime.now(timezone.utc) + timedelta(minutes=30),
+            expires_at=datetime.now(UTC) + timedelta(minutes=30),
         )
         db.add(proposal)
         db.commit()
@@ -153,11 +201,16 @@ def run_agent(
             UiAction(action="save_plan_draft", payload={"proposal_id": proposal.id})
         )
         answer = (
-            "Preparé un borrador. Necesito que confirmes antes de guardarlo; "
-            "si rechazás, no se escribe nada."
+            "Preparé un borrador. Confirma antes de guardarlo; si dices que no, no se guarda nada."
         )
+        phase = "listo"
     else:
         context = get_context(db, parcel)
+        completeness = {
+            "ready": "completo",
+            "partial": "falta completar",
+            "missing": "faltan datos",
+        }.get(context.completeness.comparison, context.completeness.comparison)
         trace.append(
             ToolTrace(
                 tool="get_parcel_context",
@@ -167,18 +220,12 @@ def run_agent(
             )
         )
         answer = (
-            f"Estoy trabajando sobre {parcel.name}. "
-            f"Completitud de comparación: {context.completeness.comparison}. "
-            "Puedo comparar rotaciones, simular agua/precio o explicar las fuentes."
+            f"Estoy revisando {parcel.name}. "
+            f"Datos para comparar: {completeness}. "
+            "Puedo comparar planes, probar agua o precio y explicar las fuentes."
         )
 
-    ui_context = ui_context or {}
-    if ui_context.get("screen") == "map" and not actions:
-        actions.append(
-            UiAction(action="focus_map_layer", payload={"layer_id": "IMERG_Precipitation_Rate"})
-        )
-
-    thread.last_message_at = datetime.now(timezone.utc)
+    thread.last_message_at = datetime.now(UTC)
     db.commit()
     return AgentMessageOut(
         thread_id=thread.id,
@@ -189,4 +236,78 @@ def run_agent(
         ui_actions=actions,
         warnings=warnings,
         analysis_run_id=analysis_run_id,
+        next_step=NextStep(phase=phase),
     )
+
+
+def _run_gemini(
+    db: Session,
+    user: User,
+    thread: AgentThread,
+    parcel: Parcel,
+    message: str,
+    ui_context: dict | None = None,
+) -> AgentMessageOut:
+    guardrail = match_guardrail(message)
+    if guardrail is not None:
+        thread.last_message_at = datetime.now(UTC)
+        db.commit()
+        return AgentMessageOut(
+            thread_id=thread.id,
+            status="completed",
+            answer=guardrail.answer,
+            next_step=NextStep(phase=guardrail.phase),
+        )
+    tools = AgentTools(db, user, parcel)
+    turn = run_gemini_turn(tools, message)
+    warnings: list[str] = []
+    if not turn.answer or not validate_answer(turn.answer, turn.evidence_payload):
+        turn.answer = fallback_answer([trace.tool for trace in turn.traces])
+        warnings.append("explanation_fallback")
+    else:
+        turn.answer = shorten_answer(
+            simplify_answer(turn.answer), settings.agent_max_answer_chars
+        )
+    phase = next_step_for(message, [trace.tool for trace in turn.traces])
+    thread.last_message_at = datetime.now(UTC)
+    db.commit()
+    return AgentMessageOut(
+        thread_id=thread.id,
+        status="completed",
+        answer=turn.answer,
+        tool_trace=turn.traces,
+        evidence_refs=turn.evidence,
+        ui_actions=turn.actions,
+        warnings=warnings,
+        analysis_run_id=turn.analysis_run_id,
+        next_step=NextStep(phase=phase),
+    )
+
+
+def run_agent(
+    db: Session,
+    user: User,
+    thread: AgentThread,
+    message: str,
+    ui_context: dict | None = None,
+) -> AgentMessageOut:
+    parcel = db.get(Parcel, thread.parcel_id)
+    if parcel is None or parcel.owner_user_id != user.id:
+        raise LookupError("parcel_not_found")
+    if settings.gemini_enabled:
+        # Tools and writes stay deterministic. Gemini is reserved for open-ended
+        # explanation, so common actions return immediately even if Vertex is slow.
+        text = message.lower()
+        if "guard" in text or any(
+            key in text
+            for key in ("compara", "comparar", "simula", "simular", "guardar", "borrador")
+        ):
+            return _run_fake(db, user, thread, message, ui_context)
+        try:
+            return _run_gemini(db, user, thread, parcel, message, ui_context)
+        except Exception:
+            logger.exception("gemini agent failed; falling back to fake")
+            result = _run_fake(db, user, thread, message, ui_context)
+            result.warnings.append("gemini_fallback")
+            return result
+    return _run_fake(db, user, thread, message, ui_context)

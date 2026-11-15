@@ -1,7 +1,7 @@
 import React from 'react';
-import { useColorScheme } from 'react-native';
+import { PixelRatio, useColorScheme } from 'react-native';
 import { Redirect, Tabs } from 'expo-router';
-import { ArrowLeftRight, CloudOff, Home, Map, MessageSquare } from 'lucide-react-native';
+import { ArrowLeftRight, CloudOff, Home, MessageCircle, Sprout } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 
 import { AppButton } from '@/components/app/AppButton';
@@ -10,6 +10,7 @@ import { StateView } from '@/components/app/StateView';
 import { colors, darkColors } from '@/design-system/tokens';
 import { testIDs } from '@/design-system/testIDs';
 import { useParcel } from '@/providers/ParcelProvider';
+import { useProfile } from '@/providers/ProfileProvider';
 
 function resolvedColor(color: unknown): string {
   return typeof color === 'string' ? color : colors.muted;
@@ -19,30 +20,47 @@ export default function TabsLayout() {
   const { t } = useTranslation();
   const scheme = useColorScheme();
   const dark = scheme === 'dark';
+  const largeText = PixelRatio.getFontScale() > 1.5;
   const { parcel, loading, error, refresh } = useParcel();
+  const { profile, loading: profileLoading, error: profileError, refresh: refreshProfile } =
+    useProfile();
+  const needsProfile = !profileLoading && !profile?.onboarding_completed_at;
 
-  if (loading && !parcel) {
-    return (
-      <Screen scroll={false} edges={['top', 'bottom']}>
-        <StateView loading title={t('Cargando parcela')} description={t('Leyendo contexto y datos NASA.')} />
-      </Screen>
-    );
-  }
-
-  if (error && !parcel) {
+  if ((loading || profileLoading) && !parcel) {
     return (
       <Screen scroll={false} edges={['top', 'bottom']}>
         <StateView
-          icon={CloudOff}
-          title={t('No pudimos cargar la parcela')}
-          description={error}
-          action={<AppButton onPress={() => void refresh()}>{t('Reintentar')}</AppButton>}
+          loading
+          title={t('Cargando tu perfil')}
+          description={t('Preparando Anden.')}
         />
       </Screen>
     );
   }
 
-  if (!parcel) {
+  if ((error || profileError) && !parcel && !profile) {
+    return (
+      <Screen scroll={false} edges={['top', 'bottom']}>
+        <StateView
+          icon={CloudOff}
+          title={t('No pudimos cargar tus datos')}
+          description={profileError ?? error ?? t('Revisa la conexión e intenta de nuevo.')}
+          action={
+            <AppButton
+              onPress={() => {
+                void refresh();
+                refreshProfile();
+              }}
+            >
+              {t('Reintentar')}
+            </AppButton>
+          }
+        />
+      </Screen>
+    );
+  }
+
+  if (needsProfile && !parcel) {
     return <Redirect href="/onboarding" />;
   }
 
@@ -53,15 +71,16 @@ export default function TabsLayout() {
         tabBarActiveTintColor: dark ? darkColors.primary : colors.primary,
         tabBarInactiveTintColor: dark ? darkColors.muted : colors.muted,
         tabBarHideOnKeyboard: true,
+        tabBarShowLabel: !largeText,
         tabBarStyle: {
           backgroundColor: dark ? darkColors.surface : colors.surface,
           borderTopColor: dark ? darkColors.border : colors.border,
           borderTopWidth: 1,
-          height: 64,
+          height: 68,
           paddingTop: 6,
-          paddingBottom: 6,
+          paddingBottom: 8,
         },
-        tabBarLabelStyle: { fontSize: 11, fontWeight: '600' },
+        tabBarLabelStyle: { fontSize: 12, fontWeight: '600' },
       }}
     >
       <Tabs.Screen
@@ -69,31 +88,31 @@ export default function TabsLayout() {
         options={{
           title: t('Inicio'),
           tabBarButtonTestID: testIDs.navHome,
-          tabBarIcon: ({ color }) => <Home size={22} color={resolvedColor(color)} />,
-        }}
-      />
-      <Tabs.Screen
-        name="map"
-        options={{
-          title: t('Mapa'),
-          tabBarButtonTestID: testIDs.navMap,
-          tabBarIcon: ({ color }) => <Map size={22} color={resolvedColor(color)} />,
+          tabBarIcon: ({ color }) => <Home size={24} color={resolvedColor(color)} />,
         }}
       />
       <Tabs.Screen
         name="comparison"
         options={{
-          title: t('Rotaciones'),
+          title: t('Comparar'),
           tabBarButtonTestID: testIDs.navRotations,
-          tabBarIcon: ({ color }) => <ArrowLeftRight size={22} color={resolvedColor(color)} />,
+          tabBarIcon: ({ color }) => <ArrowLeftRight size={24} color={resolvedColor(color)} />,
         }}
       />
       <Tabs.Screen
         name="agent"
         options={{
-          title: t('Agente'),
+          title: t('Preguntar'),
           tabBarButtonTestID: testIDs.navAgent,
-          tabBarIcon: ({ color }) => <MessageSquare size={22} color={resolvedColor(color)} />,
+          tabBarIcon: ({ color }) => <MessageCircle size={24} color={resolvedColor(color)} />,
+        }}
+      />
+      <Tabs.Screen
+        name="parcel"
+        options={{
+          title: t('Mi parcela'),
+          tabBarButtonTestID: testIDs.navParcel,
+          tabBarIcon: ({ color }) => <Sprout size={24} color={resolvedColor(color)} />,
         }}
       />
     </Tabs>

@@ -31,10 +31,10 @@ export function SectionCard({
         <HStack className="items-start justify-between gap-3">
           <VStack className="flex-1 gap-0.5">
             {title ? (
-              <Text className="text-base font-semibold text-foreground">{title}</Text>
+              <Text className="text-lg font-semibold text-foreground">{title}</Text>
             ) : null}
             {subtitle ? (
-              <Text size="xs" className="text-muted-foreground">
+              <Text className="text-sm leading-5 text-muted-foreground">
                 {subtitle}
               </Text>
             ) : null}

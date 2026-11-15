@@ -4,18 +4,26 @@ Copiloto inteligente de planificación agrícola geoespacial para pequeños prod
 Proyecto para **NASA Space Apps Challenge 2026 - Field Shift: Adapting Farms with NASA Data**.
 Piloto: **Moquegua, Perú** · 100 agricultores · Android · español, quechua, aimara e inglés.
 
-> **Estado (14-nov-2026):** MVP P0 implementado y ejecutándose en local.
-> El recorrido demo (onboarding → dashboard → mapa → comparador → simulador → agente → guardado)
+> **Estado (14-nov-2026):** MVP P0 implementado en local y desplegado en GCP.
+> El recorrido demo (onboarding → Inicio → comparar → probar un cambio → preguntar → guardar)
 > funciona contra FastAPI + PostGIS y Expo Go. La UI usa **gluestack v5 + NativeWind 5**,
-> con marca Anden, gráficos accesibles, i18n y preferencias de accesibilidad.
-> Ver `docs/architecture/adr-0004-anden-brand-i18n-charts-a11y.md`.
-> Datos de demo sintéticos y etiquetados; no es una recomendación agronómica validada.
+> con marca Anden, cuatro pestañas (Inicio/Comparar/Preguntar/Mi parcela), copy simple,
+> i18n y preferencias de accesibilidad. Los mapas se retiraron en Spec 028.
+> El perfil anónimo, el onboarding de 5 pasos con GPS/TTS y la creación de
+> parcela guiada están en Spec 030; la ficha de parcela (historial, agua, suelo
+> y prioridades) en Spec 031; el riego semanal con Open-Meteo y SRTM en Spec 032.
+> Ver `docs/architecture/adr-0005-ui-agricultor-mapas.md`,
+> `docs/architecture/adr-0007-perfil-onboarding-gps.md` y
+> `docs/architecture/adr-0008-paleta-ilustraciones-motion.md`.
+> La parcela demo es sintética y está etiquetada. Las parcelas nuevas usan NASA POWER real
+> por coordenadas y datos declarados por el agricultor; no es una recomendación agronómica validada.
 
 ## Qué hace
 
 - Crea una parcela o carga la parcela demo y muestra sus datos faltantes.
-- Muestra contexto NASA POWER (lluvia, temperatura, ETo calculada) con fuente y fecha.
-- Muestra capas regionales NASA GIBS: IMERG (maxZ 6) y NDVI (maxZ 7).
+- Completa una ficha con historial de cultivos, agua, suelo y prioridades.
+- Descarga NASA POWER real por parcela (lluvia, temperatura, ETo) con fuente y fecha; la parcela demo sigue etiquetada como sintética.
+- Consulta pronóstico real de Open-Meteo a 7 días y elevación/pendiente SRTM 90 m con fuente y límites visibles.
 - Compara la rotación actual con dos alternativas en el mismo horizonte.
 - Estima agua, suelo y margen; usa `null` cuando falta un dato.
 - Simula agua −20 % y precio −15 % sin modificar el baseline.
@@ -30,15 +38,18 @@ Piloto: **Moquegua, Perú** · 100 agricultores · Android · español, quechua,
 | Capa | Tecnología |
 |---|---|
 | Mobile | Expo SDK 58 · React Native 0.88 · TypeScript · gluestack v5 · NativeWind 5 |
-| Runtime MVP | Expo Go 58 (ver ADR-0004) |
+| Runtime MVP | APK Android propio (Expo SDK 58); Expo Go para desarrollo |
 | i18n | i18next · react-i18next · expo-localization |
-| Gráficos | react-native-gifted-charts · expo-linear-gradient · react-native-svg |
+| Gráficos | Barras livianas con `View` · tablas accesibles · react-native-svg |
 | API | FastAPI · Pydantic v2 · SQLAlchemy 2 |
 | DB | PostgreSQL 16 + PostGIS 3.4 |
-| Agente | Runtime determinista con tools; Groq opcional pendiente |
-| Datos | NASA POWER (snapshot demo) · NASA GIBS (IMERG, NDVI) |
-| Infra | Docker Compose local |
+| Agente | Runtime determinista + Gemini 3.5 Flash (Vertex AI) con tools |
+| Datos | NASA POWER + Open-Meteo + SRTM reales · catálogo local · suelo y economía declarados |
+| Infra | Docker Compose local · VM GCP `e2-small` para el demo |
 | Tests | pytest · contrato OpenAPI · paridad Python/TS · Maestro E2E |
+
+> Demo desplegado: `https://34-55-141-32.sslip.io` (PostGIS + FastAPI + Gemini).
+> Operación y rollback: `docs/architecture/deploy-gcp.md`.
 
 ## Inicio rápido
 
@@ -56,6 +67,23 @@ curl http://localhost:8000/api/v1/ready
 # 3. Mobile
 cd application
 pnpm install
+
+# Opción A — teléfono físico con backend GCP (recomendada)
+#   application/.env.local:
+#   EXPO_PUBLIC_API_URL=https://34-55-141-32.sslip.io
+pnpm start -- --lan
+# Abrir el QR de Expo Go en el teléfono
+
+# Opción B — backend local en la misma Wi-Fi
+#   application/.env.local:
+#   EXPO_PUBLIC_API_URL=http://<ip-lan-de-tu-pc>:8000
+#   arrancar Metro en LAN:
+pnpm start -- --lan
+
+# Modo rendimiento (sin dev tools, bundle minificado):
+pnpm start:perf
+
+# Opción C — emulador Android con adb reverse
 adb reverse tcp:8000 tcp:8000
 adb reverse tcp:8081 tcp:8081
 pnpm start -- --localhost
@@ -76,7 +104,7 @@ cd application
 pnpm typecheck
 pnpm test
 
-# E2E Maestro (emulador encendido, Metro en 8081 y Expo Go abierto)
+# E2E Maestro (emulador encendido y APK com.anden.app instalado)
 maestro test application/.maestro/flows
 ```
 
@@ -84,15 +112,15 @@ Flujos Maestro:
 
 | Flow | Estado |
 |---|---|
-| `00-launch` | verde |
-| `01-onboarding` | verde |
-| `02-map` | verde |
-| `02b-ndvi` | verde (P1 parcial) |
-| `03-compare` | verde |
-| `04-scenario` | verde |
-| `05-agent-save` | verde |
-| `06-settings` | verde (idioma + Ajustes) |
-| `07-offline` | no implementado (P1 023) |
+| `00-launch` | verde sobre APK |
+| `01-onboarding` | verde sobre APK |
+| `03-compare` | verde sobre APK |
+| `04-scenario` | verde sobre APK |
+| `05-agent-save` | requiere Vertex; fallback determinista probado por API |
+| `06-settings` | verde sobre APK |
+| `07-parcel` | verde sobre APK |
+| `09-ficha-parcela` | verde sobre APK |
+| `10-riego` | verde sobre APK |
 
 ## Estructura
 
@@ -102,7 +130,7 @@ backend/            FastAPI, modelos, endpoints, tests
 services/           motores puros: agua, economía, rotaciones, escenario
 datasets/demo/      snapshot POWER sintético etiquetado
 tests/parity/       fixtures compartidos Python/TS
-specs/              SDD: 28 specs (000-027)
+specs/              SDD: specs 000-032
 docs/               constitución, arquitectura, ADRs, supuestos, demo
 ```
 
@@ -118,7 +146,7 @@ docs/               constitución, arquitectura, ADRs, supuestos, demo
 ## Datos y licencia
 
 - Código: MIT (`LICENSE`).
-- Datos: NASA POWER/GIBS, FAO-56, anuario de Moquegua; ver `docs/data-licenses.md`.
+- Datos: NASA POWER, FAO-56, catálogo local de Moquegua y datos declarados por el agricultor; ver `docs/data-licenses.md`.
 - App gratuita para agricultores; no se venden datos.
 - Parcela demo sintética y etiquetada; cualquier usuario puede crear la suya.
 
@@ -129,12 +157,13 @@ docs/               constitución, arquitectura, ADRs, supuestos, demo
 
 ## Límites conocidos
 
-- No hay APK/dev build generado; Maestro corre contra Expo Go con gluestack v5.
-  Se intentó `assembleDebug`; falló por el límite de 260 caracteres de Ninja/CMake en el
-  codegen de RN 0.88 en Windows (ver ADR-0002). `application/.npmrc` usa `node-linker=hoisted`
-  para acortar rutas.
+- El APK de prueba está firmado en debug y se compila desde `C:\anden-app` para
+  evitar el límite de 260 caracteres de Ninja/CMake en Windows. No es un APK de
+  Play Store; ver `docs/architecture/apk-build.md` y `dist/README-APK.md`.
+- El pronóstico de Open-Meteo es una estimación de modelo, no una predicción
+  oficial del SENAMHI. La ETo es de referencia y no incluye el Kc del cultivo.
 - Offline (spec 023) y Groq real (spec 021) no están implementados en este MVP.
-- El snapshot NASA es sintético para el demo; la ingesta POWER real queda como siguiente paso.
+- El demo usa un snapshot sintético etiquetado; las parcelas nuevas descargan NASA POWER real y no usan valores por defecto. La economía debe declararla el agricultor para calcular margen.
 - El catálogo de cultivos está `needs_review` hasta validación agronómica local.
 - Quechua y aimara están en borrador (`review_pending`) hasta revisión de hablantes nativos.
 - El modo oscuro y el escalado de fuente 2.0× requieren QA visual continuo.

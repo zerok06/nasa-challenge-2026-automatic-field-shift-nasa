@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import test from 'node:test';
 
-import { applyScenarioValues, type ScenarioInput } from '../src/offline/scenario';
+import { applyScenarioValues, type ScenarioInput } from '../src/engine/scenario';
 
 type Case = { name: string; input: ScenarioInput; expected: Record<string, unknown> };
 

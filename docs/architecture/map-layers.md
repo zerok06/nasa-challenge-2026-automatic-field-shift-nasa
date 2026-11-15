@@ -1,5 +1,9 @@
 # Mapa y capas NASA
 
+> **No usado por la app desde Spec 028 (14-nov-2026).** La UI retiró la pestaña
+> de mapa, el selector del onboarding y las capas satelitales de Fuentes. Este
+> documento se conserva como referencia técnica de NASA GIBS.
+
 ## Decisión
 
 Mapa con `react-native-maps` + `UrlTile` de **NASA GIBS**. Sin tile server propio y sin key para GIBS.

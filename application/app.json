@@ -30,13 +30,20 @@
       [
         "expo-splash-screen",
         {
-          "backgroundColor": "#FAFBF8",
+          "backgroundColor": "#FAF7F0",
           "image": "./assets/images/anden-splash.png",
           "imageWidth": 120
         }
       ],
       "expo-secure-store",
-      "expo-localization"
+      "expo-localization",
+      "expo-sqlite",
+      [
+        "expo-location",
+        {
+          "locationWhenInUsePermission": "Anden usa tu ubicación para ubicar la parcela y descubrir datos NASA de la zona."
+        }
+      ]
     ],
     "experiments": {
       "typedRoutes": false,

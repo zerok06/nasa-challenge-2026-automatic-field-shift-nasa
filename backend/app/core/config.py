@@ -39,7 +39,14 @@ class Settings(BaseSettings):
     llm_provider: str = Field(default="fake", alias="LLM_PROVIDER")
     groq_api_key: str = Field(default="", alias="GROQ_API_KEY")
     groq_model: str = Field(default="llama-3.3-70b-versatile", alias="GROQ_MODEL")
-    llm_timeout_seconds: int = Field(default=30, alias="LLM_TIMEOUT_SECONDS")
+    google_cloud_project: str = Field(default="", alias="GOOGLE_CLOUD_PROJECT")
+    google_cloud_location: str = Field(default="global", alias="GOOGLE_CLOUD_LOCATION")
+    gemini_model: str = Field(default="gemini-3.5-flash", alias="GEMINI_MODEL")
+    gemini_max_output_tokens: int = Field(default=512, alias="GEMINI_MAX_OUTPUT_TOKENS")
+    gemini_max_tool_calls: int = Field(default=4, alias="GEMINI_MAX_TOOL_CALLS")
+    gemini_temperature: float = Field(default=0.0, alias="GEMINI_TEMPERATURE")
+    agent_max_answer_chars: int = Field(default=220, alias="AGENT_MAX_ANSWER_CHARS")
+    llm_timeout_seconds: int = Field(default=20, alias="LLM_TIMEOUT_SECONDS")
     log_level: str = Field(default="INFO", alias="LOG_LEVEL")
 
     datasets_dir: Path = Field(
@@ -55,6 +62,10 @@ class Settings(BaseSettings):
     @property
     def is_test(self) -> bool:
         return self.app_env.lower() in {"test", "testing", "ci"}
+
+    @property
+    def gemini_enabled(self) -> bool:
+        return self.llm_provider.lower() == "gemini" and bool(self.google_cloud_project)
 
 
 @lru_cache

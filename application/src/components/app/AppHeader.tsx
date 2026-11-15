@@ -2,7 +2,6 @@ import React from 'react';
 import { ArrowLeft, FileText, Settings } from 'lucide-react-native';
 
 import { AppIconButton } from '@/components/app/AppButton';
-import { DemoBadge } from '@/components/app/StatusBadge';
 import { HStack } from '@/components/ui/hstack';
 import { Text } from '@/components/ui/text';
 import { VStack } from '@/components/ui/vstack';
@@ -11,14 +10,12 @@ import { testIDs } from '@/design-system/testIDs';
 export function AppHeader({
   title = 'ANDEN',
   subtitle,
-  isSimulated = false,
   onBack,
   onSources,
   onSettings,
 }: {
   title?: string;
   subtitle?: string;
-  isSimulated?: boolean;
   onBack?: () => void;
   onSources?: () => void;
   onSettings?: () => void;
@@ -37,12 +34,11 @@ export function AppHeader({
       <VStack className="flex-1 gap-0.5">
         <Text className="text-lg font-extrabold tracking-[2px] text-primary">{title}</Text>
         {subtitle ? (
-          <Text size="xs" className="text-muted-foreground" numberOfLines={1}>
+          <Text className="text-sm text-muted-foreground" numberOfLines={2}>
             {subtitle}
           </Text>
         ) : null}
       </VStack>
-      {isSimulated ? <DemoBadge /> : null}
       {onSources ? (
         <AppIconButton
           icon={FileText}

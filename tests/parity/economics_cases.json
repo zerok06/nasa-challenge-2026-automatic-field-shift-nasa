@@ -1,0 +1,21 @@
+{
+  "name": "onion-margin",
+  "input": {
+    "area_ha": 1.2,
+    "yield_kg_ha": 12000,
+    "price_pen_kg": 1.2,
+    "costs_pen": 9000
+  },
+  "expected": {
+    "margin_pen": 8280.0,
+    "margin_pen_ha": 6900.0,
+    "break_even_price_pen_kg": 0.625,
+    "income_pen": 17280.0,
+    "costs_pen": 9000.0,
+    "production_kg": 14400.0,
+    "confidence": "complete",
+    "price_assumption_type": "farmer",
+    "missing_inputs": [],
+    "method_version": "econ-v0.1"
+  }
+}

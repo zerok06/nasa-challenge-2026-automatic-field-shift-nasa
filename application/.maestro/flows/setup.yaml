@@ -1,16 +1,7 @@
-appId: host.exp.exponent
+appId: com.anden.app
 ---
 - launchApp:
     clearState: false
-- openLink: "exp://127.0.0.1:8081"
-- runFlow:
-    when:
-      visible: "Go home"
-    file: dismiss-devmenu.yaml
-- runFlow:
-    when:
-      visible: "Development servers"
-    file: open-project.yaml
 - extendedWaitUntil:
     visible:
       id: "brand.header"
@@ -18,19 +9,18 @@ appId: host.exp.exponent
 - runFlow:
     when:
       visible:
-        id: "nav.back"
-    file: navigate-back.yaml
+        id: "onboarding.language.es-PE"
+    file: onboarding-profile.yaml
 - runFlow:
     when:
       visible:
-        id: "nav.home"
-    file: go-home.yaml
-- runFlow:
-    when:
-      visible:
-        id: "onboarding.language.es"
-    file: onboarding-demo.yaml
+        id: "parcel.new"
+    file: parcel-create.yaml
 - extendedWaitUntil:
     visible:
-      id: "dashboard.plotCard"
-    timeout: 90000
+      id: "dashboard.hero"
+    timeout: 120000
+- scrollUntilVisible:
+    element:
+      id: "dashboard.hero"
+    direction: UP

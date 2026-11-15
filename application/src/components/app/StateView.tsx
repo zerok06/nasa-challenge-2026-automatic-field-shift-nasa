@@ -3,6 +3,7 @@ import React from 'react';
 import { Spinner } from '@/components/ui/spinner';
 import { Text } from '@/components/ui/text';
 import { VStack } from '@/components/ui/vstack';
+import { Illustration, type IllustrationName } from '@/components/illustrations/Illustration';
 import { colors } from '@/design-system/tokens';
 
 export function StateView({
@@ -10,6 +11,7 @@ export function StateView({
   description,
   loading = false,
   icon,
+  illustration,
   action,
   testID,
 }: {
@@ -17,6 +19,7 @@ export function StateView({
   description?: string;
   loading?: boolean;
   icon?: React.ComponentType<{ size?: number; color?: string }>;
+  illustration?: IllustrationName;
   action?: React.ReactNode;
   testID?: string;
 }) {
@@ -25,6 +28,8 @@ export function StateView({
     <VStack className="flex-1 items-center justify-center gap-3 p-6" testID={testID}>
       {loading ? (
         <Spinner size="large" color={colors.primary} />
+      ) : illustration ? (
+        <Illustration name={illustration} size={96} />
       ) : Icon ? (
         <Icon size={40} color={colors.primary} />
       ) : null}

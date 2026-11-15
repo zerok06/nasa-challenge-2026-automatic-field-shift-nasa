@@ -11,16 +11,29 @@ class GeometryIn(BaseModel):
     coordinates: list[Any]
 
 
+class CropEconomicsIn(BaseModel):
+    yield_kg_ha: float | None = Field(default=None, ge=0)
+    price_pen_kg: float | None = Field(default=None, ge=0)
+    costs_pen: float | None = Field(default=None, ge=0)
+
+
 class PreferencesIn(BaseModel):
     weights: dict[str, float] = Field(
         default_factory=lambda: {"water": 0.4, "soil": 0.3, "margin": 0.3}
     )
+    priorities: dict[str, float] = Field(default_factory=dict)
     constraints: dict[str, Any] = Field(default_factory=dict)
+    economics: dict[str, CropEconomicsIn] = Field(default_factory=dict)
+    price_assumption_type: Literal[
+        "farmer", "historical", "reference", "none"
+    ] = "none"
 
     @model_validator(mode="after")
     def validate_weights(self) -> "PreferencesIn":
         if any(value < 0 for value in self.weights.values()):
             raise ValueError("Los pesos no pueden ser negativos")
+        if any(value < 0 for value in self.priorities.values()):
+            raise ValueError("Las prioridades no pueden ser negativas")
         if sum(self.weights.values()) <= 0:
             raise ValueError("La suma de pesos debe ser mayor que cero")
         return self
@@ -32,7 +45,7 @@ class ParcelCreate(BaseModel):
     area_ha: float | None = Field(default=None, gt=0)
     district: str | None = Field(default=None, max_length=120)
     preferences: PreferencesIn = Field(default_factory=PreferencesIn)
-    is_simulated: bool = True
+    is_simulated: bool = False
 
 
 class ParcelUpdate(BaseModel):

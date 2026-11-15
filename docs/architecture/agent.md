@@ -1,4 +1,8 @@
-# Agente LangGraph + Groq
+# Agente determinista + Gemini (Vertex AI)
+
+> Implementación actual (Spec 029): loop de function calling con Gemini y
+> fallback determinista. El grafo LangGraph de abajo queda como diseño de
+> referencia, no como el runtime desplegado.
 
 ## Misión
 
@@ -58,7 +62,13 @@ Cada tool: esquema Pydantic, autorización por parcela, timeout, allowlist, sin 
 
 ## UI actions
 
-Enum cerrado: `open_comparison`, `focus_map_layer`, `open_scenario`, `show_sources`, `save_plan_draft`.
+Enum cerrado: `open_comparison`, `open_scenario`, `show_sources`, `save_plan_draft`.
+`focus_map_layer` se retiró en Spec 028 junto con la UI de mapas.
+
+Cada respuesta incluye `next_step.phase` (`datos`, `comparar`, `probar`, `guardar`,
+`listo`) para que la app muestre un único “Siguiente paso”. El agente no predice
+clima/precio, no prescribe un cultivo, no inventa datos y rechaza instrucciones
+fuera de alcance con una respuesta corta.
 
 Validación Pydantic en API y Zod en mobile. Nada de navegación arbitraria.
 
@@ -70,13 +80,17 @@ Validación Pydantic en API y Zod en mobile. Nada de navegación arbitraria.
 4. Si falta un dato: decirlo; no completar con 0.
 5. El LLM no recibe la clave ni la DB; solo resultados seguros.
 
-## Groq
+## Gemini (Vertex AI)
 
-- `LLM_PROVIDER=groq`, `GROQ_MODEL` fijado; `temperature=0`; `max_tokens` acotado.
-- `langchain-groq` `ChatGroq`; tool calling con modelos compatibles.
-- `with_structured_output(Intent)` para clasificar.
-- Reintento 1 ante 429/timeout; si falla, `fake`/guided.
-- La key solo en el backend; nunca en mobile.
+- `LLM_PROVIDER=gemini`, `GEMINI_MODEL=gemini-3.5-flash`, endpoint global,
+  `temperature=0`, `max_output_tokens=512`, `thinking_budget=0`.
+- `google-genai` con ADC de la service account de la VM; no hay API key.
+- Function calling con 4 tools; el servidor las ejecuta y valida la parcela.
+- Reintento 1 ante timeout/5xx; si falla, `fake`/guiado con `gemini_fallback`.
+- Las escrituras (`propose_save_plan`) son deterministas; el modelo no decide
+  guardar.
+- El guard numérico reemplaza cifras no evidenciadas por una plantilla.
+- Groq queda como integración legada, no usada por el demo.
 
 ## Fallback `fake`
 

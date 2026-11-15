@@ -1,7 +1,9 @@
 # ADR-0004 — Anden: marca, gluestack v5, i18n, gráficos y accesibilidad
 
 - **Fecha:** 14-nov-2026
-- **Estado:** aceptada
+- **Estado:** aceptada; parcialmente revisada por ADR-0005 (mapas retirados,
+  Inicio simplificado, copy en español peruano simple) y por ADR-0008
+  (paleta verde/marrón; el azul/naranja quedan retirados)
 - **Supersede:** ADR-0002 (Paper fallback)
 - **Alcance:** `application/`, docs de producto
 - **Plataforma validada:** Expo SDK 58 + RN 0.88.1 + Expo Go 58 (Android)

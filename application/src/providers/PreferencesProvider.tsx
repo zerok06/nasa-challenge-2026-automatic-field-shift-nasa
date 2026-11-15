@@ -1,5 +1,6 @@
 import React, { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import { Appearance } from 'react-native';
+import * as Localization from 'expo-localization';
 import * as SecureStore from 'expo-secure-store';
 
 import i18n, { type LanguageCode } from '@/i18n';
@@ -20,8 +21,21 @@ type PreferencesState = Preferences & {
 
 const STORAGE_KEY = 'anden.preferences.v1';
 
+/**
+ * Use the phone locale as a starting point, not as a hard rule. The farmer can
+ * always change it. Quechua/Aymara device locales get their draft locale.
+ */
+function deviceLanguage(): LanguageCode {
+  const code = Localization.getLocales()[0]?.languageCode;
+  // The pilot is Spanish-first. Quechua/Aymara device locales are respected;
+  // English stays available from the selector but is not the default.
+  if (code === 'qu') return 'qu-PE';
+  if (code === 'ay') return 'ay-PE';
+  return 'es-PE';
+}
+
 const defaults: Preferences = {
-  language: 'es-PE',
+  language: deviceLanguage(),
   theme: 'light',
   reduceMotion: false,
 };
@@ -62,9 +76,7 @@ export function PreferencesProvider({ children }: { children: React.ReactNode })
 
   useEffect(() => {
     void i18n.changeLanguage(preferences.language);
-    Appearance.setColorScheme(
-      preferences.theme === 'system' ? 'auto' : preferences.theme,
-    );
+    Appearance.setColorScheme(preferences.theme === 'system' ? 'auto' : preferences.theme);
     void SecureStore.setItemAsync(STORAGE_KEY, JSON.stringify(preferences)).catch(() => {
       // Preferences are best-effort; the app still works with defaults.
     });

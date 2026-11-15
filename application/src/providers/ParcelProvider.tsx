@@ -1,8 +1,9 @@
-import React, { createContext, useCallback, useContext, useMemo, useState } from 'react';
+import React, { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
+import { loadCachedParcels, saveCachedParcels } from '@/offline/parcels';
+
 import {
-  createDemoParcel,
   createParcel as createParcelRequest,
   getContext,
   getIndicators,
@@ -10,6 +11,7 @@ import {
   type Context,
   type IndicatorResponse,
   type Parcel,
+  type ParcelGeometryInput,
 } from '@/services/api';
 import { useSession } from './SessionProvider';
 
@@ -20,12 +22,13 @@ type ParcelState = {
   indicators: IndicatorResponse | null;
   loading: boolean;
   error: string | null;
-  createDemo: () => Promise<Parcel>;
   createParcel: (input: {
     name: string;
     areaHa: number | null;
     lat: number;
     lon: number;
+    district?: string | null;
+    geometry?: ParcelGeometryInput;
   }) => Promise<Parcel>;
   selectParcel: (parcel: Parcel) => void;
   refresh: () => Promise<void>;
@@ -39,6 +42,17 @@ export function ParcelProvider({ children }: { children: React.ReactNode }) {
   const queryClient = useQueryClient();
   const [selectedOverride, setSelectedOverride] = useState<Parcel | null>(null);
   const [manualError, setManualError] = useState<string | null>(null);
+  const [cachedParcels, setCachedParcels] = useState<Parcel[] | null>(null);
+
+  useEffect(() => {
+    let mounted = true;
+    void loadCachedParcels().then((value) => {
+      if (mounted && value) setCachedParcels(value);
+    });
+    return () => {
+      mounted = false;
+    };
+  }, []);
 
   const parcelsQuery = useQuery({
     queryKey: ['parcels'],
@@ -46,9 +60,20 @@ export function ParcelProvider({ children }: { children: React.ReactNode }) {
     enabled: sessionReady,
   });
 
-  // Derive the active parcel instead of synchronizing it in an effect.
-  // A demo parcel created in this session wins over the server list.
-  const selected = selectedOverride ?? parcelsQuery.data?.[0] ?? null;
+  // The real app only shows farmer-created parcels. Synthetic fixtures stay
+  // available to backend tests but never appear as a farmer's plot.
+  const visibleParcels = useMemo(() => {
+    const source = parcelsQuery.data ?? cachedParcels ?? [];
+    return source.filter((item) => !item.is_simulated);
+  }, [cachedParcels, parcelsQuery.data]);
+
+  useEffect(() => {
+    if (parcelsQuery.data && visibleParcels.length > 0) {
+      void saveCachedParcels(visibleParcels);
+    }
+  }, [parcelsQuery.data, visibleParcels]);
+
+  const selected = selectedOverride ?? visibleParcels[0] ?? null;
 
   const contextQuery = useQuery({
     queryKey: ['context', selected?.id],
@@ -62,14 +87,6 @@ export function ParcelProvider({ children }: { children: React.ReactNode }) {
     enabled: Boolean(selected),
   });
 
-  const demoMutation = useMutation({
-    mutationFn: createDemoParcel,
-    onSuccess: (parcel) => {
-      setSelectedOverride(parcel);
-      setManualError(null);
-      queryClient.invalidateQueries({ queryKey: ['parcels'] });
-    },
-  });
 
   const createMutation = useMutation({
     mutationFn: createParcelRequest,
@@ -85,18 +102,16 @@ export function ParcelProvider({ children }: { children: React.ReactNode }) {
     setManualError(null);
   }, []);
 
-  const createDemo = useCallback(async () => {
-    try {
-      return await demoMutation.mutateAsync();
-    } catch (cause) {
-      const message = cause instanceof Error ? cause.message : 'No se pudo crear la parcela demo';
-      setManualError(message);
-      throw cause;
-    }
-  }, [demoMutation]);
 
   const createParcel = useCallback(
-    async (input: { name: string; areaHa: number | null; lat: number; lon: number }) => {
+    async (input: {
+      name: string;
+      areaHa: number | null;
+      lat: number;
+      lon: number;
+      district?: string | null;
+      geometry?: ParcelGeometryInput;
+    }) => {
       try {
         return await createMutation.mutateAsync(input);
       } catch (cause) {
@@ -128,20 +143,18 @@ export function ParcelProvider({ children }: { children: React.ReactNode }) {
 
   const loading =
     !sessionReady ||
-    parcelsQuery.isLoading ||
-    demoMutation.isPending ||
+    (parcelsQuery.isLoading && visibleParcels.length === 0) ||
     createMutation.isPending ||
-    (Boolean(selected) && (contextQuery.isLoading || indicatorsQuery.isLoading));
+    (Boolean(selected) && contextQuery.isLoading && !parcelsQuery.isError);
 
   const value = useMemo<ParcelState>(
     () => ({
       parcel: selected,
-      parcels: parcelsQuery.data ?? [],
+      parcels: visibleParcels,
       context: contextQuery.data ?? null,
       indicators: indicatorsQuery.data ?? null,
       loading,
       error,
-      createDemo,
       createParcel,
       selectParcel,
       refresh,
@@ -149,12 +162,11 @@ export function ParcelProvider({ children }: { children: React.ReactNode }) {
     }),
     [
       selected,
-      parcelsQuery.data,
+      visibleParcels,
       contextQuery.data,
       indicatorsQuery.data,
       loading,
       error,
-      createDemo,
       createParcel,
       selectParcel,
       refresh,

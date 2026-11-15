@@ -17,13 +17,13 @@ export function ChartTable({ columns, rows }: { columns: string[]; rows: ChartTa
   return (
     <VStack className="gap-1" accessibilityLabel="Tabla de datos del gráfico">
       <HStack className="gap-2 border-b border-border pb-1">
-        <Text className="flex-[1.4] text-[11px] font-semibold uppercase text-muted-foreground">
+        <Text className="flex-[1.4] text-sm font-semibold uppercase text-muted-foreground">
           {columns[0]}
         </Text>
         {columns.slice(1).map((column) => (
           <Text
             key={column}
-            className="flex-1 text-right text-[11px] font-semibold uppercase text-muted-foreground"
+            className="flex-1 text-right text-sm font-semibold uppercase text-muted-foreground"
           >
             {column}
           </Text>
@@ -31,9 +31,9 @@ export function ChartTable({ columns, rows }: { columns: string[]; rows: ChartTa
       </HStack>
       {rows.map((row) => (
         <HStack key={row.label} className="gap-2 py-1">
-          <Text className="flex-[1.4] text-xs text-foreground">{row.label}</Text>
+          <Text className="flex-[1.4] text-sm text-foreground">{row.label}</Text>
           {row.values.map((value, index) => (
-            <Text key={`${row.label}-${columns[index + 1]}`} className="flex-1 text-right text-xs text-foreground">
+            <Text key={`${row.label}-${columns[index + 1]}`} className="flex-1 text-right text-sm text-foreground">
               {value}
             </Text>
           ))}
@@ -63,7 +63,7 @@ export function ChartCard({
   const { t } = useTranslation();
   return (
     <SectionCard title={title} subtitle={subtitle} testID={testID}>
-      <View accessible accessibilityRole="image" accessibilityLabel={summary}>
+      <View pointerEvents="none" accessible accessibilityRole="image" accessibilityLabel={summary}>
         {children}
       </View>
       <Disclosure title={t('Ver datos')}>

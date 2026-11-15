@@ -9,7 +9,6 @@ from sqlalchemy.orm import Session
 from app.models.entities import (
     AnalysisRun,
     Crop,
-    DatasetSnapshot,
     Parcel,
     RotationPlan,
     RotationPlanStep,
@@ -22,6 +21,7 @@ from app.schemas.analysis import (
     PlanOut,
     ScenarioRequest,
 )
+from app.use_cases.climate import ClimateDataUnavailable, ensure_power_snapshot
 from app.use_cases.context import get_context
 from services.economics import evaluate_soil
 from services.rotations import PlanDraft, build_plan_drafts
@@ -37,18 +37,11 @@ MODEL_VERSION = "rotation-engine-v0.1"
 CATALOG_VERSION = "v0.1"
 
 
-def _avg(records: list[dict[str, Any]], key: str, default: float) -> float:
+def _avg(records: list[dict[str, Any]], key: str) -> float | None:
     values = [float(r[key]) for r in records if r.get(key) is not None]
-    return sum(values) / len(values) if values else default
-
-
-def _snapshot_records(db: Session) -> tuple[list[dict[str, Any]], str | None]:
-    snapshot = db.scalars(
-        select(DatasetSnapshot).order_by(DatasetSnapshot.retrieved_at.desc()).limit(1)
-    ).first()
-    if snapshot is None:
-        return [], None
-    return snapshot.metadata_json.get("records", []), snapshot.id
+    if not values:
+        return None
+    return sum(values) / len(values)
 
 
 def _plan_economics(
@@ -218,9 +211,23 @@ def create_comparison(
     )
     crops = {c.id: c for c in db.scalars(select(Crop)).all()}
     drafts = build_plan_drafts(history, crops, start, end)
-    records, snapshot_id = _snapshot_records(db)
-    avg_eto = _avg(records, "eto_mm", 4.0)
-    avg_precip = _avg(records, "precip_mm", 1.0)
+    snapshot = ensure_power_snapshot(db, parcel)
+    if snapshot is None:
+        raise ClimateDataUnavailable(
+            "No pudimos obtener datos reales de NASA POWER para esta parcela."
+        )
+    records = snapshot.metadata_json.get("records", [])
+    if not records:
+        raise ClimateDataUnavailable(
+            "El paquete de clima de la parcela no contiene registros."
+        )
+    avg_eto = _avg(records, "eto_mm")
+    avg_precip = _avg(records, "precip_mm")
+    if avg_eto is None or avg_precip is None:
+        raise ClimateDataUnavailable(
+            "NASA POWER no devolvió temperatura y lluvia suficientes."
+        )
+    snapshot_id = snapshot.id
     horizon_days = (end - start).days + 1
     rain_effective = effective_rain(avg_precip * horizon_days)
 

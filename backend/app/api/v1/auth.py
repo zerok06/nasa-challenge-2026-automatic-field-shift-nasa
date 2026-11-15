@@ -10,7 +10,7 @@ from app.core.config import settings
 from app.core.security import create_token, decode_token
 from app.db.session import get_db
 from app.models.entities import User
-from app.schemas.auth import AnonymousIn, MeOut, RefreshIn, TokenOut, UserOut
+from app.schemas.auth import AnonymousIn, MeOut, ProfileIn, RefreshIn, TokenOut, UserOut
 
 router = APIRouter(prefix="/auth", tags=["auth"])
 
@@ -53,4 +53,23 @@ def refresh(payload: RefreshIn, db: Session = Depends(get_db)) -> TokenOut:
 
 @router.get("/me", response_model=MeOut)
 def me(user: User = Depends(get_current_user)) -> MeOut:
+    return MeOut(user=UserOut.model_validate(user))
+
+
+@router.patch("/me", response_model=MeOut)
+def update_me(
+    payload: ProfileIn,
+    user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+) -> MeOut:
+    user.display_name = payload.display_name
+    user.locale = payload.locale
+    user.profile_json = payload.profile
+    if payload.consent_version:
+        user.consent_version = payload.consent_version
+        user.consent_at = user.consent_at or datetime.now(timezone.utc)
+    if payload.onboarding_completed and user.onboarding_completed_at is None:
+        user.onboarding_completed_at = datetime.now(timezone.utc)
+    db.commit()
+    db.refresh(user)
     return MeOut(user=UserOut.model_validate(user))

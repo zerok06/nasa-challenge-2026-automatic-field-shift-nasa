@@ -1,8 +1,21 @@
 import React from 'react';
+import { useColorScheme } from 'react-native';
 
 import { Button, ButtonSpinner, ButtonText } from '@/components/ui/button';
-import { colors } from '@/design-system/tokens';
+import { colors, darkColors } from '@/design-system/tokens';
 
+/**
+ * Button hierarchy:
+ * - primary: the one main action on a screen.
+ * - secondary: a tonal alternative that does not compete with primary.
+ * - outline: a tertiary action with a visible boundary.
+ * - ghost: cancel, back or low-emphasis navigation.
+ * - destructive: irreversible actions only.
+ * - water / earth / success / warning: contextual secondary tones.
+ *
+ * Only primary and destructive use a solid fill. Context tones stay soft so
+ * the farmer can always identify the main next step.
+ */
 export type AppButtonTone =
   | 'primary'
   | 'secondary'
@@ -12,41 +25,60 @@ export type AppButtonTone =
   | 'water'
   | 'earth'
   | 'success'
-  | 'warning';
+  | 'warning'
+  | 'surface';
 
 const toneVariant: Record<
   AppButtonTone,
   'default' | 'secondary' | 'outline' | 'ghost' | 'destructive'
 > = {
   primary: 'default',
-  secondary: 'secondary',
+  secondary: 'ghost',
   outline: 'outline',
   ghost: 'ghost',
   destructive: 'destructive',
-  water: 'default',
-  earth: 'default',
-  success: 'default',
-  warning: 'default',
+  water: 'ghost',
+  earth: 'ghost',
+  success: 'ghost',
+  warning: 'ghost',
+  surface: 'ghost',
 };
 
 const toneClass: Partial<Record<AppButtonTone, string>> = {
-  water: 'bg-water',
-  earth: 'bg-earth',
-  success: 'bg-success',
-  warning: 'bg-warning',
+  secondary: 'bg-accent',
+  water: 'bg-water/10',
+  earth: 'bg-earth/10',
+  success: 'bg-success/10',
+  warning: 'bg-warning/10',
+  surface: 'border border-border bg-card',
+  outline: 'bg-transparent px-4',
+  ghost: 'bg-transparent px-2',
+};
+
+const toneShadow: Partial<Record<AppButtonTone, string>> = {
+  primary: 'shadow-sm',
+  destructive: 'shadow-sm',
+  surface: 'shadow-sm',
 };
 
 const toneTextClass: Record<AppButtonTone, string> = {
   primary: 'text-primary-foreground',
-  secondary: 'text-secondary-foreground',
+  secondary: 'text-primary',
   outline: 'text-foreground',
   ghost: 'text-foreground',
   destructive: 'text-destructive-foreground',
-  water: 'text-water-foreground',
-  earth: 'text-earth-foreground',
-  success: 'text-success-foreground',
-  warning: 'text-warning-foreground',
+  water: 'text-water',
+  earth: 'text-earth',
+  success: 'text-success',
+  warning: 'text-warning',
+  surface: 'text-primary',
 };
+
+function spinnerColor(tone: AppButtonTone): string {
+  if (tone === 'primary' || tone === 'destructive') return colors.white;
+  if (tone === 'surface' || tone === 'secondary') return colors.primary;
+  return colors.primary;
+}
 
 export type AppButtonProps = Omit<
   React.ComponentProps<typeof Button>,
@@ -67,15 +99,34 @@ export function AppButton({
   isDisabled,
   ...props
 }: AppButtonProps) {
+  const scheme = useColorScheme();
+  const surfaceStyle =
+    tone === 'surface'
+      ? { backgroundColor: scheme === 'dark' ? darkColors.surface : colors.surface }
+      : undefined;
+
   return (
     <Button
       variant={toneVariant[tone]}
-      className={['min-h-12', toneClass[tone], className].filter(Boolean).join(' ')}
+      style={surfaceStyle}
+      className={[
+        'min-h-12 rounded-full px-5',
+        toneShadow[tone],
+        toneClass[tone],
+        isDisabled || loading ? 'opacity-50' : '',
+        className,
+      ]
+        .filter(Boolean)
+        .join(' ')}
       isDisabled={isDisabled || loading}
       {...props}
     >
-      {loading ? <ButtonSpinner color={colors.white} /> : null}
-      <ButtonText className={[toneTextClass[tone], textClassName].filter(Boolean).join(' ')}>
+      {loading ? <ButtonSpinner color={spinnerColor(tone)} /> : null}
+      <ButtonText
+        className={['text-sm font-semibold', toneTextClass[tone], textClassName]
+          .filter(Boolean)
+          .join(' ')}
+      >
         {children}
       </ButtonText>
     </Button>

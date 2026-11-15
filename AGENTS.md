@@ -1,4 +1,4 @@
-# AGENTS.md - Automatic
+# AGENTS.md - Anden
 
 ## Contexto
 
@@ -45,7 +45,9 @@ cd application
 pnpm install
 pnpm typecheck
 pnpm test
-pnpm start -- --localhost
+pnpm start -- --lan          # teléfono físico (GCP o LAN)
+pnpm start:perf              # modo rendimiento: --no-dev --minify
+# pnpm start -- --localhost  # emulador con adb reverse
 
 # E2E (emulador + Metro + Expo Go)
 adb reverse tcp:8000 tcp:8000

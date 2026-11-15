@@ -1,38 +1,27 @@
-appId: host.exp.exponent
+appId: com.anden.app
 ---
 - launchApp:
-    clearState: false
-- openLink: "exp://127.0.0.1:8081"
-- runFlow:
-    when:
-      visible: "Go home"
-    file: dismiss-devmenu.yaml
-- runFlow:
-    when:
-      visible: "Development servers"
-    file: open-project.yaml
+    clearState: true
 - extendedWaitUntil:
     visible:
-      id: "brand.header"
+      id: "onboarding.language.es-PE"
     timeout: 60000
 - runFlow:
-    when:
-      visible:
-        id: "nav.back"
-    file: navigate-back.yaml
-- runFlow:
-    when:
-      visible:
-        id: "nav.home"
-    file: go-home.yaml
-- runFlow:
-    when:
-      visible:
-        id: "onboarding.language.es"
-    file: onboarding-demo.yaml
+    file: onboarding-profile.yaml
 - extendedWaitUntil:
     visible:
-      id: "dashboard.plotCard"
+      id: "parcel.new"
     timeout: 30000
-- assertVisible: "Parcela demo"
-- assertVisible: "Contexto NASA"
+- runFlow:
+    file: parcel-create.yaml
+- extendedWaitUntil:
+    visible:
+      id: "dashboard.hero"
+    timeout: 120000
+- assertNotVisible: "DEMO"
+- assertVisible: "¿Qué necesitas?"
+- scrollUntilVisible:
+    element:
+      text: "Tu parcela"
+    direction: DOWN
+- assertVisible: "Tu parcela"

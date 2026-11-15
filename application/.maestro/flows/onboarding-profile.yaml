@@ -1,0 +1,30 @@
+appId: com.anden.app
+---
+- tapOn:
+    id: "onboarding.language.es-PE"
+- tapOn:
+    id: "onboarding.next"
+- tapOn:
+    id: "onboarding.name"
+- inputText: "Juan"
+- hideKeyboard
+- tapOn:
+    id: "onboarding.next"
+- extendedWaitUntil:
+    visible: "Ahora no"
+    timeout: 15000
+- tapOn: "Ahora no"
+- extendedWaitUntil:
+    visible:
+      id: "onboarding.consent"
+    timeout: 15000
+- tapOn:
+    id: "onboarding.consent"
+- tapOn:
+    id: "onboarding.create"
+- extendedWaitUntil:
+    visible:
+      id: "onboarding.ready"
+    timeout: 30000
+- tapOn:
+    id: "onboarding.start"

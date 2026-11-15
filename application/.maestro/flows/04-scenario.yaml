@@ -1,37 +1,42 @@
-appId: host.exp.exponent
+appId: com.anden.app
 ---
 - runFlow:
     file: setup.yaml
-- scrollUntilVisible:
-    element:
-      id: "dashboard.compare"
-    direction: DOWN
 - tapOn:
     id: "dashboard.compare"
 - extendedWaitUntil:
-    visible: "Comparación"
+    visible: "Tu comparación"
     timeout: 30000
-- scrollUntilVisible:
-    element:
-      id: "comparison.simulate"
-    direction: DOWN
 - tapOn:
     id: "comparison.simulate"
 - extendedWaitUntil:
-    visible: "Laboratorio de escenarios"
+    visible:
+      id: "scenario.result"
     timeout: 30000
+- scrollUntilVisible:
+    element:
+      id: "scenario.water.preset20"
+    direction: DOWN
 - tapOn:
     id: "scenario.water.preset20"
 - extendedWaitUntil:
-    visible: "Resultado simulado"
+    visible: "Agua que falta con el cambio"
     timeout: 30000
-- assertVisible: ".*déficit.*"
+- scrollUntilVisible:
+    element:
+      id: "scenario.price.preset15"
+    direction: DOWN
 - tapOn:
     id: "scenario.price.preset15"
 - extendedWaitUntil:
-    visible: "Resultado simulado"
+    visible: "Ganancia con el cambio"
     timeout: 30000
-- assertVisible: ".*margen.*"
 - tapOn:
     id: "scenario.reset"
-- assertVisible: "Comparación"
+- extendedWaitUntil:
+    visible: "Volver a la comparación"
+    timeout: 30000
+- tapOn: "Volver a la comparación"
+- extendedWaitUntil:
+    visible: "Tu comparación"
+    timeout: 30000

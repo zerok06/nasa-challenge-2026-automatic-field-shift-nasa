@@ -10,6 +10,7 @@ from app.api.deps import get_current_user, get_parcel_or_404
 from app.db.session import get_db
 from app.models.entities import AnalysisRun, User
 from app.schemas.analysis import ComparisonOut, ComparisonRequest, ScenarioRequest
+from app.use_cases.climate import ClimateDataUnavailable
 from app.use_cases.comparison import create_comparison, get_comparison, simulate
 
 router = APIRouter(prefix="/comparisons", tags=["comparisons"])
@@ -49,6 +50,17 @@ def create(
             return ComparisonOut.model_validate(existing.results_json)
     try:
         return create_comparison(db, user, parcel, start, end, idempotency_key)
+    except ClimateDataUnavailable as exc:
+        raise HTTPException(
+            status_code=503,
+            detail={
+                "code": "climate_unavailable",
+                "message": (
+                    "No pudimos obtener datos reales de NASA POWER para tu parcela. "
+                    "Revisa la conexión e intenta de nuevo."
+                ),
+            },
+        ) from exc
     except ValueError as exc:
         raise HTTPException(
             status_code=422,

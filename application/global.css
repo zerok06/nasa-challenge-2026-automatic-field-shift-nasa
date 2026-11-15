@@ -11,35 +11,35 @@
    class-qualified :root selectors on native. */
 @layer theme {
   :root {
-    --background: 250 251 248;
-    --foreground: 19 32 23;
+    --background: 250 247 240;
+    --foreground: 30 35 30;
 
     --card: 255 255 255;
-    --card-foreground: 19 32 23;
+    --card-foreground: 30 35 30;
     --popover: 255 255 255;
-    --popover-foreground: 19 32 23;
+    --popover-foreground: 30 35 30;
 
     --primary: 27 94 32;
     --primary-foreground: 255 255 255;
-    --secondary: 242 245 241;
-    --secondary-foreground: 19 32 23;
+    --secondary: 244 240 233;
+    --secondary-foreground: 30 35 30;
 
-    --muted: 242 245 241;
-    --muted-foreground: 92 107 96;
+    --muted: 244 240 233;
+    --muted-foreground: 95 107 96;
     --accent: 241 248 242;
     --accent-foreground: 18 63 22;
 
-    --destructive: 198 40 40;
+    --destructive: 110 47 36;
     --destructive-foreground: 255 255 255;
     --success: 46 125 50;
     --success-foreground: 255 255 255;
-    --warning: 180 83 9;
+    --warning: 122 59 46;
     --warning-foreground: 255 255 255;
-    --warning-highlight: 239 108 0;
-    --info: 21 101 192;
+    --warning-highlight: 141 110 99;
+    --info: 109 76 65;
     --info-foreground: 255 255 255;
 
-    --water: 21 101 192;
+    --water: 109 76 65;
     --water-foreground: 255 255 255;
     --earth: 141 110 99;
     --earth-foreground: 255 255 255;
@@ -47,11 +47,11 @@
     --chart-1: 27 94 32;
     --chart-2: 60 148 83;
     --chart-3: 99 177 118;
-    --chart-4: 21 101 192;
+    --chart-4: 109 76 65;
     --chart-5: 141 110 99;
 
-    --border: 226 232 224;
-    --input: 226 232 224;
+    --border: 227 221 209;
+    --input: 227 221 209;
     --ring: 27 94 32;
   }
 
@@ -75,17 +75,17 @@
       --accent: 31 46 33;
       --accent-foreground: 223 240 226;
 
-      --destructive: 242 139 130;
+      --destructive: 240 184 168;
       --destructive-foreground: 11 18 12;
       --success: 129 199 132;
       --success-foreground: 10 36 13;
-      --warning: 255 183 77;
+      --warning: 224 180 164;
       --warning-foreground: 11 18 12;
-      --warning-highlight: 255 183 77;
-      --info: 111 168 245;
+      --warning-highlight: 224 180 164;
+      --info: 196 167 156;
       --info-foreground: 11 18 12;
 
-      --water: 111 168 245;
+      --water: 196 167 156;
       --water-foreground: 11 18 12;
       --earth: 196 167 156;
       --earth-foreground: 11 18 12;
@@ -93,8 +93,8 @@
       --chart-1: 124 196 127;
       --chart-2: 99 177 118;
       --chart-3: 148 204 160;
-      --chart-4: 111 168 245;
-      --chart-5: 196 167 156;
+      --chart-4: 196 167 156;
+      --chart-5: 176 145 134;
 
       --border: 43 56 45;
       --input: 43 56 45;

@@ -16,6 +16,7 @@ from app.models.entities import (
     User,
     WaterAvailability,
 )
+from app.schemas.irrigation import IrrigationOut
 from app.schemas.parcel import (
     ContextOut,
     CropHistoryIn,
@@ -30,6 +31,8 @@ from app.schemas.parcel import (
     WaterOut,
 )
 from app.use_cases.context import get_context, parcel_to_out
+from app.use_cases.irrigation import build_irrigation
+from app.use_cases.weather import ForecastUnavailable
 
 router = APIRouter(prefix="/parcels", tags=["parcels"])
 
@@ -151,7 +154,9 @@ def update_parcel(
     if "district" in fields:
         parcel.district = payload.district
     if "preferences" in fields and payload.preferences is not None:
-        parcel.preferences_json = payload.preferences.model_dump()
+        current = dict(parcel.preferences_json or {})
+        current.update(payload.preferences.model_dump(exclude_unset=True))
+        parcel.preferences_json = current
     if "geometry" in fields and payload.geometry is not None:
         _validate_geometry(payload.geometry)
         parcel.geom = _geom_expr(payload.geometry)
@@ -184,6 +189,26 @@ def context(
 ) -> ContextOut:
     parcel = get_parcel_or_404(db, user, parcel_id)
     return get_context(db, parcel)
+
+
+@router.get("/{parcel_id}/irrigation", response_model=IrrigationOut)
+def irrigation(
+    parcel_id: str,
+    days: int = Query(7, ge=1, le=7),
+    user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+) -> IrrigationOut:
+    parcel = get_parcel_or_404(db, user, parcel_id)
+    try:
+        return IrrigationOut.model_validate(build_irrigation(db, parcel, days=days))
+    except ForecastUnavailable as exc:
+        raise HTTPException(
+            status_code=503,
+            detail={
+                "code": "forecast_unavailable",
+                "message": "No se pudo consultar el pronóstico de Open-Meteo.",
+            },
+        ) from exc
 
 
 @router.get("/{parcel_id}/crop-history", response_model=list[CropHistoryOut])

@@ -1,6 +1,18 @@
+import Constants from 'expo-constants';
 import * as SecureStore from 'expo-secure-store';
 
-const API_URL = process.env.EXPO_PUBLIC_API_URL ?? 'http://localhost:8000';
+import { resolveApiUrl } from './resolveApiUrl';
+
+const configuredApiUrl = process.env.EXPO_PUBLIC_API_URL?.trim();
+const expoHost =
+  Constants.expoConfig?.hostUri ??
+  (Constants as unknown as { manifest2?: { extra?: { expoGo?: { debuggerHost?: string } } } })
+    .manifest2?.extra?.expoGo?.debuggerHost;
+
+const API_URL = resolveApiUrl(configuredApiUrl, expoHost);
+if (__DEV__) {
+  console.log(`[Anden] API ${API_URL}`);
+}
 const TOKEN_KEY = 'automatic_token';
 
 let token: string | null = null;
@@ -20,6 +32,7 @@ export async function request<T>(
   path: string,
   init: RequestInit = {},
   auth = true,
+  timeoutMs = 20000,
 ): Promise<T> {
   const headers: Record<string, string> = {
     'Content-Type': 'application/json',
@@ -30,7 +43,7 @@ export async function request<T>(
     headers.Authorization = `Bearer ${token}`;
   }
   const controller = new AbortController();
-  const timeout = setTimeout(() => controller.abort(), 20000);
+  const timeout = setTimeout(() => controller.abort(), timeoutMs);
   try {
     const response = await fetch(`${API_URL}${path}`, {
       ...init,
@@ -53,7 +66,58 @@ export async function request<T>(
     if (error instanceof Error && error.name === 'AbortError') {
       throw new ApiError(0, 'timeout', 'La API tardó demasiado en responder');
     }
-    throw new ApiError(0, 'network_error', 'No se pudo conectar con la API');
+    throw new ApiError(
+      0,
+      'network_error',
+      'No se pudo conectar con la API. Revisa tu conexión a internet e intenta de nuevo.',
+    );
+  } finally {
+    clearTimeout(timeout);
+  }
+}
+
+export async function requestText(
+  path: string,
+  init: RequestInit = {},
+): Promise<{ text: string; headers: Headers }> {
+  if (!token) throw new ApiError(401, 'unauthorized', 'Sesión no iniciada');
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), 45000);
+  try {
+    const response = await fetch(`${API_URL}${path}`, {
+      ...init,
+      headers: {
+        Accept: 'application/json',
+        Authorization: `Bearer ${token}`,
+        ...(init.headers as Record<string, string> | undefined),
+      },
+      signal: controller.signal,
+    });
+    const text = await response.text();
+    if (!response.ok) {
+      let body: { detail?: { code?: string; message?: string }; error?: { code?: string; message?: string } } = {};
+      try {
+        body = text ? JSON.parse(text) : {};
+      } catch {
+        // Keep the raw status when the error body is not JSON.
+      }
+      throw new ApiError(
+        response.status,
+        body.detail?.code ?? body.error?.code ?? 'http_error',
+        body.detail?.message ?? body.error?.message ?? `Error HTTP ${response.status}`,
+      );
+    }
+    return { text, headers: response.headers };
+  } catch (error) {
+    if (error instanceof ApiError) throw error;
+    if (error instanceof Error && error.name === 'AbortError') {
+      throw new ApiError(0, 'timeout', 'La API tardó demasiado en responder');
+    }
+    throw new ApiError(
+      0,
+      'network_error',
+      'No se pudo conectar con la API. Revisa tu conexión a internet e intenta de nuevo.',
+    );
   } finally {
     clearTimeout(timeout);
   }
@@ -68,7 +132,10 @@ export async function ensureSession(): Promise<void> {
       try {
         await request('/api/v1/auth/me');
         return;
-      } catch {
+      } catch (error) {
+        // Offline: keep the saved session and let the cached profile/bundle
+        // drive the UI. Only a real 401 clears the token.
+        if (error instanceof ApiError && error.status === 0) return;
         token = null;
       }
     }
@@ -79,7 +146,7 @@ export async function ensureSession(): Promise<void> {
     '/api/v1/auth/anonymous',
     {
       method: 'POST',
-      body: JSON.stringify({ display_name: 'Agricultor', consent_version: 'v1' }),
+      body: JSON.stringify({}),
     },
     false,
   );

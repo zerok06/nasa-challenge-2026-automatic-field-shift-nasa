@@ -8,17 +8,24 @@ export function MetricRow({
   label,
   value,
   testID,
+  valueClassName,
 }: {
   label: string;
   value: string;
   testID?: string;
+  valueClassName?: string;
 }) {
   return (
     <HStack className="items-start justify-between gap-3" testID={testID}>
-      <Text size="sm" className="flex-1 text-muted-foreground">
-        {label}
-      </Text>
-      <Text size="sm" className="flex-1 text-right font-semibold text-foreground">
+      <Text className="flex-1 text-sm leading-5 text-muted-foreground">{label}</Text>
+      <Text
+        className={[
+          'max-w-[58%] text-right text-base font-semibold leading-5 text-foreground',
+          valueClassName,
+        ]
+          .filter(Boolean)
+          .join(' ')}
+      >
         {value}
       </Text>
     </HStack>
@@ -29,24 +36,33 @@ export function MetricTile({
   label,
   value,
   unit,
+  icon,
+  tone = 'neutral',
   testID,
 }: {
   label: string;
   value: string;
   unit?: string;
+  icon?: React.ReactNode;
+  tone?: 'neutral' | 'water' | 'earth' | 'primary' | 'warning';
   testID?: string;
 }) {
+  const toneClass = {
+    neutral: 'bg-muted/60',
+    water: 'bg-info/10',
+    earth: 'bg-earth/10',
+    primary: 'bg-accent',
+    warning: 'bg-warning/10',
+  }[tone];
+
   return (
-    <VStack className="min-w-[30%] flex-1 gap-1 rounded-xl bg-muted/60 p-3" testID={testID}>
-      <Text size="xs" className="text-muted-foreground">
-        {label}
-      </Text>
-      <Text className="text-lg font-bold text-foreground">{value}</Text>
-      {unit ? (
-        <Text size="xs" className="text-muted-foreground">
-          {unit}
-        </Text>
-      ) : null}
+    <VStack className={`min-w-[30%] flex-1 gap-1 rounded-2xl p-3 ${toneClass}`} testID={testID}>
+      <HStack className="items-center gap-1.5">
+        {icon}
+        <Text className="flex-1 text-sm leading-5 text-muted-foreground">{label}</Text>
+      </HStack>
+      <Text className="text-xl font-bold text-foreground">{value}</Text>
+      {unit ? <Text className="text-sm text-muted-foreground">{unit}</Text> : null}
     </VStack>
   );
 }

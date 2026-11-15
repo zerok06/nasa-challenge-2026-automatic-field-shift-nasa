@@ -1,0 +1,12 @@
+appId: com.anden.app
+---
+- extendedWaitUntil:
+    visible:
+      id: "onboarding.demo"
+    timeout: 30000
+- tapOn:
+    id: "onboarding.demo"
+- extendedWaitUntil:
+    visible:
+      id: "dashboard.hero"
+    timeout: 60000

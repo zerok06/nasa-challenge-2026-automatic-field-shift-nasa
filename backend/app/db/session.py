@@ -32,3 +32,26 @@ def init_db() -> None:
     with engine.begin() as conn:
         conn.execute(text("CREATE EXTENSION IF NOT EXISTS postgis"))
     Base.metadata.create_all(bind=engine)
+
+    # Lightweight forward-compatible migration for the pilot database. The
+    # project does not use Alembic yet, so create_all cannot add columns to an
+    # existing table. Keep these statements idempotent.
+    with engine.begin() as conn:
+        conn.execute(
+            text(
+                "ALTER TABLE users ADD COLUMN IF NOT EXISTS "
+                "profile_json JSONB NOT NULL DEFAULT '{}'::jsonb"
+            )
+        )
+        conn.execute(
+            text(
+                "ALTER TABLE users ADD COLUMN IF NOT EXISTS "
+                "onboarding_completed_at TIMESTAMPTZ"
+            )
+        )
+        conn.execute(
+            text(
+                "ALTER TABLE parcels ADD COLUMN IF NOT EXISTS "
+                "terrain_json JSONB NOT NULL DEFAULT '{}'::jsonb"
+            )
+        )
