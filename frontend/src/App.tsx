@@ -12,6 +12,9 @@ import { useTranslation } from 'react-i18next';
 import { ArrowLeftRight, Home, Info, Loader2, MessageCircle, Sprout, Wifi, WifiOff, X } from 'lucide-react';
 import { useOnline } from './lib/useOnline';
 import { useSyncPendingCount } from './lib/useSyncPendingCount';
+import { useViewport } from './lib/useDevice';
+import { DeviceFrame } from './components/app/DeviceFrame';
+import { InstallNudge } from './components/app/InstallNudge';
 import { translationStatus, type LanguageCode } from './i18n';
 import { ParcelProvider } from './providers/ParcelProvider';
 import { ComparisonProvider } from './providers/ComparisonProvider';
@@ -58,6 +61,7 @@ function Shell() {
   const { profile, loading: profileLoading } = useProfile();
   const online = useOnline();
   const pending = useSyncPendingCount();
+  const { isMobile, showPhoneFrame } = useViewport();
   const [introDone, setIntroDone] = useState(() => isIntroCompleted());
   const draftLocale = translationStatus[i18n.language as LanguageCode] === 'review_pending';
   const [draftNoticeDismissed, setDraftNoticeDismissed] = useState(false);
@@ -68,8 +72,8 @@ function Shell() {
 
   if (!introDone) return <Intro onFinished={() => setIntroDone(true)} />;
 
-  return (
-    <div className="flex min-h-screen flex-col bg-background">
+  const shell = (
+    <>
       <a
         href="#main"
         className="sr-only focus:not-sr-only focus:absolute focus:left-2 focus:top-2 focus:z-50 focus:rounded-lg focus:bg-white focus:px-4 focus:py-2 focus:shadow"
@@ -95,6 +99,8 @@ function Shell() {
           </button>
         </div>
       ) : null}
+
+      <InstallNudge mobile={isMobile} />
 
       <main
         id="main"
@@ -143,8 +149,15 @@ function Shell() {
           online={online}
           pending={pending}
         />
-      )}    </div>
+      )}
+    </>
   );
+
+  if (showPhoneFrame) {
+    return <DeviceFrame>{shell}</DeviceFrame>;
+  }
+
+  return <div className="flex min-h-screen flex-col bg-background">{shell}</div>;
 }
 
 function ConnectionBadge({ online, pending }: { online: boolean; pending: number }) {
