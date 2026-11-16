@@ -11,6 +11,12 @@ El conjunto es **coherente y ejecutable** como plan de implementación. Cubre el
 **Listo para implementar:** 000–003.  
 **Riesgo que debe resolverse primero:** spike RNUI 10 + Expo 58 + `uilib-native`.
 
+> **Actualización de implementación (14-nov-2026):** el spike RNUI falló en Windows
+> (ProGuard/AGP 9, `wix-react-native-text-size` contra RN 0.88 y rutas CMake > MAX_PATH).
+> Se aplicó el fallback a React Native Paper + Expo Go (`adr-0002-paper-fallback.md`).
+> El informe siguiente describe la fase SDD; las referencias a RNUI/dev build quedan
+> históricas, no describen el runtime actual.
+
 ## Fuentes
 
 - `docs/AUTOMATIC_PLAN_MAESTRO_V2.md` (plan maestro).

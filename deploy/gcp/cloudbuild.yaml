@@ -1,0 +1,34 @@
+substitutions:
+  _IMAGE: ""
+  _WEB_IMAGE: ""
+  # Vacío = el PWA llama a /api/v1 del mismo dominio (Caddy proxya al backend).
+  # Para apuntar a otro backend: --substitutions=_VITE_API_URL=https://api.example.com
+  _VITE_API_URL: ""
+
+steps:
+  - name: gcr.io/cloud-builders/docker
+    args:
+      - build
+      - --file
+      - backend/Dockerfile
+      - --tag
+      - ${_IMAGE}
+      - .
+
+  - name: gcr.io/cloud-builders/docker
+    args:
+      - build
+      - --file
+      - deploy/gcp/Dockerfile.web
+      - --build-arg
+      - VITE_API_URL=${_VITE_API_URL}
+      - --tag
+      - ${_WEB_IMAGE}
+      - .
+
+images:
+  - ${_IMAGE}
+  - ${_WEB_IMAGE}
+
+options:
+  logging: CLOUD_LOGGING_ONLY

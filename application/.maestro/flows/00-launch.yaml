@@ -1,0 +1,8 @@
+appId: com.anden.app
+---
+- launchApp:
+    clearState: false
+- extendedWaitUntil:
+    visible:
+      id: "brand.header"
+    timeout: 60000

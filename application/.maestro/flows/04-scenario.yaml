@@ -1,0 +1,50 @@
+appId: com.anden.app
+---
+- runFlow:
+    file: setup.yaml
+- tapOn:
+    id: "dashboard.compare"
+- extendedWaitUntil:
+    visible: "Tu comparación"
+    timeout: 30000
+- tapOn:
+    id: "comparison.simulate"
+- extendedWaitUntil:
+    visible:
+      id: "scenario.result"
+    timeout: 30000
+- scrollUntilVisible:
+    element:
+      id: "scenario.water.preset20"
+    direction: DOWN
+- tapOn:
+    id: "scenario.water.preset20"
+- scrollUntilVisible:
+    element:
+      text: "Agua que falta con el cambio"
+    direction: DOWN
+- extendedWaitUntil:
+    visible: "Agua que falta con el cambio"
+    timeout: 30000
+- scrollUntilVisible:
+    element:
+      id: "scenario.price.preset15"
+    direction: DOWN
+- tapOn:
+    id: "scenario.price.preset15"
+- scrollUntilVisible:
+    element:
+      text: "Ganancia con el cambio"
+    direction: DOWN
+- extendedWaitUntil:
+    visible: "Ganancia con el cambio"
+    timeout: 30000
+- tapOn:
+    id: "scenario.reset"
+- extendedWaitUntil:
+    visible: "Volver a la comparación"
+    timeout: 30000
+- tapOn: "Volver a la comparación"
+- extendedWaitUntil:
+    visible: "Tu comparación"
+    timeout: 30000

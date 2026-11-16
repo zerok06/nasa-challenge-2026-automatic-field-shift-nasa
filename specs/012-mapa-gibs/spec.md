@@ -1,9 +1,13 @@
 # Spec 012 — Mapa y capa GIBS
 
+> **Estado: superseded por Spec 028 (14-nov-2026).** La app ya no muestra mapas;
+> la ubicación se resuelve con GPS y coordenadas avanzadas. Este documento queda
+> como referencia histórica de las capas NASA GIBS.
+
 | Campo | Valor |
 |---|---|
 | ID | 012 |
-| Estado | Borrador |
+| Estado | Superseded |
 | Prioridad | P0 |
 | Dependencias | 005, 010, 003 |
 | Versión | 0.1 |

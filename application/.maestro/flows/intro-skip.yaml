@@ -1,0 +1,8 @@
+appId: com.anden.app
+---
+- tapOn:
+    id: "intro.skip"
+- extendedWaitUntil:
+    visible:
+      id: "onboarding.language.es-PE"
+    timeout: 30000

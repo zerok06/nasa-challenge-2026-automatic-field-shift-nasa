@@ -1,0 +1,36 @@
+appId: com.anden.app
+---
+- launchApp:
+    clearState: true
+- extendedWaitUntil:
+    visible:
+      id: "brand.header"
+    timeout: 60000
+- runFlow:
+    when:
+      visible:
+        id: "intro.brand"
+    file: intro-skip.yaml
+- extendedWaitUntil:
+    visible:
+      id: "onboarding.language.es-PE"
+    timeout: 60000
+- runFlow:
+    file: onboarding-profile.yaml
+- extendedWaitUntil:
+    visible:
+      id: "parcel.new"
+    timeout: 30000
+- runFlow:
+    file: parcel-create.yaml
+- extendedWaitUntil:
+    visible:
+      id: "dashboard.hero"
+    timeout: 120000
+- assertNotVisible: "DEMO"
+- assertVisible: "¿Qué necesitas?"
+- scrollUntilVisible:
+    element:
+      text: "Tu parcela"
+    direction: DOWN
+- assertVisible: "Tu parcela"

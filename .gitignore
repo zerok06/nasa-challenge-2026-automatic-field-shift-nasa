@@ -57,3 +57,12 @@ datasets/snapshots/*.nc
 datasets/snapshots/*.hdf5
 datasets/snapshots/*.tif
 datasets/snapshots/*.tiff
+
+application/.env.local
+application/.env.*.local
+
+# Local demo artifacts and captured web bundles
+/artifacts/
+/sw-dump.js
+frontend/test-results/
+frontend/screenshots/debug*.png

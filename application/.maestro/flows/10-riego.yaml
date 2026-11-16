@@ -1,0 +1,20 @@
+appId: com.anden.app
+---
+- runFlow:
+    file: setup.yaml
+- tapOn:
+    id: "dashboard.irrigation"
+- extendedWaitUntil:
+    visible: "Próximos 7 días"
+    timeout: 60000
+- assertVisible: "Día por día"
+- scrollUntilVisible:
+    element:
+      text: "Elevación y pendiente desde SRTM"
+    direction: DOWN
+- assertVisible: "Elevación y pendiente desde SRTM"
+- scrollUntilVisible:
+    element:
+      text: "Fuente del pronóstico"
+    direction: DOWN
+- assertVisible: "Open-Meteo"

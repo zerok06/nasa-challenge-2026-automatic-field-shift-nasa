@@ -1,0 +1,95 @@
+services:
+  db:
+    image: postgis/postgis:16-3.4
+    env_file: .env
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB"]
+      interval: 5s
+      timeout: 5s
+      retries: 12
+
+  migrate:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+    env_file: .env
+    command:
+      - sh
+      - -c
+      - ".venv/bin/python -m app.db.init && .venv/bin/python -m app.seed"
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: "no"
+
+  backend:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+    env_file: .env
+    dns:
+      - 8.8.8.8
+      - 1.1.1.1
+    ports:
+      - "${API_PORT:-8000}:8000"
+    depends_on:
+      db:
+        condition: service_healthy
+      migrate:
+        condition: service_completed_successfully
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - ".venv/bin/python -c \"import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/api/v1/health')\""
+      interval: 10s
+      timeout: 5s
+      start_period: 20s
+      retries: 6
+
+  # PWA dev server (Vite + HMR). It reads the API from the host address
+  # (http://localhost:8000) because the browser, not the container, makes the
+  # call. Point VITE_API_URL at the GCP backend to develop against the cloud API:
+  #   VITE_API_URL=https://<gcp-domain> docker compose up -d frontend
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile.dev
+    environment:
+      VITE_API_URL: ${VITE_API_URL:-http://localhost:8000}
+    volumes:
+      - ./frontend:/app
+      - frontend_node_modules:/app/node_modules
+    ports:
+      - "5173:5173"
+    depends_on:
+      backend:
+        condition: service_healthy
+
+  # Paridad con producción: mismo Dockerfile y Caddyfile que GCP (ADR-0010).
+  # El PWA y la API comparten origen, así que VITE_API_URL queda vacío.
+  # Útil para probar el service worker y el modo offline:
+  #   http://localhost:8080
+  web:
+    build:
+      context: .
+      dockerfile: deploy/gcp/Dockerfile.web
+      args:
+        VITE_API_URL: ""
+    environment:
+      DOMAIN: ":80"
+      API_UPSTREAM: backend:8000
+    ports:
+      - "8080:80"
+    volumes:
+      - ./deploy/gcp/Caddyfile:/etc/caddy/Caddyfile:ro
+    depends_on:
+      backend:
+        condition: service_healthy
+
+volumes:
+  pgdata:
+  frontend_node_modules:

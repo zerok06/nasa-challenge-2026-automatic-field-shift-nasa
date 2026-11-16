@@ -25,7 +25,6 @@ SaveSheet: preview + confirmar/rechazar
 ```ts
 type UiAction =
   | {action:"open_comparison"; payload:{comparison_id:string}}
-  | {action:"focus_map_layer"; payload:{layer_id:string; date:string}}
   | {action:"open_scenario"; payload:{comparison_id:string}}
   | {action:"show_sources"; payload:{snapshot_id:string}}
   | {action:"save_plan_draft"; payload:{plan_id:string}};

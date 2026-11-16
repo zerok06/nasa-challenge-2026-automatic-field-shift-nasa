@@ -1,0 +1,54 @@
+{
+  "expo": {
+    "name": "Anden",
+    "slug": "anden",
+    "version": "0.2.0",
+    "orientation": "portrait",
+    "icon": "./assets/images/anden-icon.png",
+    "scheme": "anden",
+    "userInterfaceStyle": "automatic",
+    "ios": {
+      "icon": "./assets/images/anden-icon.png",
+      "bundleIdentifier": "com.anden.app"
+    },
+    "android": {
+      "package": "com.anden.app",
+      "versionCode": 2,
+      "adaptiveIcon": {
+        "backgroundColor": "#F1F8F2",
+        "foregroundImage": "./assets/images/anden-adaptive-foreground.png",
+        "backgroundImage": "./assets/images/anden-adaptive-background.png",
+        "monochromeImage": "./assets/images/anden-monochrome.png"
+      },
+      "predictiveBackGestureEnabled": false
+    },
+    "web": {
+      "output": "single",
+      "favicon": "./assets/images/anden-favicon.png"
+    },
+    "plugins": [
+      "expo-router",
+      [
+        "expo-splash-screen",
+        {
+          "backgroundColor": "#FAF7F0",
+          "image": "./assets/images/anden-splash.png",
+          "imageWidth": 120
+        }
+      ],
+      "expo-secure-store",
+      "expo-localization",
+      "expo-sqlite",
+      [
+        "expo-location",
+        {
+          "locationWhenInUsePermission": "Anden usa tu ubicación para ubicar la parcela y descubrir datos NASA de la zona."
+        }
+      ]
+    ],
+    "experiments": {
+      "typedRoutes": false,
+      "reactCompiler": false
+    }
+  }
+}

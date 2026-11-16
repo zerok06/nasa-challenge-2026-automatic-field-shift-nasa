@@ -1,0 +1,98 @@
+[
+  {
+    "name": "water-shortage",
+    "input": {
+      "water_multiplier": 0.8,
+      "price_multiplier": 1.0,
+      "available_mm": 100.0,
+      "gross_irrigation_mm": 120.0,
+      "deficit_mm": 20.0,
+      "feasibility": "deficit",
+      "margin_pen": 100.0,
+      "margin_pen_ha": 83.33,
+      "income_pen": null,
+      "costs_pen": null,
+      "status": "eligible"
+    },
+    "expected": {
+      "available_mm": 80.0,
+      "deficit_mm": 40.0,
+      "feasibility": "deficit",
+      "margin_pen": 100.0,
+      "margin_pen_ha": 83.33,
+      "status": "invalid"
+    }
+  },
+  {
+    "name": "price-with-income-costs",
+    "input": {
+      "water_multiplier": 1.0,
+      "price_multiplier": 0.85,
+      "available_mm": 100.0,
+      "gross_irrigation_mm": 90.0,
+      "deficit_mm": 0.0,
+      "feasibility": "sufficient",
+      "margin_pen": 100.0,
+      "margin_pen_ha": 83.33,
+      "income_pen": 1000.0,
+      "costs_pen": 900.0,
+      "status": "eligible"
+    },
+    "expected": {
+      "available_mm": 100.0,
+      "deficit_mm": 0.0,
+      "feasibility": "sufficient",
+      "margin_pen": -50.0,
+      "margin_pen_ha": null,
+      "status": "eligible"
+    }
+  },
+  {
+    "name": "price-without-income-costs",
+    "input": {
+      "water_multiplier": 1.0,
+      "price_multiplier": 0.85,
+      "available_mm": 100.0,
+      "gross_irrigation_mm": 90.0,
+      "deficit_mm": 0.0,
+      "feasibility": "sufficient",
+      "margin_pen": 100.0,
+      "margin_pen_ha": 83.33,
+      "income_pen": null,
+      "costs_pen": null,
+      "status": "eligible"
+    },
+    "expected": {
+      "available_mm": 100.0,
+      "deficit_mm": 0.0,
+      "feasibility": "sufficient",
+      "margin_pen": 85.0,
+      "margin_pen_ha": 83.33,
+      "status": "eligible"
+    }
+  },
+  {
+    "name": "unknown-water",
+    "input": {
+      "water_multiplier": 0.8,
+      "price_multiplier": 0.85,
+      "available_mm": null,
+      "gross_irrigation_mm": 90.0,
+      "deficit_mm": null,
+      "feasibility": "unknown",
+      "margin_pen": null,
+      "margin_pen_ha": null,
+      "income_pen": null,
+      "costs_pen": null,
+      "status": "needs_review"
+    },
+    "expected": {
+      "available_mm": null,
+      "deficit_mm": null,
+      "feasibility": "unknown",
+      "margin_pen": null,
+      "margin_pen_ha": null,
+      "status": "needs_review"
+    }
+  }
+]

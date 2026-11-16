@@ -1,0 +1,37 @@
+appId: com.anden.app
+---
+- extendedWaitUntil:
+    visible:
+      id: "parcel.new"
+    timeout: 30000
+- tapOn:
+    id: "parcel.new.name"
+- inputText: "Parcela de Juan"
+- hideKeyboard:
+    optional: true
+- tapOn:
+    id: "parcel.new.area"
+- inputText: "1.0"
+- tapOn: "Hectáreas (opcional)"
+- tapOn:
+    id: "parcel.new.next"
+- extendedWaitUntil:
+    visible: "¿Dónde está tu parcela?"
+    timeout: 20000
+- tapOn: "Escribir las coordenadas"
+- tapOn:
+    id: "parcel.new.lat"
+- inputText: "-17.19"
+- hideKeyboard:
+    optional: true
+- tapOn:
+    id: "parcel.new.lon"
+- inputText: "-70.93"
+- hideKeyboard:
+    optional: true
+- tapOn:
+    id: "parcel.new.create"
+- extendedWaitUntil:
+    visible: "Tu historial"
+    timeout: 60000
+- tapOn: "Cancelar"

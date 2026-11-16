@@ -1,0 +1,4 @@
+appId: com.anden.app
+---
+- tapOn:
+    id: "nav.home"

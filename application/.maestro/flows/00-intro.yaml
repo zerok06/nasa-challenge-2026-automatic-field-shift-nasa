@@ -1,0 +1,28 @@
+appId: com.anden.app
+---
+- launchApp:
+    clearState: true
+- extendedWaitUntil:
+    visible:
+      id: "intro.brand"
+    timeout: 60000
+- assertVisible: "Tu parcela, tus decisiones"
+- tapOn:
+    id: "intro.next"
+- assertVisible: "Compara opciones con calma"
+- assertVisible:
+    id: "intro.back"
+- tapOn:
+    id: "intro.back"
+- assertVisible: "Tu parcela, tus decisiones"
+- tapOn:
+    id: "intro.next"
+- tapOn:
+    id: "intro.next"
+- assertVisible: "Prueba antes de decidir"
+- tapOn:
+    id: "intro.start"
+- extendedWaitUntil:
+    visible:
+      id: "onboarding.language.es-PE"
+    timeout: 60000

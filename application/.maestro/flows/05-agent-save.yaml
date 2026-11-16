@@ -1,0 +1,38 @@
+appId: com.anden.app
+---
+- runFlow:
+    file: setup.yaml
+- tapOn:
+    id: "nav.agent"
+- extendedWaitUntil:
+    visible: "¿Qué quieres saber?"
+    timeout: 90000
+- tapOn:
+    id: "agent.input"
+- waitForAnimationToEnd
+- inputText: "Compara rotaciones que usen menos agua"
+- waitForAnimationToEnd
+- tapOn:
+    id: "agent.send"
+- extendedWaitUntil:
+    visible:
+      id: "agent.nextStep"
+    timeout: 90000
+- assertVisible:
+    id: "agent.nextStep"
+- assertVisible: "Prueba con 20% menos agua"
+- tapOn:
+    id: "agent.input"
+- waitForAnimationToEnd
+- inputText: "Guardar un borrador"
+- waitForAnimationToEnd
+- tapOn:
+    id: "agent.send"
+- extendedWaitUntil:
+    visible: "Borrador listo"
+    timeout: 90000
+- tapOn:
+    id: "agent.save"
+- extendedWaitUntil:
+    visible: ".*Borrador guardado.*"
+    timeout: 90000
