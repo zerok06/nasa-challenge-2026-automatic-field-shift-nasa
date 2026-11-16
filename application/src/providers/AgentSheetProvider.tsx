@@ -1,6 +1,7 @@
 import React, { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
-import { KeyboardAvoidingView, Modal, Pressable, useColorScheme, View } from 'react-native';
+import { KeyboardAvoidingView, Modal, Pressable, ScrollView, useColorScheme, View } from 'react-native';
 import { X } from 'lucide-react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTranslation } from 'react-i18next';
 
 import { AppButton, AppIconButton } from '@/components/app/AppButton';
@@ -11,7 +12,7 @@ import { Text } from '@/components/ui/text';
 import { VStack } from '@/components/ui/vstack';
 import { colors, darkColors } from '@/design-system/tokens';
 import { testIDs } from '@/design-system/testIDs';
-import { useAgent } from '@/providers/AgentProvider';
+import { AgentChatMessage, useAgent } from '@/providers/AgentProvider';
 
 type AgentSheetState = {
   visible: boolean;
@@ -36,6 +37,23 @@ const SUGGESTIONS = [
   },
 ];
 
+function renderAgentText(
+  t: (key: string, vars?: Record<string, unknown>) => string,
+  message: AgentChatMessage,
+) {
+  if (message.role !== 'assistant' || !message.answerKey) {
+    return message.text;
+  }
+  // `what` (if present) is itself a translation key: translate it first, then
+  // interpolate it into the outer greeting template.
+  const params = { ...(message.answerParams ?? {}) };
+  const whatKey = params.what;
+  if (typeof whatKey === 'string') {
+    params.what = t(whatKey, undefined);
+  }
+  return t(message.answerKey, params);
+}
+
 function AgentSheet({
   visible,
   onClose,
@@ -49,12 +67,13 @@ function AgentSheet({
 }) {
   const { t } = useTranslation();
   const dark = useColorScheme() === 'dark';
+  const insets = useSafeAreaInsets();
   const { messages, input, setInput, sending, error, send } = useAgent();
 
   useEffect(() => {
     if (!visible || !initialPrompt) return;
     onPromptConsumed();
-    void send(initialPrompt);
+    void send(initialPrompt, 'ficha');
   }, [initialPrompt, onPromptConsumed, send, visible]);
 
   const sendMessage = useCallback(
@@ -62,7 +81,7 @@ function AgentSheet({
       const value = (text ?? input).trim();
       if (!value || sending) return;
       setInput('');
-      void send(value);
+      void send(value, 'ficha');
     },
     [input, send, sending, setInput],
   );
@@ -82,11 +101,18 @@ function AgentSheet({
           backgroundColor: 'rgba(0,0,0,0.35)',
         }}
       >
-        <Pressable style={{ flex: 1 }} onPress={onClose} accessibilityLabel={t('Cerrar')} />
-        <KeyboardAvoidingView behavior="padding">
+        <Pressable
+          style={{ position: 'absolute', top: 0, bottom: 0, left: 0, right: 0 }}
+          onPress={onClose}
+          accessibilityLabel={t('Cerrar')}
+        />
+        <KeyboardAvoidingView behavior="padding" style={{ width: '100%' }}>
           <VStack
             className="max-h-[82%] gap-3 rounded-t-3xl border border-border bg-card p-4"
-            style={{ backgroundColor: dark ? darkColors.surface : colors.surface }}
+            style={{
+              backgroundColor: dark ? darkColors.surface : colors.surface,
+              paddingBottom: Math.max(insets.bottom, 12),
+            }}
           >
             <HStack className="items-center justify-between">
               <VStack className="flex-1">
@@ -104,7 +130,11 @@ function AgentSheet({
               />
             </HStack>
 
-            <VStack className="max-h-[48vh] gap-2 overflow-hidden">
+            <ScrollView
+              className="max-h-[42vh]"
+              keyboardShouldPersistTaps="handled"
+              contentContainerStyle={{ gap: 8 }}
+            >
               {messages.length === 0 ? (
                 <VStack className="gap-2">
                   <Text className="text-sm font-semibold text-foreground">
@@ -140,7 +170,7 @@ function AgentSheet({
                             : 'text-sm leading-5 text-foreground'
                         }
                       >
-                        {message.text}
+                        {renderAgentText(t, message)}
                       </Text>
                     </Box>
                   ))}
@@ -149,7 +179,7 @@ function AgentSheet({
                   ) : null}
                 </VStack>
               )}
-            </VStack>
+            </ScrollView>
 
             {error ? (
               <Text className="text-sm leading-5 text-destructive">{error}</Text>

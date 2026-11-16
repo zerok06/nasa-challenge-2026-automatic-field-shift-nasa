@@ -1,4 +1,5 @@
 import React, { createContext, useCallback, useContext, useMemo, useState } from 'react';
+import { useQueryClient } from '@tanstack/react-query';
 
 import {
   confirmAction,
@@ -12,11 +13,15 @@ import {
 import { useComparison } from './ComparisonProvider';
 import { useOffline } from './OfflineProvider';
 import { useParcel } from './ParcelProvider';
+import { usePreferences } from './PreferencesProvider';
 
 export type AgentChatMessage = {
   id: string;
   role: 'user' | 'assistant';
   text: string;
+  /** i18n key + params to render `text` in the user's language (spec 036). */
+  answerKey?: string;
+  answerParams?: Record<string, unknown>;
   trace?: AgentToolTrace[];
   actions?: AgentAction[];
   nextStep?: AgentNextStep | null;
@@ -30,8 +35,9 @@ type AgentState = {
   proposalId: string | null;
   savedMessage: string | null;
   error: string | null;
-  send: (textOverride?: string) => Promise<void>;
+  send: (textOverride?: string, screen?: string) => Promise<void>;
   confirmSave: () => Promise<void>;
+  rejectSave: () => Promise<void>;
   clearError: () => void;
   clearSavedMessage: () => void;
 };
@@ -45,7 +51,9 @@ function nextId(prefix: string) {
 export function AgentProvider({ children }: { children: React.ReactNode }) {
   const { parcel } = useParcel();
   const { online, bundle } = useOffline();
-  const { setComparison } = useComparison();
+  const { language } = usePreferences();
+  const { setComparison, setScenario } = useComparison();
+  const queryClient = useQueryClient();
   const [threadId, setThreadId] = useState<string | null>(null);
   const [messages, setMessages] = useState<AgentChatMessage[]>([]);
   const [input, setInput] = useState('');
@@ -63,13 +71,15 @@ export function AgentProvider({ children }: { children: React.ReactNode }) {
   }, [parcel, threadId]);
 
   const send = useCallback(
-    async (textOverride?: string) => {
+    async (textOverride?: string, screen: string = 'agent') => {
       const text = (textOverride ?? input).trim();
       if (!text || !parcel || sending) return;
       setInput('');
       setSending(true);
       setError(null);
       setSavedMessage(null);
+      // A new question supersedes any pending draft card.
+      setProposalId(null);
       setMessages((current) => [
         ...current,
         { id: nextId('user'), role: 'user', text },
@@ -119,13 +129,15 @@ export function AgentProvider({ children }: { children: React.ReactNode }) {
       }
       try {
         const id = await ensureThread();
-        const response = await sendAgentMessage(id, text);
+        const response = await sendAgentMessage(id, text, { screen, locale: language });
         setMessages((current) => [
           ...current,
           {
             id: nextId('assistant'),
             role: 'assistant',
             text: response.answer,
+            answerKey: response.answer_key ?? undefined,
+            answerParams: response.answer_params,
             trace: response.tool_trace,
             actions: response.ui_actions,
             nextStep: response.next_step,
@@ -144,6 +156,13 @@ export function AgentProvider({ children }: { children: React.ReactNode }) {
           const existing = await getComparison(String(openAction.payload.comparison_id));
           setComparison(existing);
         }
+        const scenarioAction = response.ui_actions.find(
+          (action) => action.action === 'open_scenario',
+        );
+        if (scenarioAction?.payload?.comparison_id) {
+          const result = await getComparison(String(scenarioAction.payload.comparison_id));
+          setScenario(result);
+        }
       } catch (cause) {
         const message = cause instanceof Error ? cause.message : 'El agente no respondió';
         setError(message);
@@ -159,7 +178,8 @@ export function AgentProvider({ children }: { children: React.ReactNode }) {
         setSending(false);
       }
     },
-    [bundle, ensureThread, input, online, parcel, sending, setComparison],
+    [bundle, ensureThread, input, language, online, parcel, sending,
+      setComparison, setScenario],
   );
 
   const confirmSave = useCallback(async () => {
@@ -172,10 +192,30 @@ export function AgentProvider({ children }: { children: React.ReactNode }) {
     setError(null);
     try {
       await confirmAction(proposalId, true);
+      await queryClient.invalidateQueries({ queryKey: ['saved-plans', parcel?.id] });
       setSavedMessage('Borrador guardado. Lo encuentras en “Mi parcela”.');
       setProposalId(null);
     } catch (cause) {
       setError(cause instanceof Error ? cause.message : 'No se pudo guardar');
+    } finally {
+      setSending(false);
+    }
+  }, [online, parcel, proposalId, queryClient]);
+
+  const rejectSave = useCallback(async () => {
+    if (!proposalId) return;
+    if (!online) {
+      setError('Sin conexión no se puede rechazar el borrador');
+      return;
+    }
+    setSending(true);
+    setError(null);
+    try {
+      await confirmAction(proposalId, false);
+      setSavedMessage('Borrador descartado. No se guardó nada.');
+      setProposalId(null);
+    } catch (cause) {
+      setError(cause instanceof Error ? cause.message : 'No se pudo descartar');
     } finally {
       setSending(false);
     }
@@ -192,10 +232,11 @@ export function AgentProvider({ children }: { children: React.ReactNode }) {
       error,
       send,
       confirmSave,
+      rejectSave,
       clearError: () => setError(null),
       clearSavedMessage: () => setSavedMessage(null),
     }),
-    [messages, input, sending, proposalId, savedMessage, error, send, confirmSave],
+    [messages, input, sending, proposalId, savedMessage, error, send, confirmSave, rejectSave],
   );
 
   return <AgentContext.Provider value={value}>{children}</AgentContext.Provider>;

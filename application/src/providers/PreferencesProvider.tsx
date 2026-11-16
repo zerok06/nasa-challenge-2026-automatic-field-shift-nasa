@@ -1,5 +1,5 @@
 import React, { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
-import { Appearance } from 'react-native';
+import { Appearance, Platform } from 'react-native';
 import * as Localization from 'expo-localization';
 import * as SecureStore from 'expo-secure-store';
 
@@ -76,7 +76,11 @@ export function PreferencesProvider({ children }: { children: React.ReactNode })
 
   useEffect(() => {
     void i18n.changeLanguage(preferences.language);
-    Appearance.setColorScheme(preferences.theme === 'system' ? 'auto' : preferences.theme);
+    // React Native Web exposes Appearance but not setColorScheme. Keep the
+    // call native-only; `null` follows the operating system theme.
+    if (Platform.OS !== 'web' && typeof Appearance.setColorScheme === 'function') {
+      Appearance.setColorScheme(preferences.theme === 'system' ? 'auto' : preferences.theme);
+    }
     void SecureStore.setItemAsync(STORAGE_KEY, JSON.stringify(preferences)).catch(() => {
       // Preferences are best-effort; the app still works with defaults.
     });

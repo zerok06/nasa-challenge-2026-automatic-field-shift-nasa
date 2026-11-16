@@ -4,6 +4,15 @@ appId: com.anden.app
     clearState: true
 - extendedWaitUntil:
     visible:
+      id: "brand.header"
+    timeout: 60000
+- runFlow:
+    when:
+      visible:
+        id: "intro.brand"
+    file: intro-skip.yaml
+- extendedWaitUntil:
+    visible:
       id: "onboarding.language.es-PE"
     timeout: 60000
 - runFlow:

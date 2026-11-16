@@ -76,10 +76,14 @@ def _completeness(
     econ = (parcel.preferences_json or {}).get("economics") or {}
     margin = "blocked"
     if econ:
-        margin = "ready" if all(
-            all(k in crop for k in ("yield_kg_ha", "price_pen_kg", "costs_pen"))
+        has_non_null = all(
+            all(
+                crop.get(k) is not None
+                for k in ("yield_kg_ha", "price_pen_kg", "costs_pen")
+            )
             for crop in econ.values()
-        ) else "partial"
+        )
+        margin = "ready" if has_non_null else "partial"
 
     return CompletenessOut(
         comparison=comparison,

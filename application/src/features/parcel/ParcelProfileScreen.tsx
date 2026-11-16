@@ -1,15 +1,13 @@
 import React, { useMemo, useState } from 'react';
-import { router } from 'expo-router';
+import { router, useLocalSearchParams } from 'expo-router';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 import {
-  Bug,
   Check,
   CheckCircle2,
   ClipboardList,
   Coins,
   Droplets,
-  Leaf,
   Plus,
   Sprout,
   Store,
@@ -17,7 +15,6 @@ import {
   Trash2,
   TrendingUp,
   Users,
-  Wheat,
 } from 'lucide-react-native';
 
 import { ActionCard } from '@/components/app/ActionCard';
@@ -41,6 +38,7 @@ import { testIDs } from '@/design-system/testIDs';
 import { useAgentSheet } from '@/providers/AgentSheetProvider';
 import { useComparison } from '@/providers/ComparisonProvider';
 import { useParcel } from '@/providers/ParcelProvider';
+import { parseEsNumber } from '@/lib/parse';
 import {
   addCropHistory,
   addSoil,
@@ -89,6 +87,13 @@ type WaterDraft = {
   source: 'canal' | 'pozo' | 'lluvia' | 'mixto' | 'unknown';
   unit: 'mm' | 'm3';
   amount: string;
+  measure: 'amount' | 'hours' | 'turns' | 'meter';
+  hoursPerWeek: string;
+  flowLs: string;
+  weeks: string;
+  turnCount: string;
+  m3PerTurn: string;
+  meterM3: string;
   efficiency: 'low' | 'medium' | 'high' | 'unknown';
   saved: boolean;
 };
@@ -103,11 +108,8 @@ type SoilDraft = {
 
 const PRIORITY_OPTIONS: { id: string; label: string; icon: Icon }[] = [
   { id: 'water', label: 'Ahorrar agua', icon: Droplets },
-  { id: 'soil', label: 'Mejorar el suelo', icon: Leaf },
   { id: 'margin', label: 'Ganar más', icon: TrendingUp },
-  { id: 'pest', label: 'Cortar plagas', icon: Bug },
-  { id: 'forage', label: 'Tener forraje', icon: Wheat },
-  { id: 'market', label: 'Vender mejor', icon: Store },
+  { id: 'budget', label: 'Cuidar mi presupuesto', icon: Coins },
 ];
 
 const CONSTRAINT_OPTIONS: { id: string; label: string; icon: Icon }[] = [
@@ -243,6 +245,13 @@ function initialWaterDraft(rows: WaterEntry[]): WaterDraft {
       source: 'unknown',
       unit: 'mm',
       amount: '',
+      measure: 'amount',
+      hoursPerWeek: '',
+      flowLs: '',
+      weeks: '',
+      turnCount: '',
+      m3PerTurn: '',
+      meterM3: '',
       efficiency: 'unknown',
       saved: false,
     };
@@ -252,6 +261,13 @@ function initialWaterDraft(rows: WaterEntry[]): WaterDraft {
     source: parseWaterSource(current.notes),
     unit: current.mm !== null ? 'mm' : 'm3',
     amount: String(current.mm ?? current.volume_m3 ?? ''),
+    measure: 'amount',
+    hoursPerWeek: '',
+    flowLs: '',
+    weeks: '',
+    turnCount: '',
+    m3PerTurn: '',
+    meterM3: '',
     efficiency: efficiencyFromValue(current.efficiency),
     saved: true,
   };
@@ -293,6 +309,7 @@ function initialConstraints(parcel: Parcel): string[] {
 
 export function ParcelProfileScreen() {
   const { t } = useTranslation();
+  const { step: requestedStep } = useLocalSearchParams<{ step?: string }>();
   const { parcel } = useParcel();
   const parcelId = parcel?.id;
 
@@ -379,6 +396,7 @@ export function ParcelProfileScreen() {
       initialSoil={soilInitial}
       initialPriorities={initialPriorities(parcel)}
       initialConstraints={initialConstraints(parcel)}
+      initialStep={requestedStep === 'water' ? 1 : 0}
     />
   );
 }
@@ -391,6 +409,7 @@ function ParcelProfileForm({
   initialSoil,
   initialPriorities,
   initialConstraints,
+  initialStep,
 }: {
   parcel: Parcel;
   crops: Crop[];
@@ -399,6 +418,7 @@ function ParcelProfileForm({
   initialSoil: SoilDraft;
   initialPriorities: string[];
   initialConstraints: string[];
+  initialStep: number;
 }) {
   const { t } = useTranslation();
   const queryClient = useQueryClient();
@@ -407,7 +427,7 @@ function ParcelProfileForm({
   const { open: openAgent } = useAgentSheet();
   const parcelId = parcel.id;
 
-  const [step, setStep] = useState(0);
+  const [step, setStep] = useState(initialStep);
   const [historyDrafts, setHistoryDrafts] = useState<HistoryDraft[]>(initialHistory);
   const [historyUnknown, setHistoryUnknown] = useState(false);
   const [water, setWater] = useState<WaterDraft>(initialWater);
@@ -494,10 +514,22 @@ function ParcelProfileForm({
 
   const saveWater = async () => {
     if (!parcelId || water.saved) return;
-    if (!water.amount.trim()) return;
-    const amount = Number(water.amount.replace(',', '.'));
-    if (!Number.isFinite(amount) || amount <= 0) {
-      throw new Error(t('Escribe cuánta agua tienes o elige “No sé”.'));
+    if (!water.amount.trim()) {
+      const touched =
+        water.availability !== 'unknown' ||
+        water.source !== 'unknown' ||
+        water.efficiency !== 'unknown';
+      // Pristine step: let the farmer continue and complete it later.
+      if (!touched) return;
+      throw new Error(t('Escribe cuánta agua tienes o guarda “No sé cuánta agua uso”.'));
+    }
+    const amount = parseEsNumber(water.amount);
+    if (amount === null || amount <= 0) {
+      throw new Error(
+        t('“{{value}}” no es una cantidad válida. Escribe solo el número, por ejemplo 1200.', {
+          value: water.amount.trim(),
+        }),
+      );
     }
     const efficiency =
       water.efficiency === 'low' ? 0.4 : water.efficiency === 'medium' ? 0.6 : water.efficiency === 'high' ? 0.8 : null;
@@ -528,17 +560,123 @@ function ParcelProfileForm({
     await invalidateFicha();
   };
 
+  const saveWaterUnknown = async () => {
+    if (!parcelId || water.saved) return;
+    const availabilityLabel: Record<WaterDraft['availability'], string> = {
+      all_year: 'todo el año',
+      season: 'solo campaña',
+      sometimes: 'a veces',
+      unknown: 'no sé',
+    };
+    const sourceLabel: Record<WaterDraft['source'], string> = {
+      canal: 'canal',
+      pozo: 'pozo',
+      lluvia: 'lluvia',
+      mixto: 'mixto',
+      unknown: 'no sé',
+    };
+    await addWater(parcelId, {
+      startAt: `${CAMPAIGN_YEAR}-01-01`,
+      endAt: `${CAMPAIGN_YEAR}-12-31`,
+      mm: null,
+      volumeM3: null,
+      method: 'unknown',
+      efficiency: null,
+      confidence: 'unknown',
+      notes: `Declarado: no sé cuánta agua. Fuente: ${sourceLabel[water.source]}. Disponibilidad: ${availabilityLabel[water.availability]}.`,
+    });
+    setWater((current) => ({ ...current, saved: true }));
+    await invalidateFicha();
+  };
+
+  const waterPreview = (
+    areaHa: number | null,
+  ): { m3: number; mm: number | null } | null => {
+    if (water.measure === 'hours') {
+      const h = parseEsNumber(water.hoursPerWeek);
+      const q = parseEsNumber(water.flowLs);
+      const w = parseEsNumber(water.weeks);
+      if (h === null || q === null || w === null || h <= 0 || q <= 0 || w <= 0) return null;
+      const m3 = h * 3.6 * q * w;
+      return { m3, mm: areaHa ? m3 / (areaHa * 10) : null };
+    }
+    if (water.measure === 'turns') {
+      const n = parseEsNumber(water.turnCount);
+      const m = parseEsNumber(water.m3PerTurn);
+      if (n === null || m === null || n <= 0 || m <= 0) return null;
+      const m3 = n * m;
+      return { m3, mm: areaHa ? m3 / (areaHa * 10) : null };
+    }
+    if (water.measure === 'meter') {
+      const m3 = parseEsNumber(water.meterM3);
+      if (m3 === null || m3 <= 0) return null;
+      return { m3, mm: areaHa ? m3 / (areaHa * 10) : null };
+    }
+    return null;
+  };
+
+  const saveWaterCalculated = async () => {
+    if (!parcelId || water.saved) return;
+    const areaHa = parcel.area_ha ?? null;
+    const preview = waterPreview(areaHa);
+    if (!preview) {
+      throw new Error(t('Completa los números para calcular tu agua.'));
+    }
+    const efficiency =
+      water.efficiency === 'low' ? 0.4 : water.efficiency === 'medium' ? 0.6 : water.efficiency === 'high' ? 0.8 : null;
+    const availabilityLabel: Record<WaterDraft['availability'], string> = {
+      all_year: 'todo el año',
+      season: 'solo campaña',
+      sometimes: 'a veces',
+      unknown: 'no sé',
+    };
+    const formula =
+      water.measure === 'hours'
+        ? `${water.hoursPerWeek.trim()} h/sem × ${water.flowLs.trim()} L/s × ${water.weeks.trim()} sem`
+        : water.measure === 'turns'
+          ? `${water.turnCount.trim()} turnos × ${water.m3PerTurn.trim()} m³/turno`
+          : `recibo/medidor: ${water.meterM3.trim()} m³`;
+    await addWater(parcelId, {
+      startAt: `${CAMPAIGN_YEAR}-01-01`,
+      endAt: `${CAMPAIGN_YEAR}-12-31`,
+      mm: preview.mm,
+      volumeM3: preview.mm === null ? Math.round(preview.m3 * 100) / 100 : null,
+      method: water.measure === 'meter' ? 'meter' : 'estimate',
+      efficiency,
+      confidence: water.measure === 'meter' ? 'high' : efficiency ? 'medium' : 'low',
+      notes: `Estimado por el agricultor: ${formula} ≈ ${Math.round(preview.m3)} m³. Disponibilidad: ${availabilityLabel[water.availability]}.`,
+    });
+    setWater((current) => ({ ...current, saved: true }));
+    await invalidateFicha();
+  };
+
   const saveSoil = async () => {
-    if (!parcelId || soil.hasAnalysis !== 'yes' || soil.saved) return;
+    if (!parcelId || soil.saved) return;
+    if (soil.hasAnalysis !== 'yes') {
+      await addSoil(parcelId, {
+        variable: 'other',
+        value: null,
+        unit: null,
+        method: 'unknown',
+        notes: soil.hasAnalysis === 'no' ? 'soil_no_analysis_declared' : 'soil_unknown',
+      });
+      setSoil((current) => ({ ...current, saved: true }));
+      await invalidateFicha();
+      return;
+    }
     const observations: { variable: string; value: number | null; unit: string | null }[] = [];
     if (soil.ph.trim()) {
-      const value = Number(soil.ph.replace(',', '.'));
-      if (!Number.isFinite(value)) throw new Error(t('El pH debe ser un número.'));
+      const value = parseEsNumber(soil.ph);
+      if (value === null || value < 3 || value > 10) {
+        throw new Error(t('El pH debe estar entre 3 y 10. Revisa el valor del análisis.'));
+      }
       observations.push({ variable: 'ph', value, unit: 'pH' });
     }
     if (soil.organicMatter.trim()) {
-      const value = Number(soil.organicMatter.replace(',', '.'));
-      if (!Number.isFinite(value)) throw new Error(t('La materia orgánica debe ser un número.'));
+      const value = parseEsNumber(soil.organicMatter);
+      if (value === null || value < 0 || value > 50) {
+        throw new Error(t('La materia orgánica debe estar entre 0 y 50 %.'));
+      }
       observations.push({ variable: 'organic_matter', value, unit: '%' });
     }
     if (soil.texture) {
@@ -552,7 +690,7 @@ function ParcelProfileForm({
         variable: observation.variable,
         value: observation.value,
         unit: observation.unit,
-        method: 'lab',
+        method: 'reported',
       });
     }
     setSoil((current) => ({ ...current, saved: true }));
@@ -580,7 +718,10 @@ function ParcelProfileForm({
     setBusy(true);
     try {
       if (step === 0) await saveHistory();
-      if (step === 1) await saveWater();
+      if (step === 1) {
+        if (water.measure === 'amount') await saveWater();
+        else await saveWaterCalculated();
+      }
       if (step === 2) await saveSoil();
       if (step === 3) await savePriorities();
       if (step === 4) {
@@ -632,8 +773,15 @@ function ParcelProfileForm({
     },
     {
       label: t('Agua disponible'),
-      done: Boolean(water.saved && water.amount),
-      detail: water.saved && water.amount ? `${water.amount} ${water.unit}` : t('No disponible'),
+      done: Boolean(water.saved),
+      detail:
+        water.saved && water.amount
+          ? `${water.amount} ${water.unit}`
+          : water.saved && water.measure !== 'amount'
+            ? t('Estimación guardada')
+            : water.saved
+              ? t('No sé (declarado)')
+              : t('No disponible'),
     },
     {
       label: t('Suelo'),
@@ -684,7 +832,7 @@ function ParcelProfileForm({
     t('Con tu historial podemos comparar la rotación actual con otras alternativas.'),
     t('El agua es el límite más importante en Moquegua. Si no la conoces, lo mostraremos como no disponible.'),
     t('Un análisis de suelo mejora la estimación de fertilidad. Si no lo tienes, no lo inventamos.'),
-    t('Tus prioridades ordenan las alternativas. No cambian los cálculos: nos ayudan a mostrarte lo que más te importa.'),
+    t('Ordenamos las alternativas con tus prioridades y los datos disponibles. Si falta un dato, te lo mostramos.'),
     t('Puedes terminar ahora y completar el resto después.'),
   ][step];
 
@@ -895,15 +1043,41 @@ function ParcelProfileForm({
                   />
                 ))}
               </HStack>
-              <FormField
-                label={t('¿Cuánta agua usas por campaña?')}
-                value={water.amount}
-                onChangeText={(amount) => setWater((current) => ({ ...current, amount, saved: false }))}
-                placeholder={t('Ej. 1200')}
-                keyboardType="decimal-pad"
-                helper={t('Si no sabes, déjalo vacío y elige “No sé”.')}
-              />
-              <HStack className="gap-2">
+              <Text className="text-sm font-semibold text-foreground">
+                {t('¿Cómo mides tu agua?')}
+              </Text>
+              <HStack className="flex-wrap gap-2">
+                {[
+                  ['amount', t('Cantidad directa')],
+                  ['hours', t('Horas de riego')],
+                  ['turns', t('Turnos')],
+                  ['meter', t('Recibo o medidor')],
+                ].map(([id, label]) => (
+                  <ChoiceChip
+                    key={id}
+                    label={label}
+                    selected={water.measure === id}
+                    onPress={() =>
+                      setWater((current) => ({
+                        ...current,
+                        measure: id as WaterDraft['measure'],
+                        saved: false,
+                      }))
+                    }
+                  />
+                ))}
+              </HStack>
+              {water.measure === 'amount' ? (
+                <>
+                  <FormField
+                    label={t('¿Cuánta agua usas por campaña?')}
+                    value={water.amount}
+                    onChangeText={(amount) => setWater((current) => ({ ...current, amount, saved: false }))}
+                    placeholder={t('Ej. 1200')}
+                    keyboardType="decimal-pad"
+                    helper={t('Puedes usar punto o coma: 1,5 vale como 1.5. Si no sabes la cantidad, guárdalo con “No sé”.')}
+                  />
+                  <HStack className="gap-2">
                 <ChoiceChip
                   label="mm"
                   selected={water.unit === 'mm'}
@@ -914,7 +1088,104 @@ function ParcelProfileForm({
                   selected={water.unit === 'm3'}
                   onPress={() => setWater((current) => ({ ...current, unit: 'm3', saved: false }))}
                 />
-              </HStack>
+                  </HStack>
+                </>
+              ) : null}
+              {water.measure === 'hours' ? (
+                <VStack className="gap-3">
+                  <FormField
+                    label={t('¿Cuántas horas riegas por semana?')}
+                    value={water.hoursPerWeek}
+                    onChangeText={(hoursPerWeek) =>
+                      setWater((current) => ({ ...current, hoursPerWeek, saved: false }))
+                    }
+                    placeholder={t('Ej. 3')}
+                    keyboardType="decimal-pad"
+                    helper={t('Solo las horas con agua corriendo.')}
+                  />
+                  <FormField
+                    label={t('¿Qué caudal sale? (litros por segundo)')}
+                    value={water.flowLs}
+                    onChangeText={(flowLs) =>
+                      setWater((current) => ({ ...current, flowLs, saved: false }))
+                    }
+                    placeholder={t('Ej. 2')}
+                    keyboardType="decimal-pad"
+                    helper={t('1 litro por segundo = 3,6 m³ por hora. Si no lo sabes, pregunta a tu comité.')}
+                  />
+                  <FormField
+                    label={t('¿Cuántas semanas riegas en la campaña?')}
+                    value={water.weeks}
+                    onChangeText={(weeks) =>
+                      setWater((current) => ({ ...current, weeks, saved: false }))
+                    }
+                    placeholder={t('Ej. 20')}
+                    keyboardType="decimal-pad"
+                  />
+                </VStack>
+              ) : null}
+              {water.measure === 'turns' ? (
+                <VStack className="gap-3">
+                  <FormField
+                    label={t('¿Cuántos turnos tienes en la campaña?')}
+                    value={water.turnCount}
+                    onChangeText={(turnCount) =>
+                      setWater((current) => ({ ...current, turnCount, saved: false }))
+                    }
+                    placeholder={t('Ej. 6')}
+                    keyboardType="decimal-pad"
+                  />
+                  <FormField
+                    label={t('¿Cuántos m³ te dan por turno?')}
+                    value={water.m3PerTurn}
+                    onChangeText={(m3PerTurn) =>
+                      setWater((current) => ({ ...current, m3PerTurn, saved: false }))
+                    }
+                    placeholder={t('Ej. 120')}
+                    keyboardType="decimal-pad"
+                    helper={t('Está en tu recibo o pregúntalo a tu comité de regantes.')}
+                  />
+                </VStack>
+              ) : null}
+              {water.measure === 'meter' ? (
+                <FormField
+                  label={t('¿Cuántos m³ dice tu recibo o medidor?')}
+                  value={water.meterM3}
+                  onChangeText={(meterM3) =>
+                    setWater((current) => ({ ...current, meterM3, saved: false }))
+                  }
+                  placeholder={t('Ej. 1500')}
+                  keyboardType="decimal-pad"
+                />
+              ) : null}
+              {water.measure !== 'amount' ? (
+                <>
+                  {(() => {
+                    const preview = waterPreview(parcel.area_ha ?? null);
+                    if (!preview) return null;
+                    return (
+                      <AppAlert tone="info">
+                        {parcel.area_ha
+                          ? t('≈ {{m3}} m³ ≈ {{mm}} mm en tu parcela de {{ha}} ha. Revísalo antes de guardar.', {
+                              m3: Math.round(preview.m3),
+                              mm: Math.round(preview.mm ?? 0),
+                              ha: parcel.area_ha,
+                            })
+                          : t('≈ {{m3}} m³ en total. Sin superficie no puedo pasarlo a mm.', {
+                              m3: Math.round(preview.m3),
+                            })}
+                      </AppAlert>
+                    );
+                  })()}
+                  <AppButton
+                    tone="outline"
+                    size="sm"
+                    onPress={() => void saveWaterCalculated().catch((cause) => setError(cause instanceof Error ? cause.message : t('No pudimos guardar este paso.')))}
+                  >
+                    {t('Guardar esta estimación')}
+                  </AppButton>
+                </>
+              ) : null}
               <Text className="text-sm font-semibold text-foreground">
                 {t('¿Qué tan eficiente es tu riego?')}
               </Text>
@@ -942,6 +1213,18 @@ function ParcelProfileForm({
               <Text className="text-sm leading-5 text-muted-foreground">
                 {t('Si no sabes la eficiencia, elige “No sé”. No la inventamos.')}
               </Text>
+              <Text className="text-sm leading-5 text-muted-foreground">
+                {t('1 mm = 10 m³ por hectárea. Si no sabes la cantidad exacta, pulsa el botón y lo dejamos marcado como “no sé”.')}
+              </Text>
+              <AppButton
+                tone="outline"
+                size="sm"
+                isDisabled={water.saved}
+                onPress={() => void saveWaterUnknown().catch((cause) => setError(cause instanceof Error ? cause.message : t('No pudimos guardar este paso.')))}
+              >
+                {t('No sé cuánta agua uso: guardar así')}
+              </AppButton>
+              {water.saved ? <AppAlert tone="success">{t('Agua guardada en tu ficha.')}</AppAlert> : null}
               <Disclosure title={t('¿No sabes cuánta agua usas?')}>
                 <Text className="text-sm leading-5 text-muted-foreground">
                   {t(
@@ -1026,7 +1309,7 @@ function ParcelProfileForm({
                 </>
               ) : (
                 <AppAlert tone="warning">
-                  {t('Sin análisis, el suelo se muestra como “por revisar”. No inventamos valores.')}
+                  {t('Sin análisis, el suelo se muestra como “por revisar”. Si eliges “No tengo” o “No sé”, lo guardamos así y no te lo volvemos a pedir.')}
                 </AppAlert>
               )}
             </VStack>
@@ -1050,7 +1333,7 @@ function ParcelProfileForm({
                 ))}
               </HStack>
               <Text className="text-sm leading-5 text-muted-foreground">
-                {t('Las prioridades ordenan las alternativas; no cambian los cálculos.')}
+                {t('Ordenamos las alternativas con tus prioridades y los datos disponibles. Si falta un dato, te lo mostramos.')}
               </Text>
               <Text className="text-sm font-semibold text-foreground">
                 {t('¿Tienes alguna restricción?')}

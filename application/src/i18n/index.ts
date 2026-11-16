@@ -12,6 +12,21 @@ import ay from './locales/ay-PE';
 import en from './locales/en';
 import qu from './locales/qu-PE';
 
+// es-PE is the source language and usually relies on Spanish strings being the
+// keys themselves (empty resource). The agent greeting (spec 036) uses semantic
+// i18n keys, so Spanish values for those keys live here.
+const es = {
+  'agent.greeting.missing':
+    'Hola, soy Anden y voy a guiarte con {{name}}. Vi que no tienes registrado {{what}}. ¿Quieres decírmelo con tus palabras? Lo propongo y lo guardas solo si confirmas; si no, lo descarto y seguimos.',
+  'agent.greeting.complete':
+    'Hola, soy Anden y estoy revisando {{name}}. Tienes agua, suelo, precio e historial registrados, así que ya puedes comparar planes. ¿Quieres que revise tus opciones o que pruebe con menos agua?',
+  'agent.missing.water_available': 'cuánta agua tienes para esta campaña',
+  'agent.missing.soil_analysis': 'el análisis de suelo',
+  'agent.missing.crop_economics': 'el precio y el gasto por cultivo',
+  'agent.missing.crop_history': 'qué sembraste la campaña pasada',
+  'agent.missing.area_ha': 'cuánta superficie tiene tu parcela',
+};
+
 export type LanguageCode = 'es-PE' | 'qu-PE' | 'ay-PE' | 'en';
 
 export const languageOptions: { code: LanguageCode; nativeLabel: string; helper: string }[] = [
@@ -32,7 +47,7 @@ export const translationStatus = {
 // eslint-disable-next-line import/no-named-as-default-member
 void i18n.use(initReactI18next).init({
   resources: {
-    'es-PE': { translation: {} },
+    'es-PE': { translation: es },
     'qu-PE': { translation: qu },
     'ay-PE': { translation: ay },
     en: { translation: en },

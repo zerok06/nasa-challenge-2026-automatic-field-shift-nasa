@@ -123,7 +123,11 @@ class Crop(Base):
     scientific_name: Mapped[str | None] = mapped_column(String(120), nullable=True)
     family: Mapped[str] = mapped_column(String(80), nullable=False)
     catalog_version: Mapped[str] = mapped_column(String(20), default="v0.1", nullable=False)
+    catalog_id: Mapped[str | None] = mapped_column(String(40), nullable=True, index=True)
+    crop_type: Mapped[str | None] = mapped_column(String(20), nullable=True)
     duration_days: Mapped[int] = mapped_column(Integer, nullable=False)
+    duration_min_days: Mapped[int | None] = mapped_column(Integer, nullable=True)
+    duration_max_days: Mapped[int | None] = mapped_column(Integer, nullable=True)
     windows_json: Mapped[dict[str, Any]] = mapped_column(JSONB, default=dict, nullable=False)
     kc_json: Mapped[dict[str, Any]] = mapped_column(JSONB, default=dict, nullable=False)
     risks_json: Mapped[dict[str, Any]] = mapped_column(JSONB, default=dict, nullable=False)
@@ -243,8 +247,21 @@ class AgentThread(Base):
     )
     parcel_id: Mapped[str] = mapped_column(String(36), ForeignKey("parcels.id"), nullable=False)
     graph_thread_id: Mapped[str] = mapped_column(String(120), nullable=False)
+    state_json: Mapped[dict[str, Any]] = mapped_column(JSONB, default=dict, nullable=False)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow, nullable=False)
     last_message_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+
+
+class AgentMessage(Base):
+    __tablename__ = "agent_messages"
+
+    id: Mapped[str] = mapped_column(String(36), primary_key=True, default=new_id)
+    thread_id: Mapped[str] = mapped_column(
+        String(36), ForeignKey("agent_threads.id", ondelete="CASCADE"), index=True, nullable=False
+    )
+    role: Mapped[str] = mapped_column(String(20), default="user", nullable=False)
+    text: Mapped[str] = mapped_column(Text, default="", nullable=False)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow, nullable=False)
 
 
 class ActionProposal(Base):
@@ -287,6 +304,12 @@ class SavedDecision(Base):
     parcel_id: Mapped[str] = mapped_column(String(36), ForeignKey("parcels.id"), nullable=False)
     rotation_plan_id: Mapped[str | None] = mapped_column(String(36), ForeignKey("rotation_plans.id"), nullable=True)
     analysis_run_id: Mapped[str | None] = mapped_column(String(36), ForeignKey("analysis_runs.id"), nullable=True)
+    comparison_id: Mapped[str | None] = mapped_column(String(36), nullable=True)
+    preferred_plan_id: Mapped[str | None] = mapped_column(String(36), nullable=True)
+    fallback_plan_id: Mapped[str | None] = mapped_column(String(36), nullable=True)
+    snapshot_json: Mapped[dict[str, Any]] = mapped_column(JSONB, default=dict, nullable=False)
+    thresholds_json: Mapped[dict[str, Any]] = mapped_column(JSONB, default=dict, nullable=False)
+    reviewed_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
     name: Mapped[str] = mapped_column(String(120), nullable=False)
     status: Mapped[str] = mapped_column(String(20), default="draft", nullable=False)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow, nullable=False)

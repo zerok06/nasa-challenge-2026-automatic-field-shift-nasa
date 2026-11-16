@@ -1,8 +1,10 @@
 import React, { createContext, useCallback, useContext, useMemo, useState } from 'react';
 
 import { applyScenarioValues } from '@/engine/scenario';
+import { saveBundle } from '@/offline/db';
 import {
   createComparison as createComparisonRequest,
+  downloadParcelBundle,
   simulate as simulateRequest,
   type Comparison,
 } from '@/services/api';
@@ -16,6 +18,7 @@ type ComparisonState = {
   scenario: Comparison | null;
   comparisonOrigin: ComparisonOrigin | null;
   scenarioOrigin: ComparisonOrigin | null;
+  activePlanId: string | null;
   stale: boolean;
   busy: boolean;
   error: string | null;
@@ -24,6 +27,8 @@ type ComparisonState = {
   simulate: (waterMultiplier?: number, priceMultiplier?: number) => Promise<Comparison | null>;
   resetScenario: () => void;
   setComparison: (comparison: Comparison | null) => void;
+  setActivePlanId: (planId: string) => void;
+  setScenario: (scenario: Comparison | null) => void;
   clearError: () => void;
 };
 
@@ -80,6 +85,7 @@ export function ComparisonProvider({ children }: { children: React.ReactNode }) 
   const [scenario, setScenario] = useState<Comparison | null>(null);
   const [comparisonOrigin, setComparisonOrigin] = useState<ComparisonOrigin | null>(null);
   const [scenarioOrigin, setScenarioOrigin] = useState<ComparisonOrigin | null>(null);
+  const [activePlanId, setActivePlanId] = useState<string | null>(null);
   const [stale, setStale] = useState(false);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -87,6 +93,7 @@ export function ComparisonProvider({ children }: { children: React.ReactNode }) 
   const setComparison = useCallback((value: Comparison | null) => {
     setComparisonState(value);
     setComparisonOrigin(value ? 'network' : null);
+      setActivePlanId(value?.plans[0]?.plan_id ?? null);
     setStale(false);
   }, []);
 
@@ -99,6 +106,7 @@ export function ComparisonProvider({ children }: { children: React.ReactNode }) 
       if (bundle) {
         setComparisonState(bundle.comparison);
         setComparisonOrigin('bundle');
+        setActivePlanId(bundle.comparison.plans[0]?.plan_id ?? null);
         setStale(false);
         setScenario(null);
         setScenarioOrigin(null);
@@ -113,9 +121,25 @@ export function ComparisonProvider({ children }: { children: React.ReactNode }) 
       const result = await createComparisonRequest(parcel.id);
       setComparisonState(result);
       setComparisonOrigin('network');
+      setActivePlanId(result.plans[0]?.plan_id ?? null);
       setStale(false);
       setScenario(null);
       setScenarioOrigin(null);
+      // Leave the parcel ready for offline: best-effort bundle download.
+      void (async () => {
+        try {
+          const downloaded = await downloadParcelBundle(parcel.id, true);
+          await saveBundle(
+            parcel.id,
+            downloaded.bundle,
+            downloaded.checksum,
+            downloaded.sizeBytes,
+            downloaded.downloadedAt,
+          );
+        } catch {
+          // Offline readiness is best-effort; the comparison already succeeded.
+        }
+      })();
       return result;
     } catch (cause) {
       const message = cause instanceof Error ? cause.message : 'No se pudo comparar';
@@ -168,6 +192,11 @@ export function ComparisonProvider({ children }: { children: React.ReactNode }) 
     setScenarioOrigin(null);
   }, []);
 
+  const setScenarioValue = useCallback((value: Comparison | null) => {
+    setScenario(value);
+    setScenarioOrigin(value ? 'network' : null);
+  }, []);
+
   const value = useMemo<ComparisonState>(
     () => ({
       comparison: comparison ?? (!online ? bundle?.comparison ?? null : null),
@@ -175,6 +204,7 @@ export function ComparisonProvider({ children }: { children: React.ReactNode }) 
       comparisonOrigin:
         comparisonOrigin ?? (!online && bundle ? 'bundle' : null),
       scenarioOrigin,
+      activePlanId,
       stale,
       busy,
       error,
@@ -183,6 +213,8 @@ export function ComparisonProvider({ children }: { children: React.ReactNode }) 
       simulate,
       resetScenario,
       setComparison,
+      setActivePlanId,
+      setScenario: setScenarioValue,
       clearError: () => setError(null),
     }),
     [
@@ -190,6 +222,7 @@ export function ComparisonProvider({ children }: { children: React.ReactNode }) 
       scenario,
       comparisonOrigin,
       scenarioOrigin,
+      activePlanId,
       stale,
       busy,
       error,
@@ -198,6 +231,8 @@ export function ComparisonProvider({ children }: { children: React.ReactNode }) 
       simulate,
       resetScenario,
       setComparison,
+      setActivePlanId,
+      setScenarioValue,
       bundle,
       online,
     ],

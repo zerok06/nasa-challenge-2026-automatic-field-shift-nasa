@@ -2,7 +2,7 @@
   "expo": {
     "name": "Anden",
     "slug": "anden",
-    "version": "0.1.0",
+    "version": "0.2.0",
     "orientation": "portrait",
     "icon": "./assets/images/anden-icon.png",
     "scheme": "anden",
@@ -13,6 +13,7 @@
     },
     "android": {
       "package": "com.anden.app",
+      "versionCode": 2,
       "adaptiveIcon": {
         "backgroundColor": "#F1F8F2",
         "foregroundImage": "./assets/images/anden-adaptive-foreground.png",

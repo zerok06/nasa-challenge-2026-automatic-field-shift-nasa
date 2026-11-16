@@ -15,10 +15,12 @@ appId: com.anden.app
 - tapOn:
     id: "agent.send"
 - extendedWaitUntil:
-    visible: ".*plan actual.*"
+    visible:
+      id: "agent.nextStep"
     timeout: 90000
 - assertVisible:
     id: "agent.nextStep"
+- assertVisible: "Prueba con 20% menos agua"
 - tapOn:
     id: "agent.input"
 - waitForAnimationToEnd

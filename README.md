@@ -1,169 +1,77 @@
-# Anden
+<div align="center">
+  <img src="docs/assets/anden-cover.jpg" alt="Valle agrícola de Moquegua con cultivos irrigados y señales visuales de observación de la Tierra" width="100%" />
+  <h1>Anden</h1>
+  <p><strong>Decisiones agrícolas más resilientes, conectadas con datos de la Tierra y el conocimiento local.</strong></p>
+  <p>
+    <a href="https://www.spaceappschallenge.org/2026/challenges/field-shift-adapting-farms-with-nasa-data/">NASA Space Apps Challenge 2026 · Field Shift</a>
+    · Moquegua, Perú
+  </p>
+</div>
 
-Copiloto inteligente de planificación agrícola geoespacial para pequeños productores.
-Proyecto para **NASA Space Apps Challenge 2026 - Field Shift: Adapting Farms with NASA Data**.
-Piloto: **Moquegua, Perú** · 100 agricultores · Android · español, quechua, aimara e inglés.
+---
 
-> **Estado (14-nov-2026):** MVP P0 implementado en local y desplegado en GCP.
-> El recorrido demo (onboarding → Inicio → comparar → probar un cambio → preguntar → guardar)
-> funciona contra FastAPI + PostGIS y Expo Go. La UI usa **gluestack v5 + NativeWind 5**,
-> con marca Anden, cuatro pestañas (Inicio/Comparar/Preguntar/Mi parcela), copy simple,
-> i18n y preferencias de accesibilidad. Los mapas se retiraron en Spec 028.
-> El perfil anónimo, el onboarding de 5 pasos con GPS/TTS y la creación de
-> parcela guiada están en Spec 030; la ficha de parcela (historial, agua, suelo
-> y prioridades) en Spec 031; el riego semanal con Open-Meteo y SRTM en Spec 032.
-> Ver `docs/architecture/adr-0005-ui-agricultor-mapas.md`,
-> `docs/architecture/adr-0007-perfil-onboarding-gps.md` y
-> `docs/architecture/adr-0008-paleta-ilustraciones-motion.md`.
-> La parcela demo es sintética y está etiquetada. Las parcelas nuevas usan NASA POWER real
-> por coordenadas y datos declarados por el agricultor; no es una recomendación agronómica validada.
+## El reto
 
-## Qué hace
+Quienes cultivan deben tomar decisiones en condiciones que cambian: lluvias irregulares, temperaturas variables, disponibilidad limitada de agua y presión sobre la salud del suelo. Elegir qué sembrar después y cómo organizar una rotación requiere reunir información que suele estar dispersa entre observaciones del campo, experiencia local y fuentes técnicas.
 
-- Crea una parcela o carga la parcela demo y muestra sus datos faltantes.
-- Completa una ficha con historial de cultivos, agua, suelo y prioridades.
-- Descarga NASA POWER real por parcela (lluvia, temperatura, ETo) con fuente y fecha; la parcela demo sigue etiquetada como sintética.
-- Consulta pronóstico real de Open-Meteo a 7 días y elevación/pendiente SRTM 90 m con fuente y límites visibles.
-- Compara la rotación actual con dos alternativas en el mismo horizonte.
-- Estima agua, suelo y margen; usa `null` cuando falta un dato.
-- Simula agua −20 % y precio −15 % sin modificar el baseline.
-- Agente con tools deterministas: compara, simula, explica y prepara un borrador con confirmación.
-- Guarda el borrador solo tras confirmación humana.
-- Muestra gráficos de lluvia/ETo, margen y riego por plan, con tabla de datos accesible.
-- Permite elegir español, quechua, aimara o inglés, y ajustar tema/reduce motion.
-- Incluye onboarding de accesibilidad y Ajustes; objetivos WCAG 2.2 AA.
+El desafío **Field Shift: Adapting Farms with NASA Data** invita a crear herramientas de apoyo a la decisión que combinen observaciones de la Tierra de NASA con información local del suelo, características de los cultivos y prioridades de las personas agricultoras. El propósito es ayudar a explorar rotaciones que fortalezcan el suelo y permitan adaptarse a condiciones cambiantes; no reemplazar la experiencia agrícola.
 
-## Stack
+## Nuestra propuesta
 
-| Capa | Tecnología |
-|---|---|
-| Mobile | Expo SDK 58 · React Native 0.88 · TypeScript · gluestack v5 · NativeWind 5 |
-| Runtime MVP | APK Android propio (Expo SDK 58); Expo Go para desarrollo |
-| i18n | i18next · react-i18next · expo-localization |
-| Gráficos | Barras livianas con `View` · tablas accesibles · react-native-svg |
-| API | FastAPI · Pydantic v2 · SQLAlchemy 2 |
-| DB | PostgreSQL 16 + PostGIS 3.4 |
-| Agente | Runtime determinista + Gemini 3.5 Flash (Vertex AI) con tools |
-| Datos | NASA POWER + Open-Meteo + SRTM reales · catálogo local · suelo y economía declarados |
-| Infra | Docker Compose local · VM GCP `e2-small` para el demo |
-| Tests | pytest · contrato OpenAPI · paridad Python/TS · Maestro E2E |
+**Anden** es un copiloto de planificación agrícola geoespacial concebido para pequeños productores de Moquegua. Reúne contexto climático y territorial con los datos que aporta cada agricultor para comparar estrategias de rotación, examinar sus posibles efectos sobre agua y economía, y hacer visibles los supuestos y los datos que todavía faltan.
 
-> Demo desplegado: `https://34-55-141-32.sslip.io` (PostGIS + FastAPI + Gemini).
-> Operación y rollback: `docs/architecture/deploy-gcp.md`.
+La propuesta prioriza decisiones comprensibles y revisables. Presenta alternativas como escenarios para explorar, diferencia la información observada de la estimada o simulada y reserva la decisión final a la persona agricultora. El foco está en un piloto de hasta **100 agricultores**, con una experiencia pensada para teléfonos Android, conectividad intermitente y uso en español. Quechua y aimara forman parte de la dirección del proyecto, pero sus traducciones requieren revisión de hablantes nativos antes de considerarse listas.
 
-## Inicio rápido
+## Por qué Moquegua
 
-```bash
-# 1. Env (nunca commitear .env)
-# Si .env NO existe: cp .env.example .env
-# Si .env ya existe: completar variables sin borrar GROQ_API_KEY
-pnpm env:check
+El proyecto se sitúa en Moquegua, Perú, y toma como punto de partida una realidad agrícola donde el agua, el clima local, el suelo y las prioridades de cada productor importan al mismo tiempo. Una recomendación general no captura por sí sola las diferencias entre parcelas ni la experiencia de quienes las trabajan. Por eso Anden busca poner las fuentes y los supuestos a la vista y permitir que cada persona compare opciones en el contexto de su propia parcela.
 
-# 2. Backend + PostGIS
-docker compose up -d --build
-curl http://localhost:8000/ready          # {"status":"ready", ...}
-curl http://localhost:8000/api/v1/ready
+## Qué aporta al desafío
 
-# 3. Mobile
-cd application
-pnpm install
+- **Contexto de la Tierra:** incorpora información climática y de elevación asociada a la ubicación de una parcela, con fuente y fecha cuando están disponibles.
+- **Contexto local:** considera cultivos, suelo, disponibilidad de agua, experiencia previa y prioridades declaradas por la persona agricultora.
+- **Exploración de rotaciones:** facilita comparar una práctica registrada con alternativas y observar escenarios de cambio.
+- **Transparencia:** distingue datos declarados, referencias, estimaciones y simulaciones; cuando falta información, la muestra como faltante en lugar de asumir un valor.
+- **Decisión humana:** las alternativas sirven para conversar y planificar; no se presentan como prescripciones agronómicas validadas.
+- **Acceso inclusivo:** la propuesta contempla conectividad intermitente, lenguaje sencillo y necesidades de accesibilidad.
 
-# Opción A — teléfono físico con backend GCP (recomendada)
-#   application/.env.local:
-#   EXPO_PUBLIC_API_URL=https://34-55-141-32.sslip.io
-pnpm start -- --lan
-# Abrir el QR de Expo Go en el teléfono
+## Datos y atribución
 
-# Opción B — backend local en la misma Wi-Fi
-#   application/.env.local:
-#   EXPO_PUBLIC_API_URL=http://<ip-lan-de-tu-pc>:8000
-#   arrancar Metro en LAN:
-pnpm start -- --lan
+Anden combina fuentes abiertas y datos aportados por las personas usuarias. La cobertura y el nivel de detalle dependen de cada fuente y ubicación.
 
-# Modo rendimiento (sin dev tools, bundle minificado):
-pnpm start:perf
+- **NASA POWER** aporta datos de observación y climatología de la Tierra para variables ambientales. [NASA POWER](https://power.larc.nasa.gov/)
+- **Open-Meteo** aporta información meteorológica de pronóstico. El pronóstico es una salida de modelo y no sustituye avisos oficiales locales. [Open-Meteo](https://open-meteo.com/)
+- **SRTM** aporta elevación de terreno para contexto geográfico. [NASA SRTM](https://www.earthdata.nasa.gov/data/instruments/srtm)
+- **Datos declarados por el agricultor** aportan información sobre suelo, agua, cultivos, costos, precios y prioridades. Su exactitud depende de lo que se conoce y se registra.
+- **Referencias agrícolas locales** pueden orientar la conversación, pero deben revisarse antes de usarse como valores confirmados para una parcela.
 
-# Opción C — emulador Android con adb reverse
-adb reverse tcp:8000 tcp:8000
-adb reverse tcp:8081 tcp:8081
-pnpm start -- --localhost
-# Abrir exp://127.0.0.1:8081 en Expo Go
-```
+La parcela demostrativa usa datos sintéticos identificados como tales. Los resultados son exploratorios: no constituyen asesoría agronómica, pronóstico oficial ni garantía de rendimiento o rentabilidad. Los datos climáticos y de terreno no reemplazan un análisis de suelo ni una evaluación profesional en campo.
 
-La app recibe solo `EXPO_PUBLIC_*` desde `application/.env.local`. La `GROQ_API_KEY`
-nunca sale del backend.
+Consulta las condiciones y atribuciones de datos en [`docs/data-licenses.md`](docs/data-licenses.md).
 
-## Tests
+## Principios del proyecto
 
-```bash
-# Backend: unitarios, integración, contrato y paridad
-.\backend\.venv\Scripts\python.exe -m pytest backend\tests -q
+1. **La experiencia local cuenta.** Los datos satelitales complementan el conocimiento de agricultores y especialistas locales.
+2. **Sin dato no significa cero.** La falta de información debe permanecer visible.
+3. **Las estimaciones se identifican.** Toda simulación depende de supuestos que deben poder reconocerse.
+4. **La decisión permanece en manos de la persona agricultora.** Anden ayuda a comparar y conversar, no decide por ella.
+5. **Accesibilidad y contexto importan.** La experiencia se diseña para teléfonos, conectividad limitada y diversidad lingüística.
 
-# Mobile: typecheck + paridad de multiplicadores
-cd application
-pnpm typecheck
-pnpm test
+## Equipo
 
-# E2E Maestro (emulador encendido y APK com.anden.app instalado)
-maestro test application/.maestro/flows
-```
+| Integrante | Perfil | País |
+|---|---|---|
+| [Ernesto Montero Rivas](https://github.com/ardev) | Responsable del equipo | Perú |
+| [Jose Enrique Paye Mamani](https://github.com/zerok06) | Integrante | Perú |
+| [Michael Manrique](https://github.com/mike_ai) | Integrante | Perú |
+| [Frank Ruiz Dávila](https://github.com/frank_rd) | Integrante | Perú |
+| [Juan Oquendo Guzmán](https://github.com/juanoquendo) | Integrante | Perú |
+| [Luis Antonio Acuña Asenjo](https://github.com/luisacunaasenjo) | Integrante | Perú |
 
-Flujos Maestro:
+## Reto y reconocimiento
 
-| Flow | Estado |
-|---|---|
-| `00-launch` | verde sobre APK |
-| `01-onboarding` | verde sobre APK |
-| `03-compare` | verde sobre APK |
-| `04-scenario` | verde sobre APK |
-| `05-agent-save` | requiere Vertex; fallback determinista probado por API |
-| `06-settings` | verde sobre APK |
-| `07-parcel` | verde sobre APK |
-| `09-ficha-parcela` | verde sobre APK |
-| `10-riego` | verde sobre APK |
+Anden se presenta como proyecto participante del **NASA Space Apps Challenge 2026**, en el reto [Field Shift: Adapting Farms with NASA Data](https://www.spaceappschallenge.org/2026/challenges/field-shift-adapting-farms-with-nasa-data/). NASA y NASA Space Apps Challenge no patrocinan ni respaldan este proyecto. Las marcas y datos de terceros pertenecen a sus respectivos titulares.
 
-## Estructura
+## Licencia
 
-```text
-application/       Expo + gluestack v5 + cliente API + Maestro flows
-backend/            FastAPI, modelos, endpoints, tests
-services/           motores puros: agua, economía, rotaciones, escenario
-datasets/demo/      snapshot POWER sintético etiquetado
-tests/parity/       fixtures compartidos Python/TS
-specs/              SDD: specs 000-032
-docs/               constitución, arquitectura, ADRs, supuestos, demo
-```
-
-## SDD
-
-- Constitución: `docs/constitution.md`
-- Catálogo y estado: `specs/README.md`
-- Coherencia: `docs/architecture/coherence-report.md`
-- UI, marca e i18n: `docs/architecture/adr-0004-anden-brand-i18n-charts-a11y.md`
-- Accesibilidad: `docs/accessibility.md`
-- Fallback histórico: `docs/architecture/adr-0002-paper-fallback.md`
-
-## Datos y licencia
-
-- Código: MIT (`LICENSE`).
-- Datos: NASA POWER, FAO-56, catálogo local de Moquegua y datos declarados por el agricultor; ver `docs/data-licenses.md`.
-- App gratuita para agricultores; no se venden datos.
-- Parcela demo sintética y etiquetada; cualquier usuario puede crear la suya.
-
-## Seguridad
-
-`.env` está ignorado y no trackeado. La app solo recibe `EXPO_PUBLIC_*`; la
-`GROQ_API_KEY` nunca sale del backend. Si el `.env` se compartió, rotar la key.
-
-## Límites conocidos
-
-- El APK de prueba está firmado en debug y se compila desde `C:\anden-app` para
-  evitar el límite de 260 caracteres de Ninja/CMake en Windows. No es un APK de
-  Play Store; ver `docs/architecture/apk-build.md` y `dist/README-APK.md`.
-- El pronóstico de Open-Meteo es una estimación de modelo, no una predicción
-  oficial del SENAMHI. La ETo es de referencia y no incluye el Kc del cultivo.
-- Offline (spec 023) y Groq real (spec 021) no están implementados en este MVP.
-- El demo usa un snapshot sintético etiquetado; las parcelas nuevas descargan NASA POWER real y no usan valores por defecto. La economía debe declararla el agricultor para calcular margen.
-- El catálogo de cultivos está `needs_review` hasta validación agronómica local.
-- Quechua y aimara están en borrador (`review_pending`) hasta revisión de hablantes nativos.
-- El modo oscuro y el escalado de fuente 2.0× requieren QA visual continuo.
+El código de este repositorio se distribuye bajo la licencia [MIT](LICENSE). Las fuentes de datos mantienen sus propios términos de uso y atribución; consulta [`docs/data-licenses.md`](docs/data-licenses.md).

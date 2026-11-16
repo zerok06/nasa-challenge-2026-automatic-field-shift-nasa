@@ -7,23 +7,45 @@ appId: com.anden.app
 - extendedWaitUntil:
     visible: "Tu comparación"
     timeout: 30000
+# Las alternativas que quedaron fuera por datos incompletos se informan en el
+# resumen, antes de bajar a la tarjeta del plan.
+- runFlow:
+    when:
+      visible: "alternativas pendientes"
+    commands:
+      - assertVisible: "alternativas pendientes"
+# El baseline se valida antes de cambiar de pestaña: al elegir B o C la tarjeta
+# deja de decir "Plan de ejemplo".
 - scrollUntilVisible:
     element:
-      text: "Tu plan actual"
+      text: "Ejemplo"
     direction: DOWN
-- assertVisible: "Tu plan actual"
 - scrollUntilVisible:
     element:
-      text: "Alternativa B"
+      text: "Plan de ejemplo"
     direction: DOWN
-- assertVisible: "Alternativa B"
+- assertVisible: "Plan de ejemplo"
+# Volver al selector para probar las alternativas (solo si existen).
 - scrollUntilVisible:
     element:
-      text: "Alternativa C"
-    direction: DOWN
-- assertVisible: "Alternativa C"
+      text: "Ejemplo"
+    direction: UP
+- runFlow:
+    when:
+      visible: "Alternativa B"
+    commands:
+      - tapOn: "Alternativa B"
+      - assertVisible: "Alternativa B"
+- runFlow:
+    when:
+      visible: "Alternativa C"
+    commands:
+      - tapOn: "Alternativa C"
+      - assertVisible: "Alternativa C"
 - scrollUntilVisible:
     element:
       id: "comparison.simulate"
     direction: DOWN
+- assertVisible:
+    id: "comparison.simulate"
 - assertVisible: "Probar un cambio"

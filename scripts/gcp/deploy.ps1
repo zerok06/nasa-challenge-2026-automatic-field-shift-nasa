@@ -6,12 +6,22 @@ param(
     [string]$VmName = "anden-vm",
     [string]$BuilderSa = "anden-builder",
     [string]$Repository = "anden",
+    # Dominio canónico. Ej: anden.duckdns.org. Si se omite, usa <ip>.sslip.io.
+    [string]$Domain,
+    # Dominio anterior que debe redirigir 301 al canónico (opcional).
+    [string]$LegacyDomain,
     [string]$Tag,
     [switch]$SkipTests,
+    [switch]$SkipMobile,
     [switch]$NoSmoke
 )
 
 $ErrorActionPreference = "Stop"
+# gcloud writes informational warnings to stderr (for example the project
+# environment-tag notice); Windows PowerShell 5.1 turns those into terminating
+# errors when ErrorActionPreference is Stop. Keep gcloud output to errors only.
+$env:CLOUDSDK_CORE_VERBOSITY = "error"
+$env:CLOUDSDK_CORE_DISABLE_PROMPTS = "1"
 $Root = (Resolve-Path (Join-Path $PSScriptRoot "..\..")).Path
 
 function Assert-LastExit([string]$What) {
@@ -20,7 +30,22 @@ function Assert-LastExit([string]$What) {
     }
 }
 
-gcloud config set project $ProjectId | Out-Null
+function Invoke-Gcloud {
+    # gcloud escribe avisos informativos en stderr (p. ej. el notice
+    # "[environment: untagged]"). Con $ErrorActionPreference = "Stop" esos
+    # avisos se vuelven errores terminantes; aquí se ejecutan con "Continue"
+    # para que solo el exit code decida (vía Assert-LastExit).
+    $prev = $ErrorActionPreference
+    $ErrorActionPreference = "Continue"
+    try {
+        & gcloud @args
+    }
+    finally {
+        $ErrorActionPreference = $prev
+    }
+}
+
+Invoke-Gcloud config set project $ProjectId | Out-Null
 Assert-LastExit "gcloud config"
 
 if (-not $SkipTests) {
@@ -28,15 +53,33 @@ if (-not $SkipTests) {
     & "$Root\backend\.venv\Scripts\python.exe" -m pytest "$Root\backend\tests" -q
     Assert-LastExit "pytest"
 
-    Write-Host "==> Tests mobile"
-    Push-Location "$Root\application"
+    # La app móvil no se despliega a GCP (solo api + web); sus tests se pueden
+    # omitir con -SkipMobile para no bloquear la salida del frontend.
+    if (-not $SkipMobile) {
+        Write-Host "==> Tests mobile"
+        Push-Location "$Root\application"
+        try {
+            pnpm typecheck
+            Assert-LastExit "pnpm typecheck"
+            pnpm test
+            Assert-LastExit "pnpm test"
+            pnpm lint
+            Assert-LastExit "pnpm lint"
+        }
+        finally {
+            Pop-Location
+        }
+    }
+
+    Write-Host "==> Tests PWA"
+    Push-Location "$Root\frontend"
     try {
         pnpm typecheck
-        Assert-LastExit "pnpm typecheck"
+        Assert-LastExit "pnpm typecheck (PWA)"
         pnpm test
-        Assert-LastExit "pnpm test"
-        pnpm lint
-        Assert-LastExit "pnpm lint"
+        Assert-LastExit "pnpm test (PWA)"
+        pnpm build
+        Assert-LastExit "pnpm build (PWA)"
     }
     finally {
         Pop-Location
@@ -45,30 +88,46 @@ if (-not $SkipTests) {
 
 if ($Tag) {
     $image = "us-central1-docker.pkg.dev/$ProjectId/$Repository/api:$Tag"
-    Write-Host "==> Reutilizando imagen $image"
+    $webImage = "us-central1-docker.pkg.dev/$ProjectId/$Repository/web:$Tag"
+    Write-Host "==> Reutilizando imagenes $image y $webImage"
 }
 else {
     $tag = "gcp-" + (Get-Date -Format "yyyyMMdd-HHmmss")
     $image = "us-central1-docker.pkg.dev/$ProjectId/$Repository/api:$tag"
-    Write-Host "==> Build $image"
-    gcloud builds submit $Root `
+    $webImage = "us-central1-docker.pkg.dev/$ProjectId/$Repository/web:$tag"
+    Write-Host "==> Build $image y $webImage"
+    Invoke-Gcloud builds submit $Root `
         --config="$Root\deploy\gcp\cloudbuild.yaml" `
-        --substitutions="_IMAGE=$image" `
+        --substitutions="_IMAGE=$image,_WEB_IMAGE=$webImage,_VITE_API_URL=" `
         --service-account="projects/$ProjectId/serviceAccounts/$BuilderSa@$ProjectId.iam.gserviceaccount.com" `
         --project=$ProjectId
     Assert-LastExit "Cloud Build"
 }
 
 Write-Host "==> Leyendo secretos e IP"
-$dbUrl = (gcloud secrets versions access latest --secret=anden-database-url --project=$ProjectId).Trim()
+$dbUrl = (Invoke-Gcloud secrets versions access latest --secret=anden-database-url --project=$ProjectId).Trim()
 Assert-LastExit "secreto DATABASE_URL"
-$jwtSecret = (gcloud secrets versions access latest --secret=anden-jwt-secret --project=$ProjectId).Trim()
+$jwtSecret = (Invoke-Gcloud secrets versions access latest --secret=anden-jwt-secret --project=$ProjectId).Trim()
 Assert-LastExit "secreto JWT"
 $dbPassword = ($dbUrl -replace '^.*://automatic:', '') -replace '@db:5432/automatic$', ''
-$ip = (gcloud compute addresses describe anden-ip --region=$Region --project=$ProjectId `
+$ip = (Invoke-Gcloud compute addresses describe anden-ip --region=$Region --project=$ProjectId `
         --format="value(address)").Trim()
 Assert-LastExit "IP estatica"
-$domain = ($ip -replace '\.', '-') + ".sslip.io"
+$canonical = if ($Domain) { ($Domain -replace '^https?://', '').TrimEnd('/') } else { ($ip -replace '\.', '-') + ".sslip.io" }
+
+Write-Host "==> Firewall 80/443"
+$rule = (Invoke-Gcloud compute firewall-rules list --filter="name=anden-web" --format="value(name)" --project=$ProjectId 2>$null)
+if (-not $rule) {
+    Invoke-Gcloud compute firewall-rules create anden-web `
+        --allow tcp:80,tcp:443 `
+        --source-ranges=0.0.0.0/0 `
+        --description="Anden PWA + API (Caddy)" `
+        --project=$ProjectId | Out-Null
+    Assert-LastExit "firewall"
+}
+else {
+    Write-Host "    regla anden-web ya existe"
+}
 
 $envFile = Join-Path $env:TEMP "anden.env"
 $envContent = @"
@@ -80,11 +139,11 @@ POSTGRES_PASSWORD=$dbPassword
 DATABASE_URL=$dbUrl
 JWT_SECRET=$jwtSecret
 JWT_EXPIRE_MINUTES=10080
-CORS_ORIGINS=https://$domain,http://localhost:8081
+CORS_ORIGINS=https://$canonical,http://localhost:8081,http://localhost:19006,http://localhost:5173,http://localhost:4173
 LLM_PROVIDER=gemini
 GOOGLE_CLOUD_PROJECT=$ProjectId
 GOOGLE_CLOUD_LOCATION=global
-GEMINI_MODEL=gemini-3.5-flash
+GEMINI_MODEL=gemini-3.5-flash-lite
 GEMINI_MAX_OUTPUT_TOKENS=512
 GEMINI_MAX_TOOL_CALLS=4
 GEMINI_TEMPERATURE=0
@@ -92,15 +151,32 @@ AGENT_MAX_ANSWER_CHARS=220
 LLM_TIMEOUT_SECONDS=8
 DATASETS_DIR=/app/datasets
 API_IMAGE=$image
-DOMAIN=$domain
+WEB_IMAGE=$webImage
+DOMAIN=$canonical
 "@
 [System.IO.File]::WriteAllText($envFile, $envContent)
 
+# El Caddyfile se monta en la VM. Si hay un dominio anterior, se agrega un
+# bloque 301 para no partir el origen del PWA (los service workers son por origen).
+$caddyFile = Join-Path $env:TEMP "Caddyfile"
+$caddyContent = Get-Content "$Root\deploy\gcp\Caddyfile" -Raw
+if ($LegacyDomain) {
+    $legacy = ($LegacyDomain -replace '^https?://', '').TrimEnd('/')
+    $caddyContent += @"
+
+# Dominio anterior: redirige al canónico para conservar un solo origen PWA.
+https://$legacy {
+	redir https://$canonical{uri} permanent
+}
+"@
+}
+[System.IO.File]::WriteAllText($caddyFile, $caddyContent)
+
 try {
     Write-Host "==> Copiando compose, Caddyfile, remote-deploy y .env"
-    gcloud compute scp `
+    Invoke-Gcloud compute scp `
         "$Root\deploy\gcp\docker-compose.yml" `
-        "$Root\deploy\gcp\Caddyfile" `
+        $caddyFile `
         "$Root\deploy\gcp\remote-deploy.sh" `
         $envFile `
         "$VmName`:/tmp/" `
@@ -109,20 +185,30 @@ try {
 
     Write-Host "==> Actualizando la VM"
     $remote = "set -e; sudo mv /tmp/docker-compose.yml /tmp/Caddyfile /tmp/remote-deploy.sh /opt/anden/; sudo chmod +x /opt/anden/remote-deploy.sh; sudo install -m 600 -o root -g root /tmp/anden.env /opt/anden/.env; rm -f /tmp/anden.env; /opt/anden/remote-deploy.sh"
-    gcloud compute ssh $VmName --zone=$Zone --tunnel-through-iap --project=$ProjectId `
+    Invoke-Gcloud compute ssh $VmName --zone=$Zone --tunnel-through-iap --project=$ProjectId `
         --command=$remote --quiet
     Assert-LastExit "deploy remoto"
 
     if (-not $NoSmoke) {
         Write-Host "==> Smoke"
-        & "$PSScriptRoot\smoke.ps1" -ProjectId $ProjectId -Region $Region
+        & "$PSScriptRoot\smoke.ps1" -ProjectId $ProjectId -Region $Region -Domain $canonical
         Assert-LastExit "smoke"
     }
 }
 finally {
     Remove-Item $envFile -Force -ErrorAction SilentlyContinue
+    Remove-Item $caddyFile -Force -ErrorAction SilentlyContinue
 }
 
 Write-Host ""
 Write-Host "OK $image"
-Write-Host "URL https://$domain"
+Write-Host "OK $webImage"
+Write-Host "URL https://$canonical"
+if (-not $Domain) {
+    Write-Host ""
+    Write-Host "Para usar DuckDNS:"
+    Write-Host "  1) Crea el subdominio en https://www.duckdns.org y apunta la IP $ip"
+    Write-Host "  2) Vuelve a desplegar con: .\scripts\gcp\deploy.ps1 -Domain anden.duckdns.org"
+    Write-Host "  3) Si ya tenías el PWA instalado en el dominio viejo, reinstálalo: el origen cambió."
+}
+

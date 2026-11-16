@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { router } from 'expo-router';
 import { Banknote, Droplets, RotateCcw } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
@@ -7,6 +7,7 @@ import { ActionCard } from '@/components/app/ActionCard';
 import { AppAlert } from '@/components/app/AppAlert';
 import { AppButton } from '@/components/app/AppButton';
 import { AppHeader } from '@/components/app/AppHeader';
+import { FormField } from '@/components/app/FormField';
 import { Disclosure } from '@/components/app/Disclosure';
 import { HeroCard } from '@/components/app/HeroCard';
 import { MetricRow } from '@/components/app/Metric';
@@ -19,7 +20,9 @@ import { Text } from '@/components/ui/text';
 import { VStack } from '@/components/ui/vstack';
 import { testIDs } from '@/design-system/testIDs';
 import { formatMoney, formatNumber } from '@/lib/format';
+import { parseEsNumber } from '@/lib/parse';
 import { useComparison } from '@/providers/ComparisonProvider';
+import { PlanSelector } from '@/features/comparison/PlanSelector';
 
 function deltaText(value: number | null, kind: 'money' | 'water'): string | null {
   if (value === null) return null;
@@ -29,8 +32,11 @@ function deltaText(value: number | null, kind: 'money' | 'water'): string | null
 
 export function ScenarioScreen() {
   const { t } = useTranslation();
-  const { comparison, scenario, scenarioOrigin, busy, error, simulate, resetScenario } =
+  const { comparison, scenario, scenarioOrigin, activePlanId, setActivePlanId, busy, error, simulate, resetScenario } =
     useComparison();
+  const [waterPercent, setWaterPercent] = useState('100');
+  const [pricePercent, setPricePercent] = useState('100');
+  const [inputError, setInputError] = useState<string | null>(null);
 
   if (!comparison) {
     return (
@@ -54,8 +60,8 @@ export function ScenarioScreen() {
     );
   }
 
-  const baseline = comparison.plans[0];
-  const result = scenario?.plans[0];
+  const baseline = comparison.plans.find((plan) => plan.plan_id === activePlanId) ?? comparison.plans[0];
+  const result = scenario?.plans.find((plan) => plan.plan_id === baseline?.plan_id);
   const baselineMargin = baseline?.economics.margin_pen ?? null;
   const resultMargin = result?.economics.margin_pen ?? null;
   const baselineDeficit = baseline?.water.deficit_mm ?? null;
@@ -77,6 +83,31 @@ export function ScenarioScreen() {
           : t('Te faltarían {{value}} menos de agua', { value: deltaText(deficitDelta, 'water') })
         : t('El resultado sería muy parecido');
 
+  const applyCustomScenario = () => {
+    const water = parseEsNumber(waterPercent);
+    const price = parseEsNumber(pricePercent);
+    if (water === null || price === null || water <= 0 || price <= 0 || water > 200 || price > 200) {
+      setInputError(t('Usa un porcentaje mayor que 0 y hasta 200.'));
+      return;
+    }
+    setInputError(null);
+    void simulate(water / 100, price / 100).catch(() => undefined);
+  };
+
+  const applyPreset = (water: number, price: number) => {
+    setWaterPercent(String(Math.round(water * 100)));
+    setPricePercent(String(Math.round(price * 100)));
+    setInputError(null);
+    void simulate(water, price).catch(() => undefined);
+  };
+
+  const reset = () => {
+    setWaterPercent('100');
+    setPricePercent('100');
+    setInputError(null);
+    resetScenario();
+  };
+
   return (
     <Screen
       edges={['top', 'bottom']}
@@ -91,7 +122,7 @@ export function ScenarioScreen() {
         <AppButton
           tone="ghost"
           onPress={() => {
-            resetScenario();
+            reset();
             router.back();
           }}
         >
@@ -107,12 +138,47 @@ export function ScenarioScreen() {
       ) : null}
 
       <HeroCard
-        eyebrow={t('Tu plan actual')}
+        eyebrow={t('Estimación para {{plan}}', {
+          plan: baseline
+            ? baseline.kind === 'example'
+              ? t('Plan de ejemplo')
+              : baseline.kind === 'existing'
+                ? t('Tu plan actual')
+                : t(baseline.label)
+            : t('Plan'),
+        })}
         title={headline}
-        description={t('El plan actual no se modifica. Esto es solo una prueba.')}
+        description={t('Es una prueba con los datos y supuestos actuales. Tu plan guardado no se modifica.')}
         illustration="scenario"
         testID={testIDs.scenarioResult}
       />
+
+      <PlanSelector
+        plans={comparison.plans}
+        selectedPlanId={baseline?.plan_id ?? ''}
+        onSelect={setActivePlanId}
+      />
+
+      <SectionCard title={t('Ajusta los valores')} subtitle={t('100% conserva el dato actual')}>
+        <FormField
+          label={t('Agua disponible (%)')}
+          value={waterPercent}
+          onChangeText={(value) => { setWaterPercent(value); setInputError(null); }}
+          keyboardType="decimal-pad"
+          placeholder="100"
+        />
+        <FormField
+          label={t('Precio de venta (%)')}
+          value={pricePercent}
+          onChangeText={(value) => { setPricePercent(value); setInputError(null); }}
+          keyboardType="decimal-pad"
+          placeholder="100"
+        />
+        {inputError ? <AppAlert tone="error">{inputError}</AppAlert> : null}
+        <AppButton onPress={applyCustomScenario} loading={busy}>
+          {t('Ver esta simulación')}
+        </AppButton>
+      </SectionCard>
 
       <VStack className="gap-3">
         <ActionCard
@@ -120,7 +186,7 @@ export function ScenarioScreen() {
           title={t('Tengo 20% menos agua')}
           subtitle={t('Mira si el agua te alcanza')}
           tone="water"
-          onPress={() => void simulate(0.8, 1)}
+          onPress={() => applyPreset(0.8, 1)}
           testID={testIDs.scenarioWaterPreset20}
         />
         <ActionCard
@@ -128,7 +194,7 @@ export function ScenarioScreen() {
           title={t('El precio baja 15%')}
           subtitle={t('Mira cómo cambia tu ganancia')}
           tone="earth"
-          onPress={() => void simulate(1, 0.85)}
+          onPress={() => applyPreset(1, 0.85)}
           testID={testIDs.scenarioPricePreset15}
         />
         {scenario ? (
@@ -136,7 +202,7 @@ export function ScenarioScreen() {
             icon={RotateCcw}
             title={t('Volver a mi plan')}
             subtitle={t('Quitar la prueba')}
-            onPress={() => resetScenario()}
+            onPress={reset}
             testID={testIDs.scenarioReset}
           />
         ) : null}
@@ -151,12 +217,12 @@ export function ScenarioScreen() {
 
       {result && baseline ? (
         <SectionCard
-          title={t('Resultado de la prueba')}
-          subtitle={t('Comparado con tu plan actual')}
+          title={t('Resultado de la simulación')}
+          subtitle={t('Comparado con {{plan}}', { plan: baseline.label })}
         >
           <VStack className="gap-2">
             <MetricRow
-              label={t('Ganancia con tu plan actual')}
+              label={t('Ganancia en el plan base')}
               value={formatMoney(baseline.economics.margin_pen)}
             />
             <MetricRow

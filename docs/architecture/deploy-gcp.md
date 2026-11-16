@@ -12,7 +12,7 @@
 | Dominio | `https://34-55-141-32.sslip.io` |
 | Service accounts | `anden-api@…`, `anden-builder@…` |
 | Secretos | `anden-database-url`, `anden-jwt-secret` |
-| Modelo | `gemini-3.5-flash` · Vertex AI · endpoint global |
+| Modelo | `gemini-3.5-flash-lite` · Vertex AI · endpoint global |
 | Imagen | `us-central1-docker.pkg.dev/project-59be27c2-c126-4ea7-b01/anden/api:<tag>` |
 
 ## Arquitectura
@@ -21,7 +21,7 @@
 Android / Expo
       │ HTTPS 443
       ▼
-Caddy (VM e2-small) ──► FastAPI :8000 ──► Vertex AI (gemini-3.5-flash)
+Caddy (VM e2-small) ──► FastAPI :8000 ──► Vertex AI (gemini-3.5-flash-lite)
                                 │
                                 ▼
                     Postgres 16 + PostGIS 3.4

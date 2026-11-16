@@ -50,10 +50,23 @@ class FakeTools:
 def test_tool_declarations_do_not_accept_identity_parameters():
     names = {item["name"] for item in TOOL_DECLARATIONS}
     assert names == {
+        "get_catalog_price_reference",
         "get_parcel_context",
         "compare_rotations",
         "simulate_scenario",
         "propose_save_plan",
+        "get_parcel_snapshot",
+        "get_power_trend",
+        "get_forecast",
+        "get_terrain",
+        "estimate_water",
+        "convert_units",
+        "get_next_questions",
+        "propose_capture",
+        "rank_plans",
+        "audit_parcel",
+        "explain_plan",
+        "get_saved_plans",
     }
     for item in TOOL_DECLARATIONS:
         properties = item["parameters"].get("properties", {})
@@ -63,8 +76,10 @@ def test_tool_declarations_do_not_accept_identity_parameters():
 
 def test_declarations_build_with_json_schema():
     declarations = llm._declarations(types)
-    assert len(declarations) == 4
-    assert declarations[0].parameters_json_schema == {"type": "object", "properties": {}}
+    assert len(declarations) == 17
+    assert declarations[0].name == "get_catalog_price_reference"
+    empty = next(d for d in declarations if d.name == "get_parcel_context")
+    assert empty.parameters_json_schema == {"type": "object", "properties": {}}
 
 
 def test_config_disables_thinking_and_includes_tools():
@@ -107,6 +122,7 @@ def test_run_gemini_turn_without_tool_calls(monkeypatch):
 
 def test_run_gemini_turn_forces_final_answer_after_tool_budget(monkeypatch):
     configs: list[Any] = []
+    monkeypatch.setattr(llm.settings, "agent_max_steps", 4)
     responses = [FakeResponse(calls=[FakeCall("compare_rotations", {})]) for _ in range(4)]
     responses.append(FakeResponse(text="Revisa la tarjeta."))
 

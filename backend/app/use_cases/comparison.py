@@ -24,6 +24,7 @@ from app.schemas.analysis import (
 from app.use_cases.climate import ClimateDataUnavailable, ensure_power_snapshot
 from app.use_cases.context import get_context
 from services.economics import evaluate_soil
+from services.ranking import weighted_rank_scores
 from services.rotations import PlanDraft, build_plan_drafts
 from services.scenario import apply_scenario_values
 from services.water_engine import (
@@ -59,32 +60,84 @@ def _plan_economics(
     production = 0.0
     income = 0.0
     costs = 0.0
+    costs_complete = True
+    income_complete = True
     for step in steps:
         crop_id = step["crop_id"]
         item = economics.get(crop_id)
         if not item:
             missing.append(f"economics.{crop_id}")
+            costs_complete = False
+            income_complete = False
             continue
-        for key in ("yield_kg_ha", "price_pen_kg", "costs_pen"):
-            if item.get(key) is None:
+        source = item.get("price_source")
+        confirmed = item.get("price_confirmed")
+        legacy_reference = source is None and price_type in {"historical", "reference"}
+        is_unconfirmed = confirmed is False or (
+            source == "catalog_reference" and confirmed is not True
+        ) or (legacy_reference and confirmed is not True)
+        if is_unconfirmed:
+            missing.append(f"economics.{crop_id}.price_confirmation")
+        effective_price = (
+            item.get("price_pen_kg")
+            if not is_unconfirmed
+            else None
+        )
+        yield_val = item.get("yield_kg_ha")
+        costs_val = item.get("costs_pen")
+        for key, value in (
+            ("yield_kg_ha", yield_val),
+            ("price_pen_kg", effective_price),
+            ("costs_pen", costs_val),
+        ):
+            if value is None:
                 missing.append(f"economics.{crop_id}.{key}")
+        if costs_val is None:
+            costs_complete = False
+        else:
+            costs += float(costs_val)
         if area_ha is None:
             missing.append("area_ha")
+            income_complete = False
             continue
-        production += float(item["yield_kg_ha"]) * area_ha
-        income += float(item["yield_kg_ha"]) * area_ha * float(item["price_pen_kg"])
-        costs += float(item["costs_pen"])
+        if yield_val is None or effective_price is None:
+            income_complete = False
+            continue
+        step_production = float(yield_val) * area_ha
+        # marketable_share caps how much of the total area is actually sold;
+        # default 1.0 keeps backward-compatible behaviour.  Use an explicit
+        # None check so 0.0 is respected as "nothing sold".
+        marketable = item.get("marketable_share")
+        if marketable is not None:
+            step_production *= float(marketable)
+        production += step_production
+        income += step_production * float(effective_price)
     if missing:
+        # A margin needs both a known income and complete costs. Report the
+        # declared cost total so the UI can show the budget without inventing a
+        # result.
+        margin_known = income_complete and costs_complete
         return EconomicsResultOut(
             confidence="partial",
             price_assumption_type=price_type,
+            margin_pen=round(income - costs, 2) if margin_known else None,
+            margin_pen_ha=(
+                round((income - costs) / area_ha, 2)
+                if margin_known and area_ha
+                else None
+            ),
+            break_even_price_pen_kg=None,
+            income_pen=round(income, 2) if income_complete else None,
+            costs_pen=round(costs, 2) if costs_complete else None,
+            production_kg=round(production, 2) if income_complete else None,
             missing_inputs=sorted(set(missing)),
         )
     margin = income - costs
+    break_even = costs / production if production > 0 else None
     return EconomicsResultOut(
         margin_pen=round(margin, 2),
         margin_pen_ha=round(margin / area_ha, 2) if area_ha else None,
-        break_even_price_pen_kg=None,
+        break_even_price_pen_kg=round(break_even, 4) if break_even is not None else None,
         income_pen=round(income, 2),
         costs_pen=round(costs, 2),
         production_kg=round(production, 2),
@@ -186,6 +239,91 @@ def _evaluate_plan(
     return plan, inputs
 
 
+def _priority_weights(preferences: dict[str, Any]) -> dict[str, float]:
+    raw = preferences.get("priorities") or preferences.get("weights") or {}
+    allowed = ("water", "margin", "budget", "soil")
+    try:
+        values = {key: max(0.0, float(raw.get(key, 0))) for key in allowed}
+    except (TypeError, ValueError):
+        values = {}
+    if sum(values.values()) <= 0:
+        return {"water": 0.5, "margin": 0.3, "budget": 0.2, "soil": 0.0}
+    return values
+
+
+def _select_baseline_and_alternatives(
+    evaluated: list[PlanOut], preferences: dict[str, Any]
+) -> tuple[list[PlanOut], list[PlanOut]]:
+    """Return (selected_plans, pending_plans).
+
+    selected: existing + up to 2 alternatives with distinct crop sets.
+    pending: candidates not selected (incomplete economics or duplicates).
+    """
+    if len(evaluated) <= 1:
+        return evaluated, []
+    baseline, candidates = evaluated[0], [plan for plan in evaluated[1:] if plan.status != "invalid"]
+    pending: list[PlanOut] = []
+
+    # Deduplicate by crop set (unordered), keep first occurrence.
+    seen_sets: set[frozenset[str]] = set()
+    deduped: list[PlanOut] = []
+    for plan in candidates:
+        crop_set = frozenset(plan.crop_sequence)
+        if crop_set in seen_sets:
+            pending.append(plan)
+            continue
+        seen_sets.add(crop_set)
+        deduped.append(plan)
+
+    if not deduped:
+        return [baseline], candidates
+
+    weights = _priority_weights(preferences)
+    scores = weighted_rank_scores(
+        {
+            "water": [plan.water.gross_irrigation_mm for plan in deduped],
+            "margin": [plan.economics.margin_pen for plan in deduped],
+            "budget": [plan.economics.costs_pen for plan in deduped],
+            "soil": [
+                {"measured": 1.0, "declared": 0.7, "not_measured": 0.5}.get(
+                    plan.soil.fertility_status
+                )
+                for plan in deduped
+            ],
+        },
+        weights,
+        lower_is_better={"water", "budget"},
+    )
+    order = sorted(
+        range(len(deduped)),
+        key=lambda index: (scores[index] is not None, scores[index] or 0),
+        reverse=True,
+    )
+    selected = [baseline]
+    chosen_indexes = list(order[:2])
+    # Guarantee at least one economically evaluable alternative when one
+    # exists. Plans with a null margin stay visible in `pending_plans` instead
+    # of pretending they can be compared on money.
+    complete_indexes = [
+        index for index in order if deduped[index].economics.margin_pen is not None
+    ]
+    if complete_indexes and not any(
+        deduped[index].economics.margin_pen is not None for index in chosen_indexes
+    ):
+        best = complete_indexes[0]
+        if chosen_indexes:
+            chosen_indexes[-1] = best
+        else:
+            chosen_indexes.append(best)
+    for position, index in enumerate(chosen_indexes):
+        plan = deduped[index]
+        plan.label = "Alternativa B" if position == 0 else "Alternativa C"
+        selected.append(plan)
+    chosen = set(chosen_indexes)
+    pending.extend(plan for index, plan in enumerate(deduped) if index not in chosen)
+    return selected, pending
+
+
 def create_comparison(
     db: Session,
     user: User,
@@ -210,7 +348,7 @@ def create_comparison(
         db.scalars(select(SoilObservation).where(SoilObservation.parcel_id == parcel.id)).all()
     )
     crops = {c.id: c for c in db.scalars(select(Crop)).all()}
-    drafts = build_plan_drafts(history, crops, start, end)
+    drafts, pending_drafts = build_plan_drafts(history, crops, start, end)
     snapshot = ensure_power_snapshot(db, parcel)
     if snapshot is None:
         raise ClimateDataUnavailable(
@@ -229,7 +367,14 @@ def create_comparison(
         )
     snapshot_id = snapshot.id
     horizon_days = (end - start).days + 1
-    rain_effective = effective_rain(avg_precip * horizon_days)
+    # Use crop-stage window for effective rain, not the full horizon.
+    # Fall back to horizon total when stage dates are unavailable.
+    stage_days = 0
+    for draft in drafts:
+        for step in draft.steps:
+            stage_days = max(stage_days, int(step.get("duration_days", 0) or 0))
+    rain_period_days = stage_days if stage_days > 0 else horizon_days
+    rain_effective = effective_rain(avg_precip * rain_period_days)
 
     latest_water = context.water[-1] if context.water else None
     available = None
@@ -242,9 +387,11 @@ def create_comparison(
         )
         efficiency = latest_water.efficiency
 
-    plans: list[PlanOut] = []
-    plan_inputs: dict[str, Any] = {}
-    for draft in drafts:
+    evaluated_plans: list[PlanOut] = []
+    all_plan_inputs: dict[str, Any] = {}
+    # Evaluate the selected drafts plus the pending ones so the UI can explain
+    # why some alternatives are missing data instead of silently hiding them.
+    for draft in [*drafts, *pending_drafts]:
         plan, inputs = _evaluate_plan(
             draft,
             crops,
@@ -257,8 +404,28 @@ def create_comparison(
             efficiency,
         )
         plan.horizon = {"start": start, "end": end}
-        plans.append(plan)
-        plan_inputs[draft.plan_id] = inputs
+        evaluated_plans.append(plan)
+        all_plan_inputs[draft.plan_id] = inputs
+
+    preferences = parcel.preferences_json or {}
+    plans, pending_plans = _select_baseline_and_alternatives(evaluated_plans, preferences)
+    selected_ids = {plan.plan_id for plan in plans}
+    plan_inputs = {
+        plan_id: inputs
+        for plan_id, inputs in all_plan_inputs.items()
+        if plan_id in selected_ids
+    }
+
+    # If no alternatives are viable, add a note to the baseline plan.
+    no_viable = len(plans) == 1 and all(
+        p.status == "invalid" or p.economics.confidence in {"insufficient_inputs", "partial"}
+        for p in evaluated_plans[1:]
+    )
+    if no_viable and plans:
+        plans[0].assumptions.append(
+            "No se encontraron alternativas viables con las restricciones actuales. "
+            "Puedes relajar el agua disponible, el presupuesto o el horizonte."
+        )
 
     run = AnalysisRun(
         parcel_id=parcel.id,
@@ -282,6 +449,9 @@ def create_comparison(
     db.flush()
 
     for plan in plans:
+        draft = next(
+            d for d in [*drafts, *pending_drafts] if d.plan_id == plan.plan_id
+        )
         db_plan = RotationPlan(
             parcel_id=parcel.id,
             analysis_run_id=run.id,
@@ -296,7 +466,7 @@ def create_comparison(
         db.add(db_plan)
         db.flush()
         plan.plan_id = db_plan.id
-        for step in next(d for d in drafts if d.label == plan.label).steps:
+        for step in draft.steps:
             db.add(
                 RotationPlanStep(
                     plan_id=db_plan.id,
@@ -312,6 +482,7 @@ def create_comparison(
         parcel_id=parcel.id,
         analysis_period={"start": start, "end": end},
         plans=plans,
+        pending_plans=pending_plans,
         source_snapshots=[snapshot_id] if snapshot_id else [],
         model_version=MODEL_VERSION,
         catalog_version=CATALOG_VERSION,

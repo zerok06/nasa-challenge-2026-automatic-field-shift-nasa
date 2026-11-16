@@ -10,7 +10,7 @@ appId: com.anden.app
 - assertVisible: "Día por día"
 - scrollUntilVisible:
     element:
-      text: "Tu terreno"
+      text: "Elevación y pendiente desde SRTM"
     direction: DOWN
 - assertVisible: "Elevación y pendiente desde SRTM"
 - scrollUntilVisible:

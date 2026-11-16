@@ -110,7 +110,9 @@ function economicsMissingLabel(value: string): string {
         ? 'rendimiento'
         : field === 'costs_pen'
           ? 'costo'
-          : 'datos';
+          : field === 'price_confirmation'
+            ? 'confirmación del precio'
+            : 'datos';
   return `${fieldLabel} de ${crop}`;
 }
 
@@ -126,8 +128,13 @@ export function formatMissing(values: string[] | null | undefined, limit = 3): s
   })}`;
 }
 
+/** Crop names come from the catalog; the id only supplies a fallback label. */
+export function formatCropName(cropId: string, localName?: string | null): string {
+  return localName ?? i18n.t(cropLabels[cropId] ?? cropId);
+}
+
 export function formatCropSequence(sequence: string[]): string {
-  return sequence.map((crop) => i18n.t(cropLabels[crop] ?? crop)).join(' → ');
+  return sequence.map((crop) => formatCropName(crop)).join(' → ');
 }
 
 export function formatFeasibility(value: string): string {

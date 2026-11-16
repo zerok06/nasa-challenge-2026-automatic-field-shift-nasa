@@ -37,9 +37,10 @@ class ComparisonOut(BaseModel):
     parcel_id: str
     analysis_period: dict[str, date]
     plans: list[PlanOut]
+    pending_plans: list[PlanOut] = Field(default_factory=list)
     source_snapshots: list[str] = Field(default_factory=list)
-    model_version: str = "rotation-engine-v0.1"
-    catalog_version: str = "v0.1"
+    model_version: str = "rotation-engine-v0.2"
+    catalog_version: str = "v0.2.5"
     scenario_type: str = "baseline"
     warnings: list[str] = Field(default_factory=list)
     is_simulated: bool = True

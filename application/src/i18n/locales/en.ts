@@ -27,6 +27,11 @@ const en = {
   'precio de venta': 'selling price',
   rendimiento: 'yield',
   'costos de producción': 'production costs',
+  'El precio propuesto viene de una referencia histórica del catálogo y puedes editarlo. Los costos de producción los ingresas tú.':
+    'The suggested price comes from a historical catalog reference and you can edit it. Enter your own production costs.',
+  'Precio propuesto (editable)': 'Suggested price (editable)',
+  'Precio de venta que recibes': 'Selling price you receive',
+  'Tus costos totales de producción (S/)': 'Your total production costs (S/)',
   'snapshot NASA': 'NASA snapshot',
   cebolla: 'onion',
   zapallo: 'pumpkin',
@@ -125,6 +130,7 @@ const en = {
   'PEN · periodo analizado': 'PEN · analyzed period',
   'mm · periodo analizado': 'mm · analyzed period',
   Actual: 'Current',
+  Ejemplo: 'Example',
   'Margen baseline vs escenario': 'Margin baseline vs scenario',
   'Plan comparado': 'Compared plan',
   'Cambiá una variable a la vez': 'Change one variable at a time',
@@ -729,14 +735,13 @@ const en = {
   'El pH debe ser un número.': 'pH must be a number.',
   'La materia orgánica debe ser un número.': 'Organic matter must be a number.',
   'Elige hasta 3 prioridades': 'Choose up to 3 priorities',
-  'Las prioridades ordenan las alternativas; no cambian los cálculos.':
-    'Priorities order the alternatives; they do not change the calculations.',
-  'Tus prioridades ordenan las alternativas. No cambian los cálculos: nos ayudan a mostrarte lo que más te importa.':
-    'Your priorities order the alternatives. They do not change the calculations: they help us show what matters most to you.',
+  'Ordenamos las alternativas con tus prioridades y los datos disponibles. Si falta un dato, te lo mostramos.':
+    'We order alternatives using your priorities and the available data. We show you when data is missing.',
   '¿Tienes alguna restricción?': 'Do you have any constraints?',
   'Ahorrar agua': 'Save water',
   'Mejorar el suelo': 'Improve soil',
   'Ganar más': 'Earn more',
+  'Cuidar mi presupuesto': 'Stay within my budget',
   'Cortar plagas': 'Break pest cycles',
   'Tener forraje': 'Grow forage',
   'Vender mejor': 'Sell better',
@@ -795,7 +800,80 @@ const en = {
     'This data is yours: we do not make it up. Without cost we cannot calculate a real margin.',
   'Rendimiento (kg por hectárea)': 'Yield (kg per hectare)',
   'Precio de venta (S/ por kg)': 'Selling price (S/ per kg)',
-  'Costo de producción (S/ por hectárea)': 'Production cost (S/ per hectare)',
+  'Costo total de producción (S/)': 'Total production cost (S/)',
+  // Ficha honesta: no-sé declarado, rangos y parseo es-PE
+  'Escribe cuánta agua tienes o guarda “No sé cuánta agua uso”.':
+    'Enter how much water you have or save “I don’t know how much water I use”.',
+  '“{{value}}” no es una cantidad válida. Escribe solo el número, por ejemplo 1200.':
+    '“{{value}}” is not a valid amount. Enter just the number, e.g. 1200.',
+  'No sé cuánta agua uso: guardar así': 'I don’t know how much water I use: save as-is',
+  'El pH debe estar entre 3 y 10. Revisa el valor del análisis.':
+    'pH must be between 3 and 10. Check the test value.',
+  'La materia orgánica debe estar entre 0 y 50 %.':
+    'Organic matter must be between 0 and 50%.',
+  'Sin análisis, el suelo se muestra como “por revisar”. Si eliges “No tengo” o “No sé”, lo guardamos así y no te lo volvemos a pedir.':
+    'Without a test, soil shows as “needs review”. If you choose “No test” or “I don’t know”, we save it and won’t ask again.',
+  'No sé (declarado)': 'I don’t know (declared)',
+  'Puedes usar punto o coma: 1,5 vale como 1.5. Si no sabes la cantidad, guárdalo con “No sé”.':
+    'You can use dot or comma: 1,5 counts as 1.5. If you don’t know the amount, save it with “I don’t know”.',
+  '1 mm = 10 m³ por hectárea. Si no sabes la cantidad exacta, pulsa el botón y lo dejamos marcado como “no sé”.':
+    '1 mm = 10 m³ per hectare. If you don’t know the exact amount, tap the button and we’ll mark it as unknown.',
+  'Descartar borrador': 'Discard draft',
+  'Borrador descartado. No se guardó nada.': 'Draft discarded. Nothing was saved.',
+  'Sin conexión no se puede rechazar el borrador': 'You can’t discard the draft offline',
+  'Guardada en el teléfono. Se enviará cuando tengas señal.':
+    'Saved on the phone. It will be sent when you have signal.',
+  'Una respuesta corta nos ayuda a entender si la app se entiende. Sin conexión, se guarda en el teléfono.':
+    'A short answer helps us understand whether the app is clear. Offline, it is saved on the phone.',
+  '“{{value}}” no es una superficie válida. Usa hectáreas, por ejemplo 1.2.':
+    '“{{value}}” is not a valid area. Use hectares, e.g. 1.2.',
+  '¿Cómo mides tu agua?': 'How do you measure your water?',
+  'Cantidad directa': 'Direct amount',
+  'Horas de riego': 'Irrigation hours',
+  Turnos: 'Shifts',
+  'Recibo o medidor': 'Bill or meter',
+  '¿Cuántas horas riegas por semana?': 'How many hours do you irrigate per week?',
+  'Ej. 3': 'E.g. 3',
+  'Solo las horas con agua corriendo.': 'Only hours with running water.',
+  '¿Qué caudal sale? (litros por segundo)': 'What is the flow? (litres per second)',
+  'Ej. 2': 'E.g. 2',
+  '1 litro por segundo = 3,6 m³ por hora. Si no lo sabes, pregunta a tu comité.':
+    '1 litre per second = 3.6 m³ per hour. If you don’t know, ask your committee.',
+  '¿Cuántas semanas riegas en la campaña?': 'How many weeks do you irrigate in the season?',
+  'Ej. 20': 'E.g. 20',
+  '¿Cuántos turnos tienes en la campaña?': 'How many shifts do you have in the season?',
+  'Ej. 6': 'E.g. 6',
+  '¿Cuántos m³ te dan por turno?': 'How many m³ do you get per shift?',
+  'Ej. 120': 'E.g. 120',
+  'Está en tu recibo o pregúntalo a tu comité de regantes.':
+    'It is on your bill, or ask your irrigation committee.',
+  '¿Cuántos m³ dice tu recibo o medidor?': 'How many m³ does your bill or meter say?',
+  'Ej. 1500': 'E.g. 1500',
+  'Completa los números para calcular tu agua.': 'Complete the numbers to calculate your water.',
+  'Guardar esta estimación': 'Save this estimate',
+  '≈ {{m3}} m³ ≈ {{mm}} mm en tu parcela de {{ha}} ha. Revísalo antes de guardar.':
+    '≈ {{m3}} m³ ≈ {{mm}} mm on your {{ha}} ha plot. Check it before saving.',
+  '≈ {{m3}} m³ en total. Sin superficie no puedo pasarlo a mm.':
+    '≈ {{m3}} m³ in total. Without area I can’t convert it to mm.',
+  'Estimación guardada': 'Estimate saved',
+  '¿En qué unidad cosechas?': 'In which unit do you harvest?',
+  'kg por ha': 'kg per ha',
+  'arrobas por ha': 'arrobas per ha',
+  'sacos por ha': 'sacks per ha',
+  '¿De cuántos kg es tu saco?': 'How many kg is your sack?',
+  'Ej. 50': 'E.g. 50',
+  '¿En qué unidad vendes?': 'In which unit do you sell?',
+  'S/ por kg': 'S/ per kg',
+  'S/ por arroba': 'S/ per arroba',
+  'S/ por saco': 'S/ per sack',
+  'Ej. 1000': 'E.g. 1000',
+  'Ej. 240': 'E.g. 240',
+  'Ej. 60': 'E.g. 60',
+  'Equivale a {{yield}} y {{price}}. Así lo usamos para tu margen.':
+    'That equals {{yield}} and {{price}}. That is what we use for your margin.',
+  'rendimiento pendiente': 'yield pending',
+  'precio pendiente': 'price pending',
+  'Ej. 1.2 — acepta coma o punto': 'E.g. 1.2 — comma or dot accepted',
   'Guardar precios y costos': 'Save prices and costs',
   'Primero registra qué sembraste. Así sabemos para qué cultivos pedir precios y costos.':
     'First record what you planted. That tells us which crops need prices and costs.',
@@ -866,6 +944,8 @@ const en = {
   'Leyendo el pronóstico': 'Reading the forecast',
   'Consultando Open-Meteo y la elevación de tu parcela.':
     'Checking Open-Meteo and your plot elevation.',
+  'El pronóstico semanal usa Open-Meteo. NASA POWER aporta datos históricos en otras consultas.':
+    'The weekly forecast uses Open-Meteo. NASA POWER provides historical data for other parts of the app.',
   'No pudimos leer el pronóstico. Revisa la conexión e intenta de nuevo.':
     'We could not read the forecast. Check the connection and try again.',
   'Próximos 7 días': 'Next 7 days',
@@ -898,6 +978,19 @@ const en = {
     'ETo is a reference and does not include your crop coefficient. We use 80% of rain as effective. This is not a validated agronomic recommendation.',
   'Anden · piloto Moquegua · datos abiertos':
     'Anden · Moquegua pilot · open data',
+
+  // Agent proactive greeting (spec 036) — backend emits answer_key + params
+  'agent.greeting.missing':
+    'Hi, I am Anden and I will guide you with {{name}}. I noticed you have not recorded {{what}}. Would you like to tell me in your own words? I will propose it and only save it if you confirm; otherwise I discard it and we continue.',
+  'agent.greeting.complete':
+    'Hi, I am Anden and I am reviewing {{name}}. You have water, soil, price and history recorded, so you can already compare plans. Would you like me to review your options or try with less water?',
+  // Greeting input labels (used as the {{what}} value)
+  'agent.missing.water_available': 'how much water you have for this season',
+  'agent.missing.soil_analysis': 'the soil analysis',
+  'agent.missing.crop_economics': 'the price and cost per crop',
+  'agent.missing.crop_history': 'what you planted last season',
+  'agent.missing.area_ha': 'how much area your plot has',
+
   'La lluvia alcanza': 'Rain covers it',
   'Tu agua declarada alcanza para la semana':
     'Your declared water covers the week',
@@ -998,6 +1091,58 @@ const en = {
   'Elevación y pendiente': 'Elevation and slope',
   'Ingresados por ti; referencia pendiente':
     'Entered by you; reference prices pending',
+  'Plan A': 'Plan A',
+  'Plan B': 'Plan B',
+  'Plan C': 'Plan C',
+  'Estimación para {{plan}}': 'Estimate for {{plan}}',
+  'Ajusta los valores': 'Adjust values',
+  '100% conserva el dato actual': '100% keeps the current value',
+  'Agua disponible (%)': 'Available water (%)',
+  'Precio de venta (%)': 'Selling price (%)',
+  'Usa un porcentaje mayor que 0 y hasta 200.': 'Enter a percentage above 0 and up to 200.',
+  'Ver esta simulación': 'Run this simulation',
+  'Es una prueba con los datos y supuestos actuales. Tu plan guardado no se modifica.':
+    'This is an estimate using current data and assumptions. Your saved plan is unchanged.',
+  'Resultado de la simulación': 'Simulation result',
+  'Comparado con {{plan}}': 'Compared with {{plan}}',
+  'Ganancia en el plan base': 'Profit in the original plan',
+  'Referencia del catálogo: S/ {{value}} por kg': 'Catalog reference: S/ {{value}} per kg',
+  'Transcripción pendiente de cotejo. Confirma o corrige el valor antes de usarlo.':
+    'This transcription is pending review. Confirm or correct the value before using it.',
+  'Es un precio estimado de referencia; todavía no es el precio confirmado de tu venta.':
+    'This is an estimated reference price, not yet the confirmed price of your sale.',
+  'Precio confirmado': 'Price confirmed',
+  'Confirmar este precio estimado': 'Confirm this estimated price',
+  '{{source}} · {{year}} · {{place}}': '{{source}} · {{year}} · {{place}}',
+  'Transcripción pendiente de cotejo. Puedes cambiar el precio antes de guardar.':
+    'Transcription not yet verified. You can change the price before saving.',
+  'Es un precio histórico de referencia, no el precio confirmado de tu venta.':
+    'This is a historical reference price, not your confirmed sale price.',
+  'Aún no tenemos el agua de tu parcela. Puedes completar ese dato para revisar mejor este plan.':
+    'We do not have your plot’s water amount yet. Add it to review this plan more accurately.',
+  'Completar agua ahora': 'Add water now',
+  'Revisa la latitud y longitud de tu parcela.': 'Check your plot’s latitude and longitude.',
+  'Agua guardada en tu ficha.': 'Water saved to your plot record.',
+  'Agua guardada': 'Water saved',
+  'Necesita internet para consultar la semana': 'Needs internet to check this week’s forecast',
+  'Portada ilustrativa': 'Illustrative cover',
+  'Portada ilustrativa de una chacra agrícola': 'Illustrative cover of a farm plot',
+  'Rotaciones claras para tu chacra.': 'Clear crop rotations for your farm.',
+  'Saltar': 'Skip',
+  'Comenzar': 'Get started',
+  'Marca Anden': 'Anden brand mark',
+  'Volver a la diapositiva anterior': 'Go to the previous slide',
+  'Chacra cultivada en un valle andino': 'A cultivated farm in an Andean valley',
+  'Cultivos en hileras en un paisaje andino': 'Crop rows in an Andean landscape',
+  'Cultivo de ají en una chacra andina': 'Pepper crop on an Andean farm',
+  'Anden reúne la información de tu chacra para ayudarte a planificar cada campaña.':
+    'Anden brings your farm information together to help you plan each season.',
+  'Compara opciones con calma': 'Compare your options with confidence',
+  'Mira los planes A, B y C con el agua y los precios que conoces.':
+    'Review plans A, B, and C with the water and prices you know.',
+  'Prueba antes de decidir': 'Try a change before deciding',
+  'Ajusta agua y precio, revisa los supuestos y guarda tus datos para consultarlos sin señal.':
+    'Adjust water and price, review the assumptions, and save your data to use it offline.',
 };
 
 export default en;

@@ -56,67 +56,141 @@ def _family_ok(steps: list[dict[str, Any]]) -> bool:
     return all(families[i] != families[i + 1] for i in range(len(families) - 1))
 
 
+MODEL_VERSION = "rotation-engine-v0.2"
+CATALOG_VERSION = "v0.2.5"
+
+
+def _crop_set(sequence: list[str]) -> frozenset[str]:
+    return frozenset(sequence)
+
+
 def build_plan_drafts(
     history: list[dict[str, Any]],
     crops: dict[str, Any],
     horizon_start: date,
     horizon_end: date,
     existing_sequence: list[str] | None = None,
-) -> list[PlanDraft]:
+) -> tuple[list[PlanDraft], list[PlanDraft]]:
+    """Return (evaluable_drafts, pending_drafts).
+
+    evaluable_drafts: existing + up to 2 alternatives with distinct crop sets.
+    pending_drafts: candidates that lack agronomic evidence or crop data.
+    """
+    horizon_days = (horizon_end - horizon_start).days + 1
     if existing_sequence:
         current_seq = existing_sequence[:2]
     else:
         current_seq = [h.get("crop_id") for h in history[-2:] if h.get("crop_id")]
     has_history = bool(current_seq)
+    crops_by_id = dict(sorted(crops.items()))
+
+    # Generate all valid ordered pairs with distinct crop sets (no same-family adjacency).
+    seen_sets: set[frozenset[str]] = set()
+    candidate_sequences: list[list[str]] = []
+    for first_id, first in crops_by_id.items():
+        if int(first.duration_days) > horizon_days:
+            continue
+        for second_id, second in crops_by_id.items():
+            if first_id == second_id:
+                continue
+            sequence = [first_id, second_id]
+            if int(first.duration_days) + int(second.duration_days) > horizon_days:
+                continue
+            crop_set = _crop_set(sequence)
+            if crop_set in seen_sets:
+                continue
+            seen_sets.add(crop_set)
+            if sequence != current_seq:
+                candidate_sequences.append(sequence)
+
     if not current_seq:
-        current_seq = ["onion", "pumpkin"]
-
-    candidates = [
-        (["pumpkin", "onion"], "Alternativa B"),
-        (["chili", "onion"], "Alternativa C"),
-    ]
-
-    drafts: list[PlanDraft] = []
-    for idx, (sequence, label) in enumerate(
-        [
-            (
-                current_seq,
-                "Rotación actual" if has_history else "Rotación de ejemplo",
-            )
-        ]
-        + candidates
-    ):
-        steps, too_long = _steps_for_sequence(sequence, crops, horizon_start, horizon_end)
-        draft = PlanDraft(
-            plan_id="existing" if idx == 0 else f"candidate_{idx}",
-            label=label,
-            kind=("existing" if has_history else "example") if idx == 0 else "candidate",
-            crop_sequence=[s["crop_id"] for s in steps] or sequence,
-            steps=steps,
+        current_seq = next(
+            (sequence for sequence in candidate_sequences if sequence[0] == "onion"),
+            candidate_sequences[0] if candidate_sequences else [],
         )
+        has_history = False
+    if not current_seq and crops_by_id:
+        current_seq = [next(iter(crops_by_id))]
+
+    # Build all candidate drafts with evidence tracking.
+    all_candidates: list[PlanDraft] = []
+    for index, sequence in enumerate(candidate_sequences, start=1):
+        steps, too_long = _steps_for_sequence(sequence, crops, horizon_start, horizon_end)
+        reasons: list[str] = []
         if too_long:
-            draft.status = "invalid"
-            draft.reasons.append("horizon_too_short")
+            reasons.append("horizon_too_short")
         elif not _family_ok(steps):
-            draft.status = "invalid"
-            draft.reasons.append("family_repeat")
-        else:
-            draft.status = "needs_review"
-            draft.reasons.append("review_pending")
+            reasons.append("family_repeat")
+        status = "invalid" if reasons else "needs_review"
 
-        if idx == 0 and has_history:
-            draft.why.append("Es la rotación registrada por el agricultor.")
-        elif idx == 0:
-            draft.why.append(
-                "No registraste historial; esta es una rotación de ejemplo, no tu plan actual."
+        why = ["Combina cultivos de familias distintas del catálogo."]
+        tradeoffs = ["La adecuación local de esta alternativa requiere revisión."]
+        all_candidates.append(
+            PlanDraft(
+                plan_id=f"candidate_{'_'.join(sequence)}",
+                label=f"Candidata {index}",
+                kind="candidate",
+                crop_sequence=[s["crop_id"] for s in steps] or sequence,
+                steps=steps,
+                status=status,
+                reasons=reasons,
+                why=why,
+                tradeoffs=tradeoffs,
             )
-            draft.reasons.append("history_missing_example")
-        elif idx == 1:
-            draft.why.append("Diversifica la familia respecto de la campaña anterior.")
-            draft.tradeoffs.append("Puede requerir otra ventana de siembra.")
-        else:
-            draft.why.append("Introduce una familia distinta y un ciclo distinto.")
-            draft.tradeoffs.append("Mayor incertidumbre de mercado y manejo.")
+        )
 
-        drafts.append(draft)
-    return drafts
+    # Existing/example plan.
+    existing_steps, existing_too_long = _steps_for_sequence(
+        current_seq, crops_by_id, horizon_start, horizon_end
+    )
+    existing_reasons: list[str] = []
+    if existing_too_long:
+        existing_reasons.append("horizon_too_short")
+    elif not _family_ok(existing_steps):
+        existing_reasons.append("family_repeat")
+    existing_status = "invalid" if existing_reasons else "needs_review"
+    existing_label = "Rotación actual" if has_history else "Rotación de ejemplo"
+    existing_why = (
+        ["Es la rotación registrada por el agricultor."]
+        if has_history
+        else ["No registraste historial; esta es una rotación de ejemplo, no tu plan actual."]
+    )
+    if not has_history:
+        existing_reasons.append("history_missing_example")
+    existing_draft = PlanDraft(
+        plan_id="existing",
+        label=existing_label,
+        kind=("existing" if has_history else "example"),
+        crop_sequence=[s["crop_id"] for s in existing_steps] or current_seq,
+        steps=existing_steps,
+        status=existing_status,
+        reasons=existing_reasons,
+        why=existing_why,
+        tradeoffs=[],
+    )
+
+    # Select up to 2 alternatives with distinct crop sets from the existing.
+    existing_set = _crop_set(existing_draft.crop_sequence)
+    selected: list[PlanDraft] = []
+    selected_sets: set[frozenset[str]] = {existing_set}
+    for candidate in all_candidates:
+        if candidate.status == "invalid":
+            continue
+        candidate_set = _crop_set(candidate.crop_sequence)
+        if candidate_set in selected_sets:
+            continue
+        selected.append(candidate)
+        selected_sets.add(candidate_set)
+        if len(selected) >= 2:
+            break
+
+    if not selected and all_candidates:
+        # Fall back to first valid candidate even if it shares a crop set edge case.
+        for candidate in all_candidates:
+            if candidate.status != "invalid":
+                selected.append(candidate)
+                break
+
+    pending = [c for c in all_candidates if c not in selected]
+    drafts = [existing_draft] + selected
+    return drafts, pending

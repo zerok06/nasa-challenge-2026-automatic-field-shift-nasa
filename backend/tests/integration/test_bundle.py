@@ -22,6 +22,13 @@ def test_bundle_has_integrity_and_catalog(client: TestClient, auth, demo_parcel)
     assert body["expires_at"] > body["created_at"]
     assert body["catalog"]["review_status"] == "needs_review"
     assert len(body["catalog"]["crops"]) >= 3
+    assert body["catalog"]["prices_chacra_2025"]
+    assert {"cultivo_id", "precio_chacra", "periodo", "fuente_id", "estado"} <= set(
+        body["catalog"]["prices_chacra_2025"][0]
+    )
+    assert any(
+        row.get("crop_id") for row in body["catalog"]["prices_chacra_2025"]
+    )
     assert len(body["comparison"]["plans"]) == 3
     assert body["integrity"]["algorithm"] == "sha256"
 

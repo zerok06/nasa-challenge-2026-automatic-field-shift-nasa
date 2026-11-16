@@ -1,0 +1,91 @@
+/* Anden PWA — Tailwind 4 CSS entry.
+ *
+ * Palette mirrors application/src/design-system/tokens.ts so the web app looks
+ * like the Android app: warm cream canvas, deep green brand, earth and water
+ * accents. Tailwind 4 reads these from @theme and generates the utilities.
+ */
+@import 'tailwindcss';
+
+@theme {
+  /* Brand green scale */
+  --color-primary: #1b5e20;
+  --color-primary-dark: #123f16;
+  --color-primary-soft: #f1f8f2;
+  --color-primary-50: #f1f8f2;
+  --color-primary-100: #dff0e2;
+  --color-primary-200: #bfe1c5;
+  --color-primary-300: #94cca0;
+  --color-primary-400: #63b176;
+  --color-primary-500: #3c9453;
+  --color-primary-600: #2a7a3e;
+  --color-primary-700: #1f662f;
+  --color-primary-800: #1b5e20;
+  --color-primary-900: #123f16;
+
+  /* Semantic surfaces */
+  --color-background: #faf7f0;
+  --color-surface: #ffffff;
+  --color-card: #ffffff;
+  --color-foreground: #1e231e;
+  --color-muted: #5f6b60;
+  --color-muted-foreground: #5f6b60;
+  --color-subtle: #8a968c;
+  --color-border: #e3ddd1;
+  --color-accent: #dff0e2;
+
+  /* Accents */
+  --color-earth: #8d6e63;
+  --color-water: #6d4c41;
+  --color-success: #2e7d32;
+  --color-warning: #7a3b2e;
+  --color-error: #6e2f24;
+  --color-unknown: #6b6f66;
+
+  --radius-xl: 12px;
+  --radius-2xl: 16px;
+  --radius-3xl: 20px;
+  --radius-4xl: 24px;
+
+  /* Elevation: soft, warm shadows that work on the cream canvas. */
+  --shadow-card: 0 1px 2px rgb(30 35 30 / 0.06), 0 8px 20px -12px rgb(30 35 30 / 0.18);
+  --shadow-float: 0 2px 6px rgb(30 35 30 / 0.08), 0 16px 36px -18px rgb(30 35 30 / 0.28);
+  --shadow-sticky: 0 -8px 24px -18px rgb(30 35 30 / 0.35);
+
+  --font-sans: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  @apply bg-background text-foreground antialiased;
+  font-family: var(--font-sans);
+}
+
+/* ── Accessibility: targets ≥ 48 dp (docs/accessibility.md) ──────── */
+button,
+[role='button'] {
+  min-height: 48px;
+  min-width: 48px;
+}
+
+/* Visible focus for keyboard users on both light and dark surfaces. */
+:focus-visible {
+  outline: 3px solid color-mix(in srgb, var(--color-primary) 60%, transparent);
+  outline-offset: 2px;
+}
+
+/* ── Reduce motion ────────────────────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

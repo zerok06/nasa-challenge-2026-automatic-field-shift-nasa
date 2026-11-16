@@ -85,6 +85,8 @@ export function ParcelIrrigationScreen() {
     queryKey: ['irrigation', parcel?.id],
     queryFn: () => getIrrigation(parcel!.id),
     enabled: Boolean(parcel),
+    staleTime: 10 * 60 * 1000,
+    retry: 1,
   });
 
   if (!parcel) {
@@ -113,8 +115,13 @@ export function ParcelIrrigationScreen() {
     return (
       <Screen header={<AppHeader subtitle={t('Riego de la semana')} onBack={() => router.back()} />}>
         <AppAlert tone="error">
-          {t('No pudimos leer el pronóstico. Revisa la conexión e intenta de nuevo.')}
+          {irrigation.error instanceof Error && irrigation.error.message
+            ? irrigation.error.message
+            : t('No pudimos leer el pronóstico. Revisa la conexión e intenta de nuevo.')}
         </AppAlert>
+        <Text className="text-sm leading-5 text-muted-foreground">
+          {t('El pronóstico semanal usa Open-Meteo. NASA POWER aporta datos históricos en otras consultas.')}
+        </Text>
         <AppButton
           onPress={() => void irrigation.refetch()}
           testID={testIDs.parcelIrrigation}
@@ -225,6 +232,9 @@ export function ParcelIrrigationScreen() {
           {t(
             'La ETo es de referencia y no incluye el coeficiente de tu cultivo. Usamos 80% de la lluvia como efectiva. No es una recomendación agronómica validada.',
           )}
+        </Text>
+        <Text className="text-sm leading-5 text-muted-foreground">
+          {t('El pronóstico semanal usa Open-Meteo. NASA POWER aporta datos históricos en otras consultas.')}
         </Text>
         {data.warnings.includes('terrain_unavailable') ? (
           <Text className="text-sm leading-5 text-muted-foreground">

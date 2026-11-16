@@ -1,0 +1,11 @@
+appId: com.anden.app
+---
+- runFlow:
+    file: setup.yaml
+- tapOn:
+    id: "nav.parcel"
+- extendedWaitUntil:
+    visible:
+      id: "parcel.summary"
+    timeout: 30000
+- assertVisible: "Portada ilustrativa"

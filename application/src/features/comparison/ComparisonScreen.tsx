@@ -19,6 +19,7 @@ import { Pressable } from '@/components/ui/pressable';
 import { Text } from '@/components/ui/text';
 import { VStack } from '@/components/ui/vstack';
 import { testIDs } from '@/design-system/testIDs';
+import { PlanSelector } from '@/features/comparison/PlanSelector';
 import {
   formatCropSequence,
   formatDate,
@@ -32,16 +33,55 @@ import { useComparison } from '@/providers/ComparisonProvider';
 import { useOffline } from '@/providers/OfflineProvider';
 import { useParcel } from '@/providers/ParcelProvider';
 import { sendFeedback, type Plan } from '@/services/api';
+import { clearPendingFeedback, enqueueFeedback, loadPendingFeedback } from '@/offline/feedback';
 
 function FeedbackPrompt({ parcelId, online }: { parcelId: string; online: boolean }) {
   const { t } = useTranslation();
   const [sent, setSent] = useState(false);
+  const [queued, setQueued] = useState(false);
   const [busy, setBusy] = useState(false);
 
+  useEffect(() => {
+    if (!online) return;
+    let mounted = true;
+    void (async () => {
+      const pending = await loadPendingFeedback();
+      if (!mounted || pending.length === 0) return;
+      try {
+        for (const item of pending) {
+          await sendFeedback({
+            parcelId: item.parcelId,
+            kind: item.kind,
+            rating: item.rating,
+            comment: item.comment,
+            context: item.context,
+          });
+        }
+        await clearPendingFeedback();
+      } catch {
+        // Keep the queue for the next online window.
+      }
+    })();
+    return () => {
+      mounted = false;
+    };
+  }, [online]);
+
   const submit = async (rating: number) => {
-    if (!online || busy) return;
+    if (busy) return;
     setBusy(true);
     try {
+      if (!online) {
+        await enqueueFeedback({
+          parcelId,
+          kind: 'comparison',
+          rating,
+          context: { screen: 'comparison' },
+          queuedAt: new Date().toISOString(),
+        });
+        setQueued(true);
+        return;
+      }
       await sendFeedback({
         parcelId,
         kind: 'comparison',
@@ -62,23 +102,23 @@ function FeedbackPrompt({ parcelId, online }: { parcelId: string; online: boolea
 
   return (
     <SectionCard title={t('¿Te sirvió esta comparación?')} testID={testIDs.comparisonFeedback}>
-      {sent ? (
+      {sent || queued ? (
         <Text className="text-sm leading-5 text-muted-foreground">
-          {t('Gracias. Tu respuesta nos ayuda a mejorar Anden.')}
+          {sent
+            ? t('Gracias. Tu respuesta nos ayuda a mejorar Anden.')
+            : t('Guardada en el teléfono. Se enviará cuando tengas señal.')}
         </Text>
       ) : (
         <>
           <Text className="text-sm leading-5 text-muted-foreground">
-            {online
-              ? t('Una respuesta corta nos ayuda a entender si la app se entiende.')
-              : t('Sin conexión: podrás responder cuando vuelvas a tener señal.')}
+            {t('Una respuesta corta nos ayuda a entender si la app se entiende. Sin conexión, se guarda en el teléfono.')}
           </Text>
           <HStack className="flex-wrap gap-2">
             {options.map((option) => (
               <Pressable
                 key={option.rating}
                 testID={option.testID}
-                disabled={!online || busy}
+                disabled={busy}
                 onPress={() => void submit(option.rating)}
                 accessibilityRole="button"
                 className="min-h-11 rounded-full border border-border bg-card px-3 py-2"
@@ -174,6 +214,16 @@ const PlanCard = memo(function PlanCard({ plan, index }: { plan: Plan; index: nu
             plan.water.feasibility === 'deficit' ? 'text-warning' : undefined
           }
         />
+        {plan.water.available_mm === null ? (
+          <VStack className="gap-2 rounded-xl border border-water/30 bg-water/5 p-3">
+            <Text className="text-sm leading-5 text-muted-foreground">
+              {t('Aún no tenemos el agua de tu parcela. Puedes completar ese dato para revisar mejor este plan.')}
+            </Text>
+            <AppButton tone="outline" size="sm" onPress={() => router.push('/parcel-profile?step=water')}>
+              {t('Completar agua ahora')}
+            </AppButton>
+          </VStack>
+        ) : null}
       </VStack>
 
       {otherMissing.length > 0 ? (
@@ -205,11 +255,21 @@ export function ComparisonScreen() {
   const palette = useChartPalette();
   const { parcel } = useParcel();
   const { online } = useOffline();
-  const { comparison, comparisonOrigin, stale, busy, error, createComparison } = useComparison();
+  const {
+    comparison,
+    comparisonOrigin,
+    activePlanId,
+    setActivePlanId,
+    stale,
+    busy,
+    error,
+    createComparison,
+  } = useComparison();
   const hasMargins = Boolean(
     comparison?.plans.some((plan) => plan.economics.margin_pen !== null),
   );
   const autoRefreshAttempted = useRef(false);
+  const activePlan = comparison?.plans.find((plan) => plan.plan_id === activePlanId) ?? comparison?.plans[0];
 
   const handleCreate = async () => {
     try {
@@ -259,8 +319,12 @@ export function ComparisonScreen() {
       footer={
         comparison ? (
           <>
+            <AppButton onPress={() => router.push('/plan-save')}>
+              {t('Elegir y guardar mi plan')}
+            </AppButton>
             <AppButton
               testID={testIDs.comparisonSimulate}
+              tone="outline"
               onPress={() => router.push('/scenario')}
             >
               {t('Probar un cambio')}
@@ -333,14 +397,40 @@ export function ComparisonScreen() {
             subtitle={`${formatDate(comparison.analysis_period.start)} → ${formatDate(comparison.analysis_period.end)}`}
             testID={testIDs.comparisonSummary}
           >
-            <Text className="text-sm leading-5 text-muted-foreground">
-              {t('Tres caminos para la misma parcela. Revisa el que más te sirva.')}
-            </Text>
+            {comparison.plans.length >= 3 ? (
+              <Text className="text-sm leading-5 text-muted-foreground">
+                {t('Tres caminos para la misma parcela. Revisa el que más te sirva.')}
+              </Text>
+            ) : comparison.plans.length === 2 ? (
+              <Text className="text-sm leading-5 text-muted-foreground">
+                {t('Tu plan actual y una alternativa. Completa más datos para ver más opciones.')}
+              </Text>
+            ) : comparison.plans.length === 1 ? (
+              <Text className="text-sm leading-5 text-muted-foreground">
+                {t('Solo tu plan actual por ahora. Completa datos para comparar alternativas.')}
+              </Text>
+            ) : null}
+            {comparison.pending_plans?.length ? (
+              <Text className="text-sm leading-5 text-warning">
+                {t('{{count}} alternativas pendientes por falta de datos.', {
+                  count: comparison.pending_plans.length,
+                })}
+              </Text>
+            ) : null}
           </SectionCard>
 
-          {comparison.plans.map((plan, index) => (
-            <PlanCard key={plan.plan_id} plan={plan} index={index} />
-          ))}
+          <PlanSelector
+            plans={comparison.plans}
+            selectedPlanId={activePlan?.plan_id ?? ''}
+            onSelect={setActivePlanId}
+          />
+          {activePlan ? (
+            <PlanCard
+              key={activePlan.plan_id}
+              plan={activePlan}
+              index={comparison.plans.findIndex((plan) => plan.plan_id === activePlan.plan_id)}
+            />
+          ) : null}
 
           {hasMargins ? (
             <ChartCard
@@ -351,14 +441,24 @@ export function ComparisonScreen() {
                 .join('; ')}
               columns={[t('Plan'), t('Ganancia')]}
               rows={comparison.plans.map((plan, index) => ({
-                label: index === 0 ? t('Tu plan actual') : t(plan.label),
+                label:
+                  plan.kind === 'example'
+                    ? t('Plan de ejemplo')
+                    : plan.kind === 'existing'
+                      ? t('Tu plan actual')
+                      : t(plan.label),
                 values: [formatMoney(plan.economics.margin_pen)],
               }))}
               testID="comparison.chart.margin"
             >
               <AndenBarChart
                 data={comparison.plans.map((plan, index) => ({
-                  label: index === 0 ? t('Actual') : plan.label.replace('Alternativa ', ''),
+                  label:
+                    plan.kind === 'example'
+                      ? t('Ejemplo')
+                      : plan.kind === 'existing'
+                        ? t('Actual')
+                        : plan.label.replace('Alternativa ', ''),
                   value: plan.economics.margin_pen,
                   color:
                     index === 0

@@ -6,6 +6,9 @@
 .opencode
 node_modules
 application/node_modules
+frontend/node_modules
+frontend/dist
+frontend/screenshots
 application/.expo
 backend/.venv
 **/__pycache__

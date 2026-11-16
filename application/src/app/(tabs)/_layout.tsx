@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { PixelRatio, useColorScheme } from 'react-native';
 import { Redirect, Tabs } from 'expo-router';
+import * as SecureStore from 'expo-secure-store';
 import { ArrowLeftRight, CloudOff, Home, MessageCircle, Sprout } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 
@@ -11,6 +12,8 @@ import { colors, darkColors } from '@/design-system/tokens';
 import { testIDs } from '@/design-system/testIDs';
 import { useParcel } from '@/providers/ParcelProvider';
 import { useProfile } from '@/providers/ProfileProvider';
+
+const INTRO_KEY = 'anden.intro.completed.v1';
 
 function resolvedColor(color: unknown): string {
   return typeof color === 'string' ? color : colors.muted;
@@ -25,6 +28,31 @@ export default function TabsLayout() {
   const { profile, loading: profileLoading, error: profileError, refresh: refreshProfile } =
     useProfile();
   const needsProfile = !profileLoading && !profile?.onboarding_completed_at;
+  const [introCompleted, setIntroCompleted] = useState<boolean | null>(null);
+
+  useEffect(() => {
+    let mounted = true;
+    void SecureStore.getItemAsync(INTRO_KEY)
+      .then((value) => {
+        if (mounted) setIntroCompleted(value === '1');
+      })
+      .catch(() => {
+        if (mounted) setIntroCompleted(false);
+      });
+    return () => {
+      mounted = false;
+    };
+  }, []);
+
+  if (introCompleted === null) {
+    return (
+      <Screen scroll={false} edges={['top', 'bottom']}>
+        <StateView loading title={t('Cargando tu perfil')} description={t('Preparando Anden.')} />
+      </Screen>
+    );
+  }
+
+  if (!introCompleted) return <Redirect href="/intro" />;
 
   if ((loading || profileLoading) && !parcel) {
     return (

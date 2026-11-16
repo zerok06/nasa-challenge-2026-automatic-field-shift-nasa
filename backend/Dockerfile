@@ -16,6 +16,7 @@ COPY backend/uv.lock /app/backend/uv.lock
 COPY services /app/services
 COPY backend/app /app/backend/app
 COPY datasets /app/datasets
+COPY catalogo_moquegua_v0_2_5.json /app/catalogo_moquegua_v0_2_5.json
 
 WORKDIR /app/backend
 RUN uv sync --frozen --extra gemini

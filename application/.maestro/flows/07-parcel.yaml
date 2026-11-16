@@ -11,7 +11,7 @@ appId: com.anden.app
 - assertVisible: "Datos para decidir"
 - scrollUntilVisible:
     element:
-      id: "parcel.offline"
+      text: "Datos sin internet"
     direction: DOWN
 - assertVisible: "Datos sin internet"
 - tapOn:

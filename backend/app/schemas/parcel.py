@@ -15,11 +15,17 @@ class CropEconomicsIn(BaseModel):
     yield_kg_ha: float | None = Field(default=None, ge=0)
     price_pen_kg: float | None = Field(default=None, ge=0)
     costs_pen: float | None = Field(default=None, ge=0)
+    price_source: Literal["farmer", "catalog_reference"] | None = None
+    price_confirmed: bool | None = None
+    price_reference: dict[str, Any] | None = None
+    marketable_share: float | None = Field(
+        default=None, ge=0, le=1, description="Fraction of total area actually sold (0–1); default 1.0"
+    )
 
 
 class PreferencesIn(BaseModel):
     weights: dict[str, float] = Field(
-        default_factory=lambda: {"water": 0.4, "soil": 0.3, "margin": 0.3}
+        default_factory=lambda: {"water": 0.5, "margin": 0.3, "budget": 0.2}
     )
     priorities: dict[str, float] = Field(default_factory=dict)
     constraints: dict[str, Any] = Field(default_factory=dict)

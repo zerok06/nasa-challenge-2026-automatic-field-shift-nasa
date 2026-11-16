@@ -24,11 +24,14 @@ export default function RootLayout() {
           <Stack screenOptions={{ headerShown: false }}>
             <Stack.Screen name="(tabs)" />
             <Stack.Screen name="onboarding" options={{ animation: 'fade' }} />
+            <Stack.Screen name="intro" options={{ animation: 'fade' }} />
             <Stack.Screen name="parcel-new" />
             <Stack.Screen name="parcel-profile" />
             <Stack.Screen name="parcel-economics" />
             <Stack.Screen name="parcel-irrigation" />
             <Stack.Screen name="scenario" />
+            <Stack.Screen name="plan-save" />
+            <Stack.Screen name="plan-review" />
             <Stack.Screen name="sources" />
             <Stack.Screen name="settings" />
           </Stack>

@@ -141,6 +141,14 @@ def fallback_answer(tools: list[str]) -> str:
             "Preparé un borrador. Confirma antes de guardarlo; si dices que no, "
             "no se guarda nada."
         )
+    if "propose_capture" in tools:
+        return (
+            "Anoté tu dato como borrador. Dime sí para guardarlo o no para dejarlo."
+        )
+    if "rank_plans" in tools or "explain_plan" in tools:
+        return (
+            "Revisé tus planes con tus prioridades. Pregúntame por el que más te interese."
+        )
     if "simulate_scenario" in tools:
         return (
             "Simulé el escenario con los motores. Revisa agua y ganancia en la tarjeta; "

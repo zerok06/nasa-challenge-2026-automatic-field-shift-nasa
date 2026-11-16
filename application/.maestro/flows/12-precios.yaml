@@ -1,0 +1,57 @@
+appId: com.anden.app
+---
+- launchApp:
+    clearState: true
+- runFlow:
+    file: 09-ficha-parcela.yaml
+- tapOn:
+    id: "nav.parcel"
+- tapOn: "Precios y costos"
+- extendedWaitUntil:
+    visible: "El precio propuesto viene de una referencia histórica del catálogo y puedes editarlo. Los costos de producción los ingresas tú."
+    timeout: 30000
+# La ficha lista todos los cultivos del catálogo: el scroll necesita más tiempo
+# para llegar a cebolla (4.ª tarjeta del orden del catálogo).
+- scrollUntilVisible:
+    element:
+      text: "Cebolla"
+    direction: DOWN
+    timeout: 60000
+    speed: 80
+- scrollUntilVisible:
+    element:
+      id: "parcel.economics.price.onion"
+    direction: DOWN
+    timeout: 60000
+    speed: 80
+- assertVisible: "Precio propuesto (editable)"
+- assertVisible: "0.9"
+# La referencia queda debajo del campo de precio; hay que scrollear hasta ella.
+- scrollUntilVisible:
+    element:
+      text: "Referencia del catálogo: S/ 0.90 por kg"
+    direction: DOWN
+    timeout: 30000
+- assertVisible: "Referencia del catálogo: S/ 0.90 por kg"
+- assertVisible: "DRA25 · 2025 · Moquegua"
+# El precio de referencia no entra al margen hasta que el agricultor lo acepta.
+- scrollUntilVisible:
+    element:
+      text: "Precio confirmado|Confirmar este precio estimado"
+    direction: DOWN
+- runFlow:
+    when:
+      visible: "Confirmar este precio estimado"
+    commands:
+      - tapOn: "Confirmar este precio estimado"
+- assertVisible: "Precio confirmado"
+# Un dato faltante deja el margen pendiente; nunca se muestra como cero.
+# La nota está al final de las 25 tarjetas del catálogo: necesita más scroll.
+- scrollUntilVisible:
+    element:
+      text: "Si falta un dato, el margen se mostrará como pendiente; no como cero."
+    direction: DOWN
+    timeout: 90000
+    speed: 90
+    visibilityPercentage: 50
+- assertVisible: "Si falta un dato, el margen se mostrará como pendiente; no como cero."

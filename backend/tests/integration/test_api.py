@@ -87,6 +87,14 @@ def test_agent_comparison_and_save_flow(client, auth):
     assert thread.status_code == 201, thread.text
     thread_id = thread.json()["thread_id"]
 
+    # First message triggers the deterministic proactive greeting (soft capture proposal).
+    greeting = client.post(
+        f"/api/v1/agent/threads/{thread_id}/messages",
+        json={"message": "hola"},
+        headers=auth,
+    )
+    assert greeting.status_code == 200, greeting.text
+
     message = client.post(
         f"/api/v1/agent/threads/{thread_id}/messages",
         json={"message": "Compara rotaciones que usen menos agua"},

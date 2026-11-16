@@ -53,11 +53,15 @@ export async function request<T>(
     const text = await response.text();
     const body = text ? JSON.parse(text) : {};
     if (!response.ok) {
-      const error = body?.error ?? {};
+      const error = body?.error ?? body?.detail ?? {};
       throw new ApiError(
         response.status,
-        error.code ?? 'http_error',
-        error.message ?? `Error HTTP ${response.status}`,
+        typeof error === 'object' && error?.code ? error.code : 'http_error',
+        typeof error === 'string'
+          ? error
+          : typeof error === 'object' && error?.message
+            ? error.message
+            : `Error HTTP ${response.status}`,
       );
     }
     return body as T;

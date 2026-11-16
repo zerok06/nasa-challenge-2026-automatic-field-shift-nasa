@@ -3,6 +3,10 @@
  * Keep these values identical when refactoring screens.
  */
 export const testIDs = {
+  introSkip: 'intro.skip',
+  introBack: 'intro.back',
+  introNext: 'intro.next',
+  introStart: 'intro.start',
   onboardingLanguage: (code: string) => `onboarding.language.${code}`,
   onboardingA11y: 'onboarding.a11y',
   onboardingAudio: 'onboarding.audio',
@@ -29,6 +33,7 @@ export const testIDs = {
   dashboardScenario: 'dashboard.scenario',
   dashboardAgent: 'dashboard.agent',
   dashboardParcel: 'dashboard.parcel',
+dashboardDemo: 'dashboard.demo',
   dashboardClimate: 'dashboard.climate',
   dashboardMissing: 'dashboard.missing',
   dashboardParcels: 'dashboard.parcels',
@@ -83,6 +88,7 @@ export const testIDs = {
   parcelProfileCrop: (id: string) => `parcel.profile.crop.${id}`,
   parcelProfilePriority: (id: string) => `parcel.profile.priority.${id}`,
   parcelEconomicsSave: 'parcel.economics.save',
+  parcelEconomicsPrice: (cropId: string) => `parcel.economics.price.${cropId}`,
   parcelIrrigation: 'parcel.irrigation',
   irrigationSummary: 'irrigation.summary',
   irrigationChart: 'irrigation.chart',

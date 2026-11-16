@@ -7,11 +7,12 @@ appId: com.anden.app
 - tapOn:
     id: "parcel.new.name"
 - inputText: "Parcela de Juan"
-- hideKeyboard
+- hideKeyboard:
+    optional: true
 - tapOn:
     id: "parcel.new.area"
 - inputText: "1.0"
-- hideKeyboard
+- tapOn: "Hectáreas (opcional)"
 - tapOn:
     id: "parcel.new.next"
 - extendedWaitUntil:
@@ -21,11 +22,13 @@ appId: com.anden.app
 - tapOn:
     id: "parcel.new.lat"
 - inputText: "-17.19"
-- hideKeyboard
+- hideKeyboard:
+    optional: true
 - tapOn:
     id: "parcel.new.lon"
 - inputText: "-70.93"
-- hideKeyboard
+- hideKeyboard:
+    optional: true
 - tapOn:
     id: "parcel.new.create"
 - extendedWaitUntil:

@@ -46,6 +46,21 @@ const suggestions = [
   },
 ];
 
+function renderAgentText(t: (key: string, vars?: Record<string, unknown>) => string, message: AgentChatMessage) {
+  const isAssistant = message.role === 'assistant';
+  if (!isAssistant || !message.answerKey) {
+    return message.text;
+  }
+  // `what` (if present) is itself a translation key: translate it first, then
+  // interpolate it into the outer greeting template.
+  const params = { ...(message.answerParams ?? {}) };
+  const whatKey = params.what;
+  if (typeof whatKey === 'string') {
+    params.what = t(whatKey, undefined);
+  }
+  return t(message.answerKey, params);
+}
+
 function ChatBubble({
   message,
   onNext,
@@ -91,7 +106,7 @@ function ChatBubble({
                 : 'text-base leading-6 text-foreground'
             }
           >
-            {message.text}
+            {renderAgentText(t, message)}
           </Text>
         </Box>
         {message.trace?.length ? (
@@ -167,6 +182,7 @@ export function AgentScreen() {
     error,
     send,
     confirmSave,
+    rejectSave,
   } = useAgent();
   const listRef = useRef<FlatList<AgentChatMessage>>(null);
 
@@ -254,6 +270,9 @@ export function AgentScreen() {
           >
             <AppButton testID={testIDs.agentSave} loading={sending} onPress={confirmSave}>
               {t('Confirmar y guardar')}
+            </AppButton>
+            <AppButton tone="ghost" loading={sending} onPress={rejectSave}>
+              {t('Descartar borrador')}
             </AppButton>
           </SectionCard>
         ) : null}

@@ -1,0 +1,4182 @@
+{
+  "version": "0.2.5",
+  "fecha_compilacion": "2026-11-14",
+  "rows": [
+    {
+      "crop_id": "papa",
+      "nivel": "distrito",
+      "departamento": "Moquegua",
+      "provincia": "Mariscal Nieto",
+      "distrito": "Moquegua",
+      "periodo": 2025,
+      "precio_chacra": {
+        "valor": 1.2,
+        "unidad": "PEN/kg"
+      },
+      "fuente_id": "DRA25",
+      "estado": "transcrito_pendiente_cotejo_pdf",
+      "uso": "supuesto_editable_demo",
+      "tipo_en_fuente": "Papa color"
+    },
+    {
+      "crop_id": "papa",
+      "nivel": "distrito",
+      "departamento": "Moquegua",
+      "provincia": "Mariscal Nieto",
+      "distrito": "San Antonio",
+      "periodo": 2025,
+      "precio_chacra": {
+        "valor": 1.2,
+        "unidad": "PEN/kg"
+      },
+      "fuente_id": "DRA25",
+      "estado": "transcrito_pendiente_cotejo_pdf",
+      "uso": "supuesto_editable_demo",
+      "tipo_en_fuente": "Papa color"
+    },
+    {
+      "crop_id": "papa",
+      "nivel": "distrito",
+      "departamento": "Moquegua",
+      "provincia": "Mariscal Nieto",
+      "distrito": "Samegua",
+      "periodo": 2025,
+      "precio_chacra": {
+        "valor": 1,
+        "unidad": "PEN/kg"
+      },
+      "fuente_id": "DRA25",
+      "estado": "transcrito_pendiente_cotejo_pdf",
+      "uso": "supuesto_editable_demo",
+      "tipo_en_fuente": "Papa color"
+    },
+    {
+      "crop_id": "papa",
+      "nivel": "distrito",
+      "departamento": "Moquegua",
+      "provincia": "Mariscal Nieto",
+      "distrito": "Torata",
+      "periodo": 2025,
+      "precio_chacra": {
+        "valor": 1.3,
+        "unidad": "PEN/kg"
+      },
+      "fuente_id": "DRA25",
+      "estado": "transcrito_pendiente_cotejo_pdf",
+      "uso": "supuesto_editable_demo",
+      "tipo_en_fuente": "Papa color"
+    },
+    {
+      "crop_id": "papa",
+      "nivel": "distrito",
+      "departamento": "Moquegua",
+      "provincia": "Mariscal Nieto",
+      "distrito": "Carumas",
+      "periodo": 2025,
+      "precio_chacra": {
+        "valor": 1.5,
+        "unidad": "PEN/kg"
+      },
+      "fuente_id": "DRA25",
+      "estado": "transcrito_pendiente_cotejo_pdf",
+      "uso": "supuesto_editable_demo",
+      "tipo_en_fuente": "Papa color"
+    },
+    {
+      "crop_id": "papa",
+      "nivel": "distrito",
+      "departamento": "Moquegua",
+      "provincia": "Mariscal Nieto",
+      "distrito": "Cuchumbaya",
+      "periodo": 2025,
+      "precio_chacra": {
+        "valor": 1.8,
+        "unidad": "PEN/kg"
+      },
+      "fuente_id": "DRA25",
+      "estado": "transcrito_pendiente_cotejo_pdf",
+      "uso": "supuesto_editable_demo",
+      "tipo_en_fuente": "Papa color"
+    },
+    {
+      "crop_id": "papa",
+      "nivel": "distrito",
+      "departamento": "Moquegua",
+      "provincia": "Mariscal Nieto",
+      "distrito": "San Cristóbal",
+      "periodo": 2025,
+      "precio_chacra": {
+        "valor": 2.5,
+        "unidad": "PEN/kg"
+      },
+      "fuente_id": "DRA25",
+      "estado": "transcrito_pendiente_cotejo_pdf",
+      "uso": "supuesto_editable_demo",
+      "tipo_en_fuente": "Papa color"
+    },
+    {
+      "crop_id": "papa",
+      "nivel": "distrito",
+      "departamento": "Moquegua",
+      "provincia": "General Sánchez Cerro",
+      "distrito": "Coalaque",
+      "periodo": 2025,
+      "precio_chacra": {
+        "valor": 1.8,
+        "unidad": "PEN/kg"
+      },
+      "fuente_id": "DRA25",
+      "estado": "transcrito_pendiente_cotejo_pdf",
+      "uso": "supuesto_editable_demo",
+      "tipo_en_fuente": "Papa color"
+    },
+    {
+      "crop_id": "papa",
+      "nivel": "distrito",
+      "departamento": "Moquegua",
+      "provincia": "General Sánchez Cerro",
+      "distrito": "Puquina",
+      "periodo": 2025,
+      "precio_chacra": {
+        "valor": 1.5,
+        "unidad": "PEN/kg"
+      },
+      "fuente_id": "DRA25",
+      "estado": "transcrito_pendiente_cotejo_pdf",
+      "uso": "supuesto_editable_demo",
+      "tipo_en_fuente": "Papa color"
+    },
+    {
+      "crop_id": "papa",
+      "nivel": "distrito",
+      "departamento": "Moquegua",
+      "provincia": "General Sánchez Cerro",
+      "distrito": "La Capilla",
+      "periodo": 2025,
+      "precio_chacra": {
+        "valor": 1.4,
+        "unidad": "PEN/kg"
+      },
+      "fuente_id": "DRA25",
+      "estado": "transcrito_pendiente_cotejo_pdf",
+      "uso": "supuesto_editable_demo",
+      "tipo_en_fuente": "Papa color"
+    },
+    {
+      "crop_id": "papa",
+      "nivel": "distrito",
+      "departamento": "Moquegua",
+      "provincia": "General Sánchez Cerro",
+      "distrito": "Ubinas",
+      "periodo": 2025,
+      "precio_chacra": {
+        "valor": 1.7,
+        "unidad": "PEN/kg"
+      },
+      "fuente_id": "DRA25",
+      "estado": "transcrito_pendiente_cotejo_pdf",
+      "uso": "supuesto_editable_demo",
+      "tipo_en_fuente": "Papa color"
+    },
+    {
+      "crop_id": "papa",
+      "nivel": "distrito",
+      "departamento": "Moquegua",
+      "provincia": "General Sánchez Cerro",
+      "distrito": "Matalaque",
+      "periodo": 2025,
+      "precio_chacra": {
+        "valor": 2,
+        "unidad": "PEN/kg"
+      },
+      "fuente_id": "DRA25",
+      "estado": "transcrito_pendiente_cotejo_pdf",
+      "uso": "supuesto_editable_demo",
+      "tipo_en_fuente": "Papa color"
+    },
+    {
+      "crop_id": "papa",
+      "nivel": "distrito",
+      "departamento": "Moquegua",
+      "provincia": "General Sánchez Cerro",
+      "distrito": "Chojata",
+      "periodo": 2025,
+      "precio_chacra": {
+        "valor": 1.8,
+        "unidad": "PEN/kg"
+      },
+      "fuente_id": "DRA25",
+      "estado": "transcrito_pendiente_cotejo_pdf",
+      "uso": "supuesto_editable_demo",
+      "tipo_en_fuente": "Papa color"
+    },
+    {
+      "crop_id": "papa",
+      "nivel": "distrito",
+      "departamento": "Moquegua",
+      "provincia": "General Sánchez Cerro",
+      "distrito": "Ichuña",
+      "periodo": 2025,
+      "precio_chacra": {
+        "valor": 2,
+        "unidad": "PEN/kg"
+      },
+      "fuente_id": "DRA25",
+      "estado": "transcrito_pendiente_cotejo_pdf",
+      "uso": "supuesto_editable_demo",
+      "tipo_en_fuente": "Papa color"
+    },
+    {
+      "crop_id": "papa",
+      "nivel": "distrito",
+      "departamento": "Moquegua",
+      "provincia": "General Sánchez Cerro",
+      "distrito": "Lloque",
+      "periodo": 2025,
+      "precio_chacra": {
+        "valor": 2,
+        "unidad": "PEN/kg"
+      },
+      "fuente_id": "DRA25",
+      "estado": "transcrito_pendiente_cotejo_pdf",
+      "uso": "supuesto_editable_demo",
+      "tipo_en_fuente": "Papa color"
+    },
+    {
+      "crop_id": "papa",
+      "nivel": "distrito",
+      "departamento": "Moquegua",
+      "provincia": "General Sánchez Cerro",
+      "distrito": "Yunga",
+      "periodo": 2025,
+      "precio_chacra": {
+        "valor": 1.5,
+        "unidad": "PEN/kg"
+      },
+      "fuente_id": "DRA25",
+      "estado": "transcrito_pendiente_cotejo_pdf",
+      "uso": "supuesto_editable_demo",
+      "tipo_en_fuente": "Papa color"
+    },
+    {
+      "crop_id": "papa",
+      "nivel": "distrito",
+      "departamento": "Moquegua",
+      "provincia": "Mariscal Nieto",
+      "distrito": "Torata",
+      "periodo": 2025,
+      "precio_chacra": {
+        "valor": 2,
+        "unidad": "PEN/kg"
+      },
+      "fuente_id": "DRA25",
+      "estado": "transcrito_pendiente_cotejo_pdf",
+      "uso": "supuesto_editable_demo",
+      "tipo_en_fuente": "Papa nativa"
+    },
+    {
+      "crop_id": "papa",
+      "nivel": "distrito",
+      "departamento": "Moquegua",
+      "provincia": "Mariscal Nieto",
+      "distrito": "Carumas",
+      "periodo": 2025,
+      "precio_chacra": {
+        "valor": 3,
+        "unidad": "PEN/kg"
+      },
+      "fuente_id": "DRA25",
+      "estado": "transcrito_pendiente_cotejo_pdf",
+      "uso": "supuesto_editable_demo",
+      "tipo_en_fuente": "Papa nativa"
+    },
+    {
+      "crop_id": "papa",
+      "nivel": "distrito",
+      "departamento": "Moquegua",
+      "provincia": "Mariscal Nieto",
+      "distrito": "Cuchumbaya",
+      "periodo": 2025,
+      "precio_chacra": {
+        "valor": 3,
+        "unidad": "PEN/kg"
+      },
+      "fuente_id": "DRA25",
+      "estado": "transcrito_pendiente_cotejo_pdf",
+      "uso": "supuesto_editable_demo",
+      "tipo_en_fuente": "Papa nativa"
+    },
+    {
+      "crop_id": "papa",
+      "nivel": "distrito",
+      "departamento": "Moquegua",
+      "provincia": "Mariscal Nieto",
+      "distrito": "San Cristóbal",
+      "periodo": 2025,
+      "precio_chacra": {
+        "valor": 3,
+        "unidad": "PEN/kg"
+      },
+      "fuente_id": "DRA25",
+      "estado": "transcrito_pendiente_cotejo_pdf",
+      "uso": "supuesto_editable_demo",
+      "tipo_en_fuente": "Papa nativa"
+    },
+    {
+      "crop_id": "papa",
+      "nivel": "distrito",
+      "departamento": "Moquegua",
+      "provincia": "General Sánchez Cerro",
+      "distrito": "Puquina",
+      "periodo": 2025,
+      "precio_chacra": {
+        "valor": 2.3,
+        "unidad": "PEN/kg"
+      },
+      "fuente_id": "DRA25",
+      "estado": "transcrito_pendiente_cotejo_pdf",
+      "uso": "supuesto_editable_demo",
+      "tipo_en_fuente": "Papa nativa"
+    },
+    {
+      "crop_id": "papa",
+      "nivel": "distrito",
+      "departamento": "Moquegua",
+      "provincia": "General Sánchez Cerro",
+      "distrito": "Ubinas",
+      "periodo": 2025,
+      "precio_chacra": {
+        "valor": 2.5,
+        "unidad": "PEN/kg"
+      },
+      "fuente_id": "DRA25",
+      "estado": "transcrito_pendiente_cotejo_pdf",
+      "uso": "supuesto_editable_demo",
+      "tipo_en_fuente": "Papa nativa"
+    },
+    {
+      "crop_id": "papa",
+      "nivel": "distrito",
+      "departamento": "Moquegua",
+      "provincia": "General Sánchez Cerro",
+      "distrito": "Chojata",
+      "periodo": 2025,
+      "precio_chacra": {
+        "valor": 2,
+        "unidad": "PEN/kg"
+      },
+      "fuente_id": "DRA25",
+      "estado": "transcrito_pendiente_cotejo_pdf",
+      "uso": "supuesto_editable_demo",
+      "tipo_en_fuente": "Papa nativa"
+    },
+    {
+      "crop_id": "papa",
+      "nivel": "distrito",
+      "departamento": "Moquegua",
+      "provincia": "General Sánchez Cerro",
+      "distrito": "Ichuña",
+      "periodo": 2025,
+      "precio_chacra": {
+        "valor": 3.5,
+        "unidad": "PEN/kg"
+      },
+      "fuente_id": "DRA25",
+      "estado": "transcrito_pendiente_cotejo_pdf",
+      "uso": "supuesto_editable_demo",
+      "tipo_en_fuente": "Papa nativa"
+    },
+    {
+      "crop_id": "papa",
+      "nivel": "distrito",
+      "departamento": "Moquegua",
+      "provincia": "General Sánchez Cerro",
+      "distrito": "Lloque",
+      "periodo": 2025,
+      "precio_chacra": {
+        "valor": 3,
+        "unidad": "PEN/kg"
+      },
+      "fuente_id": "DRA25",
+      "estado": "transcrito_pendiente_cotejo_pdf",
+      "uso": "supuesto_editable_demo",
+      "tipo_en_fuente": "Papa nativa"
+    },
+    {
+      "crop_id": "papa",
+      "nivel": "distrito",
+      "departamento": "Moquegua",
+      "provincia": "General Sánchez Cerro",
+      "distrito": "Yunga",
+      "periodo": 2025,
+      "precio_chacra": {
+        "valor": 2,
+        "unidad": "PEN/kg"
+      },
+      "fuente_id": "DRA25",
+      "estado": "transcrito_pendiente_cotejo_pdf",
+      "uso": "supuesto_editable_demo",
+      "tipo_en_fuente": "Papa nativa"
+    },
+    {
+      "crop_id": "papa",
+      "nivel": "distrito",
+      "departamento": "Moquegua",
+      "provincia": "Mariscal Nieto",
+      "distrito": "San Cristóbal",
+      "periodo": 2025,
+      "precio_chacra": {
+        "valor": 1.4,
+        "unidad": "PEN/kg"
+      },
+      "fuente_id": "DRA25",
+      "estado": "transcrito_pendiente_cotejo_pdf",
+      "uso": "supuesto_editable_demo",
+      "tipo_en_fuente": "Papa mejorada"
+    },
+    {
+      "crop_id": "papa",
+      "nivel": "distrito",
+      "departamento": "Moquegua",
+      "provincia": "General Sánchez Cerro",
+      "distrito": "Coalaque",
+      "periodo": 2025,
+      "precio_chacra": {
+        "valor": 1.8,
+        "unidad": "PEN/kg"
+      },
+      "fuente_id": "DRA25",
+      "estado": "transcrito_pendiente_cotejo_pdf",
+      "uso": "supuesto_editable_demo",
+      "tipo_en_fuente": "Papa mejorada"
+    },
+    {
+      "crop_id": "papa",
+      "nivel": "distrito",
+      "departamento": "Moquegua",
+      "provincia": "General Sánchez Cerro",
+      "distrito": "Quinistaquillas",
+      "periodo": 2025,
+      "precio_chacra": {
+        "valor": 1.8,
+        "unidad": "PEN/kg"
+      },
+      "fuente_id": "DRA25",
+      "estado": "transcrito_pendiente_cotejo_pdf",
+      "uso": "supuesto_editable_demo",
+      "tipo_en_fuente": "Papa mejorada"
+    },
+    {
+      "crop_id": "papa",
+      "nivel": "distrito",
+      "departamento": "Moquegua",
+      "provincia": "General Sánchez Cerro",
+      "distrito": "Puquina",
+      "periodo": 2025,
+      "precio_chacra": {
+        "valor": 1.7,
+        "unidad": "PEN/kg"
+      },
+      "fuente_id": "DRA25",
+      "estado": "transcrito_pendiente_cotejo_pdf",
+      "uso": "supuesto_editable_demo",
+      "tipo_en_fuente": "Papa mejorada"
+    },
+    {
+      "crop_id": "papa",
+      "nivel": "distrito",
+      "departamento": "Moquegua",
+      "provincia": "General Sánchez Cerro",
+      "distrito": "La Capilla",
+      "periodo": 2025,
+      "precio_chacra": {
+        "valor": 1.5,
+        "unidad": "PEN/kg"
+      },
+      "fuente_id": "DRA25",
+      "estado": "transcrito_pendiente_cotejo_pdf",
+      "uso": "supuesto_editable_demo",
+      "tipo_en_fuente": "Papa mejorada"
+    },
+    {
+      "crop_id": "papa",
+      "nivel": "distrito",
+      "departamento": "Moquegua",
+      "provincia": "General Sánchez Cerro",
+      "distrito": "Ubinas",
+      "periodo": 2025,
+      "precio_chacra": {
+        "valor": 1.8,
+        "unidad": "PEN/kg"
+      },
+      "fuente_id": "DRA25",
+      "estado": "transcrito_pendiente_cotejo_pdf",
+      "uso": "supuesto_editable_demo",
+      "tipo_en_fuente": "Papa mejorada"
+    },
+    {
+      "crop_id": "papa",
+      "nivel": "distrito",
+      "departamento": "Moquegua",
+      "provincia": "General Sánchez Cerro",
+      "distrito": "Chojata",
+      "periodo": 2025,
+      "precio_chacra": {
+        "valor": 1.8,
+        "unidad": "PEN/kg"
+      },
+      "fuente_id": "DRA25",
+      "estado": "transcrito_pendiente_cotejo_pdf",
+      "uso": "supuesto_editable_demo",
+      "tipo_en_fuente": "Papa mejorada"
+    },
+    {
+      "crop_id": "papa",
+      "nivel": "distrito",
+      "departamento": "Moquegua",
+      "provincia": "General Sánchez Cerro",
+      "distrito": "Lloque",
+      "periodo": 2025,
+      "precio_chacra": {
+        "valor": 1.6,
+        "unidad": "PEN/kg"
+      },
+      "fuente_id": "DRA25",
+      "estado": "transcrito_pendiente_cotejo_pdf",
+      "uso": "supuesto_editable_demo",
+      "tipo_en_fuente": "Papa mejorada"
+    },
+    {
+      "crop_id": "maiz_amilaceo",
+      "nivel": "distrito",
+      "departamento": "Moquegua",
+      "provincia": "Mariscal Nieto",
+      "distrito": "Moquegua",
+      "periodo": 2025,
+      "precio_chacra": {
+        "valor": 4.5,
+        "unidad": "PEN/kg"
+      },
+      "fuente_id": "DRA25",
+      "estado": "transcrito_pendiente_cotejo_pdf",
+      "uso": "supuesto_editable_demo",
+      "tipo_en_fuente": null
+    },
+    {
+      "crop_id": "maiz_amilaceo",
+      "nivel": "distrito",
+      "departamento": "Moquegua",
+      "provincia": "Mariscal Nieto",
+      "distrito": "San Antonio",
+      "periodo": 2025,
+      "precio_chacra": {
+        "valor": 4.2,
+        "unidad": "PEN/kg"
+      },
+      "fuente_id": "DRA25",
+      "estado": "transcrito_pendiente_cotejo_pdf",
+      "uso": "supuesto_editable_demo",
+      "tipo_en_fuente": null
+    },
+    {
+      "crop_id": "maiz_amilaceo",
+      "nivel": "distrito",
+      "departamento": "Moquegua",
+      "provincia": "Mariscal Nieto",
+      "distrito": "Samegua",
+      "periodo": 2025,
+      "precio_chacra": {
+        "valor": 4.3,
+        "unidad": "PEN/kg"
+      },
+      "fuente_id": "DRA25",
+      "estado": "transcrito_pendiente_cotejo_pdf",
+      "uso": "supuesto_editable_demo",
+      "tipo_en_fuente": null
+    },
+    {
+      "crop_id": "maiz_amilaceo",
+      "nivel": "distrito",
+      "departamento": "Moquegua",
+      "provincia": "Mariscal Nieto",
+      "distrito": "Torata",
+      "periodo": 2025,
+      "precio_chacra": {
+        "valor": 5.5,
+        "unidad": "PEN/kg"
+      },
+      "fuente_id": "DRA25",
+      "estado": "transcrito_pendiente_cotejo_pdf",
+      "uso": "supuesto_editable_demo",
+      "tipo_en_fuente": null
+    },
+    {
+      "crop_id": "maiz_amilaceo",
+      "nivel": "distrito",
+      "departamento": "Moquegua",
+      "provincia": "Mariscal Nieto",
+      "distrito": "Carumas",
+      "periodo": 2025,
+      "precio_chacra": {
+        "valor": 6,
+        "unidad": "PEN/kg"
+      },
+      "fuente_id": "DRA25",
+      "estado": "transcrito_pendiente_cotejo_pdf",
+      "uso": "supuesto_editable_demo",
+      "tipo_en_fuente": null
+    },
+    {
+      "crop_id": "maiz_amilaceo",
+      "nivel": "distrito",
+      "departamento": "Moquegua",
+      "provincia": "Mariscal Nieto",
+      "distrito": "Cuchumbaya",
+      "periodo": 2025,
+      "precio_chacra": {
+        "valor": 6,
+        "unidad": "PEN/kg"
+      },
+      "fuente_id": "DRA25",
+      "estado": "transcrito_pendiente_cotejo_pdf",
+      "uso": "supuesto_editable_demo",
+      "tipo_en_fuente": null
+    },
+    {
+      "crop_id": "maiz_amilaceo",
+      "nivel": "distrito",
+      "departamento": "Moquegua",
+      "provincia": "Mariscal Nieto",
+      "distrito": "San Cristóbal",
+      "periodo": 2025,
+      "precio_chacra": {
+        "valor": 6,
+        "unidad": "PEN/kg"
+      },
+      "fuente_id": "DRA25",
+      "estado": "transcrito_pendiente_cotejo_pdf",
+      "uso": "supuesto_editable_demo",
+      "tipo_en_fuente": null
+    },
+    {
+      "crop_id": "maiz_amilaceo",
+      "nivel": "distrito",
+      "departamento": "Moquegua",
+      "provincia": "General Sánchez Cerro",
+      "distrito": "Omate",
+      "periodo": 2025,
+      "precio_chacra": {
+        "valor": 5.5,
+        "unidad": "PEN/kg"
+      },
+      "fuente_id": "DRA25",
+      "estado": "transcrito_pendiente_cotejo_pdf",
+      "uso": "supuesto_editable_demo",
+      "tipo_en_fuente": null
+    },
+    {
+      "crop_id": "maiz_amilaceo",
+      "nivel": "distrito",
+      "departamento": "Moquegua",
+      "provincia": "General Sánchez Cerro",
+      "distrito": "Coalaque",
+      "periodo": 2025,
+      "precio_chacra": {
+        "valor": 7.8,
+        "unidad": "PEN/kg"
+      },
+      "fuente_id": "DRA25",
+      "estado": "transcrito_pendiente_cotejo_pdf",
+      "uso": "supuesto_editable_demo",
+      "tipo_en_fuente": null
+    },
+    {
+      "crop_id": "maiz_amilaceo",
+      "nivel": "distrito",
+      "departamento": "Moquegua",
+      "provincia": "General Sánchez Cerro",
+      "distrito": "Quinistaquillas",
+      "periodo": 2025,
+      "precio_chacra": {
+        "valor": 6,
+        "unidad": "PEN/kg"
+      },
+      "fuente_id": "DRA25",
+      "estado": "transcrito_pendiente_cotejo_pdf",
+      "uso": "supuesto_editable_demo",
+      "tipo_en_fuente": null
+    },
+    {
+      "crop_id": "maiz_amilaceo",
+      "nivel": "distrito",
+      "departamento": "Moquegua",
+      "provincia": "General Sánchez Cerro",
+      "distrito": "Puquina",
+      "periodo": 2025,
+      "precio_chacra": {
+        "valor": 6,
+        "unidad": "PEN/kg"
+      },
+      "fuente_id": "DRA25",
+      "estado": "transcrito_pendiente_cotejo_pdf",
+      "uso": "supuesto_editable_demo",
+      "tipo_en_fuente": null
+    },
+    {
+      "crop_id": "maiz_amilaceo",
+      "nivel": "distrito",
+      "departamento": "Moquegua",
+      "provincia": "General Sánchez Cerro",
+      "distrito": "La Capilla",
+      "periodo": 2025,
+      "precio_chacra": {
+        "valor": 6,
+        "unidad": "PEN/kg"
+      },
+      "fuente_id": "DRA25",
+      "estado": "transcrito_pendiente_cotejo_pdf",
+      "uso": "supuesto_editable_demo",
+      "tipo_en_fuente": null
+    },
+    {
+      "crop_id": "maiz_amilaceo",
+      "nivel": "distrito",
+      "departamento": "Moquegua",
+      "provincia": "General Sánchez Cerro",
+      "distrito": "Ubinas",
+      "periodo": 2025,
+      "precio_chacra": {
+        "valor": 7.5,
+        "unidad": "PEN/kg"
+      },
+      "fuente_id": "DRA25",
+      "estado": "transcrito_pendiente_cotejo_pdf",
+      "uso": "supuesto_editable_demo",
+      "tipo_en_fuente": null
+    },
+    {
+      "crop_id": "maiz_amilaceo",
+      "nivel": "distrito",
+      "departamento": "Moquegua",
+      "provincia": "General Sánchez Cerro",
+      "distrito": "Matalaque",
+      "periodo": 2025,
+      "precio_chacra": {
+        "valor": 8,
+        "unidad": "PEN/kg"
+      },
+      "fuente_id": "DRA25",
+      "estado": "transcrito_pendiente_cotejo_pdf",
+      "uso": "supuesto_editable_demo",
+      "tipo_en_fuente": null
+    },
+    {
+      "crop_id": "maiz_amilaceo",
+      "nivel": "distrito",
+      "departamento": "Moquegua",
+      "provincia": "General Sánchez Cerro",
+      "distrito": "Ichuña",
+      "periodo": 2025,
+      "precio_chacra": {
+        "valor": 7,
+        "unidad": "PEN/kg"
+      },
+      "fuente_id": "DRA25",
+      "estado": "transcrito_pendiente_cotejo_pdf",
+      "uso": "supuesto_editable_demo",
+      "tipo_en_fuente": null
+    },
+    {
+      "crop_id": "maiz_amilaceo",
+      "nivel": "distrito",
+      "departamento": "Moquegua",
+      "provincia": "General Sánchez Cerro",
+      "distrito": "Chojata",
+      "periodo": 2025,
+      "precio_chacra": {
+        "valor": 7,
+        "unidad": "PEN/kg"
+      },
+      "fuente_id": "DRA25",
+      "estado": "transcrito_pendiente_cotejo_pdf",
+      "uso": "supuesto_editable_demo",
+      "tipo_en_fuente": null
+    },
+    {
+      "crop_id": "maiz_amilaceo",
+      "nivel": "distrito",
+      "departamento": "Moquegua",
+      "provincia": "General Sánchez Cerro",
+      "distrito": "Lloque",
+      "periodo": 2025,
+      "precio_chacra": {
+        "valor": 6,
+        "unidad": "PEN/kg"
+      },
+      "fuente_id": "DRA25",
+      "estado": "transcrito_pendiente_cotejo_pdf",
+      "uso": "supuesto_editable_demo",
+      "tipo_en_fuente": null
+    },
+    {
+      "crop_id": "maiz_amilaceo",
+      "nivel": "distrito",
+      "departamento": "Moquegua",
+      "provincia": "General Sánchez Cerro",
+      "distrito": "Yunga",
+      "periodo": 2025,
+      "precio_chacra": {
+        "valor": 6,
+        "unidad": "PEN/kg"
+      },
+      "fuente_id": "DRA25",
+      "estado": "transcrito_pendiente_cotejo_pdf",
+      "uso": "supuesto_editable_demo",
+      "tipo_en_fuente": null
+    },
+    {
+      "crop_id": "haba_seca",
+      "nivel": "distrito",
+      "departamento": "Moquegua",
+      "provincia": "Mariscal Nieto",
+      "distrito": "Carumas",
+      "periodo": 2025,
+      "precio_chacra": {
+        "valor": 4,
+        "unidad": "PEN/kg"
+      },
+      "fuente_id": "DRA25",
+      "estado": "transcrito_pendiente_cotejo_pdf",
+      "uso": "supuesto_editable_demo",
+      "tipo_en_fuente": null
+    },
+    {
+      "crop_id": "haba_seca",
+      "nivel": "distrito",
+      "departamento": "Moquegua",
+      "provincia": "Mariscal Nieto",
+      "distrito": "Cuchumbaya",
+      "periodo": 2025,
+      "precio_chacra": {
+        "valor": 2.5,
+        "unidad": "PEN/kg"
+      },
+      "fuente_id": "DRA25",
+      "estado": "transcrito_pendiente_cotejo_pdf",
+      "uso": "supuesto_editable_demo",
+      "tipo_en_fuente": null
+    },
+    {
+      "crop_id": "haba_seca",
+      "nivel": "distrito",
+      "departamento": "Moquegua",
+      "provincia": "Mariscal Nieto",
+      "distrito": "San Cristóbal",
+      "periodo": 2025,
+      "precio_chacra": {
+        "valor": 3,
+        "unidad": "PEN/kg"
+      },
+      "fuente_id": "DRA25",
+      "estado": "transcrito_pendiente_cotejo_pdf",
+      "uso": "supuesto_editable_demo",
+      "tipo_en_fuente": null
+    },
+    {
+      "crop_id": "haba_seca",
+      "nivel": "distrito",
+      "departamento": "Moquegua",
+      "provincia": "General Sánchez Cerro",
+      "distrito": "Omate",
+      "periodo": 2025,
+      "precio_chacra": {
+        "valor": 3,
+        "unidad": "PEN/kg"
+      },
+      "fuente_id": "DRA25",
+      "estado": "transcrito_pendiente_cotejo_pdf",
+      "uso": "supuesto_editable_demo",
+      "tipo_en_fuente": null
+    },
+    {
+      "crop_id": "haba_seca",
+      "nivel": "distrito",
+      "departamento": "Moquegua",
+      "provincia": "General Sánchez Cerro",
+      "distrito": "Coalaque",
+      "periodo": 2025,
+      "precio_chacra": {
+        "valor": 3.5,
+        "unidad": "PEN/kg"
+      },
+      "fuente_id": "DRA25",
+      "estado": "transcrito_pendiente_cotejo_pdf",
+      "uso": "supuesto_editable_demo",
+      "tipo_en_fuente": null
+    },
+    {
+      "crop_id": "haba_seca",
+      "nivel": "distrito",
+      "departamento": "Moquegua",
+      "provincia": "General Sánchez Cerro",
+      "distrito": "Puquina",
+      "periodo": 2025,
+      "precio_chacra": {
+        "valor": 5,
+        "unidad": "PEN/kg"
+      },
+      "fuente_id": "DRA25",
+      "estado": "transcrito_pendiente_cotejo_pdf",
+      "uso": "supuesto_editable_demo",
+      "tipo_en_fuente": null
+    },
+    {
+      "crop_id": "haba_seca",
+      "nivel": "distrito",
+      "departamento": "Moquegua",
+      "provincia": "General Sánchez Cerro",
+      "distrito": "Ubinas",
+      "periodo": 2025,
+      "precio_chacra": {
+        "valor": 4.5,
+        "unidad": "PEN/kg"
+      },
+      "fuente_id": "DRA25",
+      "estado": "transcrito_pendiente_cotejo_pdf",
+      "uso": "supuesto_editable_demo",
+      "tipo_en_fuente": null
+    },
+    {
+      "crop_id": "haba_seca",
+      "nivel": "distrito",
+      "departamento": "Moquegua",
+      "provincia": "General Sánchez Cerro",
+      "distrito": "Matalaque",
+      "periodo": 2025,
+      "precio_chacra": {
+        "valor": 3,
+        "unidad": "PEN/kg"
+      },
+      "fuente_id": "DRA25",
+      "estado": "transcrito_pendiente_cotejo_pdf",
+      "uso": "supuesto_editable_demo",
+      "tipo_en_fuente": null
+    },
+    {
+      "crop_id": "haba_seca",
+      "nivel": "distrito",
+      "departamento": "Moquegua",
+      "provincia": "General Sánchez Cerro",
+      "distrito": "Chojata",
+      "periodo": 2025,
+      "precio_chacra": {
+        "valor": 2,
+        "unidad": "PEN/kg"
+      },
+      "fuente_id": "DRA25",
+      "estado": "transcrito_pendiente_cotejo_pdf",
+      "uso": "supuesto_editable_demo",
+      "tipo_en_fuente": null
+    },
+    {
+      "crop_id": "haba_seca",
+      "nivel": "distrito",
+      "departamento": "Moquegua",
+      "provincia": "General Sánchez Cerro",
+      "distrito": "Lloque",
+      "periodo": 2025,
+      "precio_chacra": {
+        "valor": 4.8,
+        "unidad": "PEN/kg"
+      },
+      "fuente_id": "DRA25",
+      "estado": "transcrito_pendiente_cotejo_pdf",
+      "uso": "supuesto_editable_demo",
+      "tipo_en_fuente": null
+    },
+    {
+      "crop_id": "haba_seca",
+      "nivel": "distrito",
+      "departamento": "Moquegua",
+      "provincia": "General Sánchez Cerro",
+      "distrito": "Yunga",
+      "periodo": 2025,
+      "precio_chacra": {
+        "valor": 2,
+        "unidad": "PEN/kg"
+      },
+      "fuente_id": "DRA25",
+      "estado": "transcrito_pendiente_cotejo_pdf",
+      "uso": "supuesto_editable_demo",
+      "tipo_en_fuente": null
+    },
+    {
+      "crop_id": "haba_seca",
+      "nivel": "distrito",
+      "departamento": "Moquegua",
+      "provincia": "General Sánchez Cerro",
+      "distrito": "Ichuña",
+      "periodo": 2025,
+      "precio_chacra": {
+        "valor": 4,
+        "unidad": "PEN/kg"
+      },
+      "fuente_id": "DRA25",
+      "estado": "transcrito_pendiente_cotejo_pdf",
+      "uso": "supuesto_editable_demo",
+      "tipo_en_fuente": null
+    },
+    {
+      "crop_id": "cebolla",
+      "nivel": "distrito",
+      "departamento": "Moquegua",
+      "provincia": "Mariscal Nieto",
+      "distrito": "Moquegua",
+      "periodo": 2025,
+      "precio_chacra": {
+        "valor": 0.9,
+        "unidad": "PEN/kg"
+      },
+      "fuente_id": "DRA25",
+      "estado": "transcrito_pendiente_cotejo_pdf",
+      "uso": "supuesto_editable_demo",
+      "tipo_en_fuente": null
+    },
+    {
+      "crop_id": "cebolla",
+      "nivel": "distrito",
+      "departamento": "Moquegua",
+      "provincia": "Mariscal Nieto",
+      "distrito": "San Antonio",
+      "periodo": 2025,
+      "precio_chacra": {
+        "valor": 0.8,
+        "unidad": "PEN/kg"
+      },
+      "fuente_id": "DRA25",
+      "estado": "transcrito_pendiente_cotejo_pdf",
+      "uso": "supuesto_editable_demo",
+      "tipo_en_fuente": null
+    },
+    {
+      "crop_id": "cebolla",
+      "nivel": "distrito",
+      "departamento": "Moquegua",
+      "provincia": "Mariscal Nieto",
+      "distrito": "Samegua",
+      "periodo": 2025,
+      "precio_chacra": {
+        "valor": 1.2,
+        "unidad": "PEN/kg"
+      },
+      "fuente_id": "DRA25",
+      "estado": "transcrito_pendiente_cotejo_pdf",
+      "uso": "supuesto_editable_demo",
+      "tipo_en_fuente": null
+    },
+    {
+      "crop_id": "zapallo",
+      "nivel": "distrito",
+      "departamento": "Moquegua",
+      "provincia": "Mariscal Nieto",
+      "distrito": "Moquegua",
+      "periodo": 2025,
+      "precio_chacra": {
+        "valor": 2.3,
+        "unidad": "PEN/kg"
+      },
+      "fuente_id": "DRA25",
+      "estado": "transcrito_pendiente_cotejo_pdf",
+      "uso": "supuesto_editable_demo",
+      "tipo_en_fuente": null
+    },
+    {
+      "crop_id": "zapallo",
+      "nivel": "distrito",
+      "departamento": "Moquegua",
+      "provincia": "Mariscal Nieto",
+      "distrito": "San Antonio",
+      "periodo": 2025,
+      "precio_chacra": {
+        "valor": 2,
+        "unidad": "PEN/kg"
+      },
+      "fuente_id": "DRA25",
+      "estado": "transcrito_pendiente_cotejo_pdf",
+      "uso": "supuesto_editable_demo",
+      "tipo_en_fuente": null
+    },
+    {
+      "crop_id": "zapallo",
+      "nivel": "distrito",
+      "departamento": "Moquegua",
+      "provincia": "Mariscal Nieto",
+      "distrito": "Samegua",
+      "periodo": 2025,
+      "precio_chacra": {
+        "valor": 2,
+        "unidad": "PEN/kg"
+      },
+      "fuente_id": "DRA25",
+      "estado": "transcrito_pendiente_cotejo_pdf",
+      "uso": "supuesto_editable_demo",
+      "tipo_en_fuente": null
+    },
+    {
+      "crop_id": "zapallo",
+      "nivel": "distrito",
+      "departamento": "Moquegua",
+      "provincia": "General Sánchez Cerro",
+      "distrito": "Puquina",
+      "periodo": 2025,
+      "precio_chacra": {
+        "valor": 2,
+        "unidad": "PEN/kg"
+      },
+      "fuente_id": "DRA25",
+      "estado": "transcrito_pendiente_cotejo_pdf",
+      "uso": "supuesto_editable_demo",
+      "tipo_en_fuente": null
+    },
+    {
+      "crop_id": "zapallo",
+      "nivel": "distrito",
+      "departamento": "Moquegua",
+      "provincia": "General Sánchez Cerro",
+      "distrito": "La Capilla",
+      "periodo": 2025,
+      "precio_chacra": {
+        "valor": 2,
+        "unidad": "PEN/kg"
+      },
+      "fuente_id": "DRA25",
+      "estado": "transcrito_pendiente_cotejo_pdf",
+      "uso": "supuesto_editable_demo",
+      "tipo_en_fuente": null
+    },
+    {
+      "crop_id": "alfalfa",
+      "nivel": "distrito",
+      "departamento": "Moquegua",
+      "provincia": "Mariscal Nieto",
+      "distrito": "Moquegua",
+      "periodo": 2025,
+      "precio_chacra": {
+        "valor": 0.06,
+        "unidad": "PEN/kg"
+      },
+      "fuente_id": "DRA25",
+      "estado": "transcrito_pendiente_cotejo_pdf",
+      "uso": "supuesto_editable_demo",
+      "tipo_en_fuente": null
+    },
+    {
+      "crop_id": "alfalfa",
+      "nivel": "distrito",
+      "departamento": "Moquegua",
+      "provincia": "Mariscal Nieto",
+      "distrito": "San Antonio",
+      "periodo": 2025,
+      "precio_chacra": {
+        "valor": 0.06,
+        "unidad": "PEN/kg"
+      },
+      "fuente_id": "DRA25",
+      "estado": "transcrito_pendiente_cotejo_pdf",
+      "uso": "supuesto_editable_demo",
+      "tipo_en_fuente": null
+    },
+    {
+      "crop_id": "alfalfa",
+      "nivel": "distrito",
+      "departamento": "Moquegua",
+      "provincia": "Mariscal Nieto",
+      "distrito": "Samegua",
+      "periodo": 2025,
+      "precio_chacra": {
+        "valor": 0.3,
+        "unidad": "PEN/kg"
+      },
+      "fuente_id": "DRA25",
+      "estado": "transcrito_pendiente_cotejo_pdf",
+      "uso": "supuesto_editable_demo",
+      "tipo_en_fuente": null
+    },
+    {
+      "crop_id": "alfalfa",
+      "nivel": "distrito",
+      "departamento": "Moquegua",
+      "provincia": "Mariscal Nieto",
+      "distrito": "Torata",
+      "periodo": 2025,
+      "precio_chacra": {
+        "valor": 0.1,
+        "unidad": "PEN/kg"
+      },
+      "fuente_id": "DRA25",
+      "estado": "transcrito_pendiente_cotejo_pdf",
+      "uso": "supuesto_editable_demo",
+      "tipo_en_fuente": null
+    },
+    {
+      "crop_id": "alfalfa",
+      "nivel": "distrito",
+      "departamento": "Moquegua",
+      "provincia": "Mariscal Nieto",
+      "distrito": "Carumas",
+      "periodo": 2025,
+      "precio_chacra": {
+        "valor": 0.15,
+        "unidad": "PEN/kg"
+      },
+      "fuente_id": "DRA25",
+      "estado": "transcrito_pendiente_cotejo_pdf",
+      "uso": "supuesto_editable_demo",
+      "tipo_en_fuente": null
+    },
+    {
+      "crop_id": "alfalfa",
+      "nivel": "distrito",
+      "departamento": "Moquegua",
+      "provincia": "Mariscal Nieto",
+      "distrito": "Cuchumbaya",
+      "periodo": 2025,
+      "precio_chacra": {
+        "valor": 0.14,
+        "unidad": "PEN/kg"
+      },
+      "fuente_id": "DRA25",
+      "estado": "transcrito_pendiente_cotejo_pdf",
+      "uso": "supuesto_editable_demo",
+      "tipo_en_fuente": null
+    },
+    {
+      "crop_id": "alfalfa",
+      "nivel": "distrito",
+      "departamento": "Moquegua",
+      "provincia": "Mariscal Nieto",
+      "distrito": "San Cristóbal",
+      "periodo": 2025,
+      "precio_chacra": {
+        "valor": 0.1,
+        "unidad": "PEN/kg"
+      },
+      "fuente_id": "DRA25",
+      "estado": "transcrito_pendiente_cotejo_pdf",
+      "uso": "supuesto_editable_demo",
+      "tipo_en_fuente": null
+    },
+    {
+      "crop_id": "alfalfa",
+      "nivel": "distrito",
+      "departamento": "Moquegua",
+      "provincia": "General Sánchez Cerro",
+      "distrito": "Omate",
+      "periodo": 2025,
+      "precio_chacra": {
+        "valor": 0.1,
+        "unidad": "PEN/kg"
+      },
+      "fuente_id": "DRA25",
+      "estado": "transcrito_pendiente_cotejo_pdf",
+      "uso": "supuesto_editable_demo",
+      "tipo_en_fuente": null
+    },
+    {
+      "crop_id": "alfalfa",
+      "nivel": "distrito",
+      "departamento": "Moquegua",
+      "provincia": "General Sánchez Cerro",
+      "distrito": "Coalaque",
+      "periodo": 2025,
+      "precio_chacra": {
+        "valor": 0.1,
+        "unidad": "PEN/kg"
+      },
+      "fuente_id": "DRA25",
+      "estado": "transcrito_pendiente_cotejo_pdf",
+      "uso": "supuesto_editable_demo",
+      "tipo_en_fuente": null
+    },
+    {
+      "crop_id": "alfalfa",
+      "nivel": "distrito",
+      "departamento": "Moquegua",
+      "provincia": "General Sánchez Cerro",
+      "distrito": "Quinistaquillas",
+      "periodo": 2025,
+      "precio_chacra": {
+        "valor": 0.25,
+        "unidad": "PEN/kg"
+      },
+      "fuente_id": "DRA25",
+      "estado": "transcrito_pendiente_cotejo_pdf",
+      "uso": "supuesto_editable_demo",
+      "tipo_en_fuente": null
+    },
+    {
+      "crop_id": "alfalfa",
+      "nivel": "distrito",
+      "departamento": "Moquegua",
+      "provincia": "General Sánchez Cerro",
+      "distrito": "Puquina",
+      "periodo": 2025,
+      "precio_chacra": {
+        "valor": 0.16,
+        "unidad": "PEN/kg"
+      },
+      "fuente_id": "DRA25",
+      "estado": "transcrito_pendiente_cotejo_pdf",
+      "uso": "supuesto_editable_demo",
+      "tipo_en_fuente": null
+    },
+    {
+      "crop_id": "alfalfa",
+      "nivel": "distrito",
+      "departamento": "Moquegua",
+      "provincia": "General Sánchez Cerro",
+      "distrito": "La Capilla",
+      "periodo": 2025,
+      "precio_chacra": {
+        "valor": 0.07,
+        "unidad": "PEN/kg"
+      },
+      "fuente_id": "DRA25",
+      "estado": "transcrito_pendiente_cotejo_pdf",
+      "uso": "supuesto_editable_demo",
+      "tipo_en_fuente": null
+    },
+    {
+      "crop_id": "alfalfa",
+      "nivel": "distrito",
+      "departamento": "Moquegua",
+      "provincia": "General Sánchez Cerro",
+      "distrito": "Ubinas",
+      "periodo": 2025,
+      "precio_chacra": {
+        "valor": 0.21,
+        "unidad": "PEN/kg"
+      },
+      "fuente_id": "DRA25",
+      "estado": "transcrito_pendiente_cotejo_pdf",
+      "uso": "supuesto_editable_demo",
+      "tipo_en_fuente": null
+    },
+    {
+      "crop_id": "alfalfa",
+      "nivel": "distrito",
+      "departamento": "Moquegua",
+      "provincia": "General Sánchez Cerro",
+      "distrito": "Matalaque",
+      "periodo": 2025,
+      "precio_chacra": {
+        "valor": 0.23,
+        "unidad": "PEN/kg"
+      },
+      "fuente_id": "DRA25",
+      "estado": "transcrito_pendiente_cotejo_pdf",
+      "uso": "supuesto_editable_demo",
+      "tipo_en_fuente": null
+    },
+    {
+      "crop_id": "alfalfa",
+      "nivel": "distrito",
+      "departamento": "Moquegua",
+      "provincia": "General Sánchez Cerro",
+      "distrito": "Chojata",
+      "periodo": 2025,
+      "precio_chacra": {
+        "valor": 0.11,
+        "unidad": "PEN/kg"
+      },
+      "fuente_id": "DRA25",
+      "estado": "transcrito_pendiente_cotejo_pdf",
+      "uso": "supuesto_editable_demo",
+      "tipo_en_fuente": null
+    },
+    {
+      "crop_id": "alfalfa",
+      "nivel": "distrito",
+      "departamento": "Moquegua",
+      "provincia": "General Sánchez Cerro",
+      "distrito": "Lloque",
+      "periodo": 2025,
+      "precio_chacra": {
+        "valor": 0.28,
+        "unidad": "PEN/kg"
+      },
+      "fuente_id": "DRA25",
+      "estado": "transcrito_pendiente_cotejo_pdf",
+      "uso": "supuesto_editable_demo",
+      "tipo_en_fuente": null
+    },
+    {
+      "crop_id": "alfalfa",
+      "nivel": "distrito",
+      "departamento": "Moquegua",
+      "provincia": "General Sánchez Cerro",
+      "distrito": "Yunga",
+      "periodo": 2025,
+      "precio_chacra": {
+        "valor": 0.39,
+        "unidad": "PEN/kg"
+      },
+      "fuente_id": "DRA25",
+      "estado": "transcrito_pendiente_cotejo_pdf",
+      "uso": "supuesto_editable_demo",
+      "tipo_en_fuente": null
+    },
+    {
+      "crop_id": "alfalfa",
+      "nivel": "distrito",
+      "departamento": "Moquegua",
+      "provincia": "General Sánchez Cerro",
+      "distrito": "Ichuña",
+      "periodo": 2025,
+      "precio_chacra": {
+        "valor": 0.3,
+        "unidad": "PEN/kg"
+      },
+      "fuente_id": "DRA25",
+      "estado": "transcrito_pendiente_cotejo_pdf",
+      "uso": "supuesto_editable_demo",
+      "tipo_en_fuente": null
+    },
+    {
+      "crop_id": "alfalfa",
+      "nivel": "distrito",
+      "departamento": "Moquegua",
+      "provincia": "Ilo",
+      "distrito": "El Algarrobal",
+      "periodo": 2025,
+      "precio_chacra": {
+        "valor": 0.17,
+        "unidad": "PEN/kg"
+      },
+      "fuente_id": "DRA25",
+      "estado": "transcrito_pendiente_cotejo_pdf",
+      "uso": "supuesto_editable_demo",
+      "tipo_en_fuente": null
+    },
+    {
+      "crop_id": "palto",
+      "nivel": "distrito",
+      "departamento": "Moquegua",
+      "provincia": "Mariscal Nieto",
+      "distrito": "Moquegua",
+      "periodo": 2025,
+      "precio_chacra": {
+        "valor": 5.1,
+        "unidad": "PEN/kg"
+      },
+      "fuente_id": "DRA25",
+      "estado": "transcrito_pendiente_cotejo_pdf",
+      "uso": "supuesto_editable_demo",
+      "tipo_en_fuente": null
+    },
+    {
+      "crop_id": "palto",
+      "nivel": "distrito",
+      "departamento": "Moquegua",
+      "provincia": "Mariscal Nieto",
+      "distrito": "San Antonio",
+      "periodo": 2025,
+      "precio_chacra": {
+        "valor": 4.8,
+        "unidad": "PEN/kg"
+      },
+      "fuente_id": "DRA25",
+      "estado": "transcrito_pendiente_cotejo_pdf",
+      "uso": "supuesto_editable_demo",
+      "tipo_en_fuente": null
+    },
+    {
+      "crop_id": "palto",
+      "nivel": "distrito",
+      "departamento": "Moquegua",
+      "provincia": "Mariscal Nieto",
+      "distrito": "Samegua",
+      "periodo": 2025,
+      "precio_chacra": {
+        "valor": 4.8,
+        "unidad": "PEN/kg"
+      },
+      "fuente_id": "DRA25",
+      "estado": "transcrito_pendiente_cotejo_pdf",
+      "uso": "supuesto_editable_demo",
+      "tipo_en_fuente": null
+    },
+    {
+      "crop_id": "palto",
+      "nivel": "distrito",
+      "departamento": "Moquegua",
+      "provincia": "Mariscal Nieto",
+      "distrito": "Torata",
+      "periodo": 2025,
+      "precio_chacra": {
+        "valor": 5.3,
+        "unidad": "PEN/kg"
+      },
+      "fuente_id": "DRA25",
+      "estado": "transcrito_pendiente_cotejo_pdf",
+      "uso": "supuesto_editable_demo",
+      "tipo_en_fuente": null
+    },
+    {
+      "crop_id": "palto",
+      "nivel": "distrito",
+      "departamento": "Moquegua",
+      "provincia": "Mariscal Nieto",
+      "distrito": "Carumas",
+      "periodo": 2025,
+      "precio_chacra": {
+        "valor": 5,
+        "unidad": "PEN/kg"
+      },
+      "fuente_id": "DRA25",
+      "estado": "transcrito_pendiente_cotejo_pdf",
+      "uso": "supuesto_editable_demo",
+      "tipo_en_fuente": null
+    },
+    {
+      "crop_id": "palto",
+      "nivel": "distrito",
+      "departamento": "Moquegua",
+      "provincia": "Mariscal Nieto",
+      "distrito": "Cuchumbaya",
+      "periodo": 2025,
+      "precio_chacra": {
+        "valor": 6,
+        "unidad": "PEN/kg"
+      },
+      "fuente_id": "DRA25",
+      "estado": "transcrito_pendiente_cotejo_pdf",
+      "uso": "supuesto_editable_demo",
+      "tipo_en_fuente": null
+    },
+    {
+      "crop_id": "palto",
+      "nivel": "distrito",
+      "departamento": "Moquegua",
+      "provincia": "Mariscal Nieto",
+      "distrito": "San Cristóbal",
+      "periodo": 2025,
+      "precio_chacra": {
+        "valor": 6,
+        "unidad": "PEN/kg"
+      },
+      "fuente_id": "DRA25",
+      "estado": "transcrito_pendiente_cotejo_pdf",
+      "uso": "supuesto_editable_demo",
+      "tipo_en_fuente": null
+    },
+    {
+      "crop_id": "palto",
+      "nivel": "distrito",
+      "departamento": "Moquegua",
+      "provincia": "General Sánchez Cerro",
+      "distrito": "Omate",
+      "periodo": 2025,
+      "precio_chacra": {
+        "valor": 6.4,
+        "unidad": "PEN/kg"
+      },
+      "fuente_id": "DRA25",
+      "estado": "transcrito_pendiente_cotejo_pdf",
+      "uso": "supuesto_editable_demo",
+      "tipo_en_fuente": null
+    },
+    {
+      "crop_id": "palto",
+      "nivel": "distrito",
+      "departamento": "Moquegua",
+      "provincia": "General Sánchez Cerro",
+      "distrito": "Coalaque",
+      "periodo": 2025,
+      "precio_chacra": {
+        "valor": 5.8,
+        "unidad": "PEN/kg"
+      },
+      "fuente_id": "DRA25",
+      "estado": "transcrito_pendiente_cotejo_pdf",
+      "uso": "supuesto_editable_demo",
+      "tipo_en_fuente": null
+    },
+    {
+      "crop_id": "palto",
+      "nivel": "distrito",
+      "departamento": "Moquegua",
+      "provincia": "General Sánchez Cerro",
+      "distrito": "Quinistaquillas",
+      "periodo": 2025,
+      "precio_chacra": {
+        "valor": 5.6,
+        "unidad": "PEN/kg"
+      },
+      "fuente_id": "DRA25",
+      "estado": "transcrito_pendiente_cotejo_pdf",
+      "uso": "supuesto_editable_demo",
+      "tipo_en_fuente": null
+    },
+    {
+      "crop_id": "palto",
+      "nivel": "distrito",
+      "departamento": "Moquegua",
+      "provincia": "General Sánchez Cerro",
+      "distrito": "Puquina",
+      "periodo": 2025,
+      "precio_chacra": {
+        "valor": 5.2,
+        "unidad": "PEN/kg"
+      },
+      "fuente_id": "DRA25",
+      "estado": "transcrito_pendiente_cotejo_pdf",
+      "uso": "supuesto_editable_demo",
+      "tipo_en_fuente": null
+    },
+    {
+      "crop_id": "palto",
+      "nivel": "distrito",
+      "departamento": "Moquegua",
+      "provincia": "General Sánchez Cerro",
+      "distrito": "La Capilla",
+      "periodo": 2025,
+      "precio_chacra": {
+        "valor": 5.4,
+        "unidad": "PEN/kg"
+      },
+      "fuente_id": "DRA25",
+      "estado": "transcrito_pendiente_cotejo_pdf",
+      "uso": "supuesto_editable_demo",
+      "tipo_en_fuente": null
+    },
+    {
+      "crop_id": "palto",
+      "nivel": "distrito",
+      "departamento": "Moquegua",
+      "provincia": "General Sánchez Cerro",
+      "distrito": "Matalaque",
+      "periodo": 2025,
+      "precio_chacra": {
+        "valor": 4.6,
+        "unidad": "PEN/kg"
+      },
+      "fuente_id": "DRA25",
+      "estado": "transcrito_pendiente_cotejo_pdf",
+      "uso": "supuesto_editable_demo",
+      "tipo_en_fuente": null
+    },
+    {
+      "crop_id": "palto",
+      "nivel": "distrito",
+      "departamento": "Moquegua",
+      "provincia": "Ilo",
+      "distrito": "El Algarrobal",
+      "periodo": 2025,
+      "precio_chacra": {
+        "valor": 4,
+        "unidad": "PEN/kg"
+      },
+      "fuente_id": "DRA25",
+      "estado": "transcrito_pendiente_cotejo_pdf",
+      "uso": "supuesto_editable_demo",
+      "tipo_en_fuente": null
+    },
+    {
+      "crop_id": "tuna",
+      "nivel": "distrito",
+      "departamento": "Moquegua",
+      "provincia": "Mariscal Nieto",
+      "distrito": "Moquegua",
+      "periodo": 2025,
+      "precio_chacra": {
+        "valor": 1.5,
+        "unidad": "PEN/kg"
+      },
+      "fuente_id": "DRA25",
+      "estado": "transcrito_pendiente_cotejo_pdf",
+      "uso": "supuesto_editable_demo",
+      "tipo_en_fuente": null
+    },
+    {
+      "crop_id": "tuna",
+      "nivel": "distrito",
+      "departamento": "Moquegua",
+      "provincia": "Mariscal Nieto",
+      "distrito": "San Antonio",
+      "periodo": 2025,
+      "precio_chacra": {
+        "valor": 1.7,
+        "unidad": "PEN/kg"
+      },
+      "fuente_id": "DRA25",
+      "estado": "transcrito_pendiente_cotejo_pdf",
+      "uso": "supuesto_editable_demo",
+      "tipo_en_fuente": null
+    },
+    {
+      "crop_id": "tuna",
+      "nivel": "distrito",
+      "departamento": "Moquegua",
+      "provincia": "Mariscal Nieto",
+      "distrito": "Samegua",
+      "periodo": 2025,
+      "precio_chacra": {
+        "valor": 1.5,
+        "unidad": "PEN/kg"
+      },
+      "fuente_id": "DRA25",
+      "estado": "transcrito_pendiente_cotejo_pdf",
+      "uso": "supuesto_editable_demo",
+      "tipo_en_fuente": null
+    },
+    {
+      "crop_id": "tuna",
+      "nivel": "distrito",
+      "departamento": "Moquegua",
+      "provincia": "Mariscal Nieto",
+      "distrito": "Torata",
+      "periodo": 2025,
+      "precio_chacra": {
+        "valor": 2,
+        "unidad": "PEN/kg"
+      },
+      "fuente_id": "DRA25",
+      "estado": "transcrito_pendiente_cotejo_pdf",
+      "uso": "supuesto_editable_demo",
+      "tipo_en_fuente": null
+    },
+    {
+      "crop_id": "tuna",
+      "nivel": "distrito",
+      "departamento": "Moquegua",
+      "provincia": "Mariscal Nieto",
+      "distrito": "Carumas",
+      "periodo": 2025,
+      "precio_chacra": {
+        "valor": 2,
+        "unidad": "PEN/kg"
+      },
+      "fuente_id": "DRA25",
+      "estado": "transcrito_pendiente_cotejo_pdf",
+      "uso": "supuesto_editable_demo",
+      "tipo_en_fuente": null
+    },
+    {
+      "crop_id": "tuna",
+      "nivel": "distrito",
+      "departamento": "Moquegua",
+      "provincia": "Mariscal Nieto",
+      "distrito": "Cuchumbaya",
+      "periodo": 2025,
+      "precio_chacra": {
+        "valor": 2,
+        "unidad": "PEN/kg"
+      },
+      "fuente_id": "DRA25",
+      "estado": "transcrito_pendiente_cotejo_pdf",
+      "uso": "supuesto_editable_demo",
+      "tipo_en_fuente": null
+    },
+    {
+      "crop_id": "tuna",
+      "nivel": "distrito",
+      "departamento": "Moquegua",
+      "provincia": "Mariscal Nieto",
+      "distrito": "San Cristóbal",
+      "periodo": 2025,
+      "precio_chacra": {
+        "valor": 2.5,
+        "unidad": "PEN/kg"
+      },
+      "fuente_id": "DRA25",
+      "estado": "transcrito_pendiente_cotejo_pdf",
+      "uso": "supuesto_editable_demo",
+      "tipo_en_fuente": null
+    },
+    {
+      "crop_id": "tuna",
+      "nivel": "distrito",
+      "departamento": "Moquegua",
+      "provincia": "General Sánchez Cerro",
+      "distrito": "Omate",
+      "periodo": 2025,
+      "precio_chacra": {
+        "valor": 2.2,
+        "unidad": "PEN/kg"
+      },
+      "fuente_id": "DRA25",
+      "estado": "transcrito_pendiente_cotejo_pdf",
+      "uso": "supuesto_editable_demo",
+      "tipo_en_fuente": null
+    },
+    {
+      "crop_id": "tuna",
+      "nivel": "distrito",
+      "departamento": "Moquegua",
+      "provincia": "General Sánchez Cerro",
+      "distrito": "Coalaque",
+      "periodo": 2025,
+      "precio_chacra": {
+        "valor": 2.5,
+        "unidad": "PEN/kg"
+      },
+      "fuente_id": "DRA25",
+      "estado": "transcrito_pendiente_cotejo_pdf",
+      "uso": "supuesto_editable_demo",
+      "tipo_en_fuente": null
+    },
+    {
+      "crop_id": "tuna",
+      "nivel": "distrito",
+      "departamento": "Moquegua",
+      "provincia": "General Sánchez Cerro",
+      "distrito": "Quinistaquillas",
+      "periodo": 2025,
+      "precio_chacra": {
+        "valor": 1.8,
+        "unidad": "PEN/kg"
+      },
+      "fuente_id": "DRA25",
+      "estado": "transcrito_pendiente_cotejo_pdf",
+      "uso": "supuesto_editable_demo",
+      "tipo_en_fuente": null
+    },
+    {
+      "crop_id": "tuna",
+      "nivel": "distrito",
+      "departamento": "Moquegua",
+      "provincia": "General Sánchez Cerro",
+      "distrito": "Puquina",
+      "periodo": 2025,
+      "precio_chacra": {
+        "valor": 1.5,
+        "unidad": "PEN/kg"
+      },
+      "fuente_id": "DRA25",
+      "estado": "transcrito_pendiente_cotejo_pdf",
+      "uso": "supuesto_editable_demo",
+      "tipo_en_fuente": null
+    },
+    {
+      "crop_id": "tuna",
+      "nivel": "distrito",
+      "departamento": "Moquegua",
+      "provincia": "General Sánchez Cerro",
+      "distrito": "Ubinas",
+      "periodo": 2025,
+      "precio_chacra": {
+        "valor": 2.5,
+        "unidad": "PEN/kg"
+      },
+      "fuente_id": "DRA25",
+      "estado": "transcrito_pendiente_cotejo_pdf",
+      "uso": "supuesto_editable_demo",
+      "tipo_en_fuente": null
+    },
+    {
+      "crop_id": "tuna",
+      "nivel": "distrito",
+      "departamento": "Moquegua",
+      "provincia": "General Sánchez Cerro",
+      "distrito": "Matalaque",
+      "periodo": 2025,
+      "precio_chacra": {
+        "valor": 1.9,
+        "unidad": "PEN/kg"
+      },
+      "fuente_id": "DRA25",
+      "estado": "transcrito_pendiente_cotejo_pdf",
+      "uso": "supuesto_editable_demo",
+      "tipo_en_fuente": null
+    },
+    {
+      "crop_id": "tuna",
+      "nivel": "distrito",
+      "departamento": "Moquegua",
+      "provincia": "General Sánchez Cerro",
+      "distrito": "Chojata",
+      "periodo": 2025,
+      "precio_chacra": {
+        "valor": 2,
+        "unidad": "PEN/kg"
+      },
+      "fuente_id": "DRA25",
+      "estado": "transcrito_pendiente_cotejo_pdf",
+      "uso": "supuesto_editable_demo",
+      "tipo_en_fuente": null
+    },
+    {
+      "crop_id": "tuna",
+      "nivel": "distrito",
+      "departamento": "Moquegua",
+      "provincia": "General Sánchez Cerro",
+      "distrito": "Lloque",
+      "periodo": 2025,
+      "precio_chacra": {
+        "valor": 2.5,
+        "unidad": "PEN/kg"
+      },
+      "fuente_id": "DRA25",
+      "estado": "transcrito_pendiente_cotejo_pdf",
+      "uso": "supuesto_editable_demo",
+      "tipo_en_fuente": null
+    },
+    {
+      "crop_id": "tuna",
+      "nivel": "distrito",
+      "departamento": "Moquegua",
+      "provincia": "General Sánchez Cerro",
+      "distrito": "Yunga",
+      "periodo": 2025,
+      "precio_chacra": {
+        "valor": 2,
+        "unidad": "PEN/kg"
+      },
+      "fuente_id": "DRA25",
+      "estado": "transcrito_pendiente_cotejo_pdf",
+      "uso": "supuesto_editable_demo",
+      "tipo_en_fuente": null
+    },
+    {
+      "crop_id": "vid",
+      "nivel": "distrito",
+      "departamento": "Moquegua",
+      "provincia": "Mariscal Nieto",
+      "distrito": "Moquegua",
+      "periodo": 2025,
+      "precio_chacra": {
+        "valor": 3.2,
+        "unidad": "PEN/kg"
+      },
+      "fuente_id": "DRA25",
+      "estado": "transcrito_pendiente_cotejo_pdf",
+      "uso": "supuesto_editable_demo",
+      "tipo_en_fuente": null
+    },
+    {
+      "crop_id": "vid",
+      "nivel": "distrito",
+      "departamento": "Moquegua",
+      "provincia": "Mariscal Nieto",
+      "distrito": "San Antonio",
+      "periodo": 2025,
+      "precio_chacra": {
+        "valor": 3.5,
+        "unidad": "PEN/kg"
+      },
+      "fuente_id": "DRA25",
+      "estado": "transcrito_pendiente_cotejo_pdf",
+      "uso": "supuesto_editable_demo",
+      "tipo_en_fuente": null
+    },
+    {
+      "crop_id": "vid",
+      "nivel": "distrito",
+      "departamento": "Moquegua",
+      "provincia": "Mariscal Nieto",
+      "distrito": "Samegua",
+      "periodo": 2025,
+      "precio_chacra": {
+        "valor": 3.2,
+        "unidad": "PEN/kg"
+      },
+      "fuente_id": "DRA25",
+      "estado": "transcrito_pendiente_cotejo_pdf",
+      "uso": "supuesto_editable_demo",
+      "tipo_en_fuente": null
+    },
+    {
+      "crop_id": "vid",
+      "nivel": "distrito",
+      "departamento": "Moquegua",
+      "provincia": "General Sánchez Cerro",
+      "distrito": "Omate",
+      "periodo": 2025,
+      "precio_chacra": {
+        "valor": 3.5,
+        "unidad": "PEN/kg"
+      },
+      "fuente_id": "DRA25",
+      "estado": "transcrito_pendiente_cotejo_pdf",
+      "uso": "supuesto_editable_demo",
+      "tipo_en_fuente": null
+    },
+    {
+      "crop_id": "vid",
+      "nivel": "distrito",
+      "departamento": "Moquegua",
+      "provincia": "General Sánchez Cerro",
+      "distrito": "Quinistaquillas",
+      "periodo": 2025,
+      "precio_chacra": {
+        "valor": 3,
+        "unidad": "PEN/kg"
+      },
+      "fuente_id": "DRA25",
+      "estado": "transcrito_pendiente_cotejo_pdf",
+      "uso": "supuesto_editable_demo",
+      "tipo_en_fuente": null
+    },
+    {
+      "crop_id": "vid",
+      "nivel": "distrito",
+      "departamento": "Moquegua",
+      "provincia": "Ilo",
+      "distrito": "El Algarrobal",
+      "periodo": 2025,
+      "precio_chacra": {
+        "valor": 4.5,
+        "unidad": "PEN/kg"
+      },
+      "fuente_id": "DRA25",
+      "estado": "transcrito_pendiente_cotejo_pdf",
+      "uso": "supuesto_editable_demo",
+      "tipo_en_fuente": null
+    },
+    {
+      "crop_id": "oregano",
+      "nivel": "distrito",
+      "departamento": "Moquegua",
+      "provincia": "Mariscal Nieto",
+      "distrito": "Torata",
+      "periodo": 2025,
+      "precio_chacra": {
+        "valor": 12.5,
+        "unidad": "PEN/kg"
+      },
+      "fuente_id": "DRA25",
+      "estado": "transcrito_pendiente_cotejo_pdf",
+      "uso": "supuesto_editable_demo",
+      "tipo_en_fuente": null
+    },
+    {
+      "crop_id": "oregano",
+      "nivel": "distrito",
+      "departamento": "Moquegua",
+      "provincia": "Mariscal Nieto",
+      "distrito": "Carumas",
+      "periodo": 2025,
+      "precio_chacra": {
+        "valor": 7.5,
+        "unidad": "PEN/kg"
+      },
+      "fuente_id": "DRA25",
+      "estado": "transcrito_pendiente_cotejo_pdf",
+      "uso": "supuesto_editable_demo",
+      "tipo_en_fuente": null
+    },
+    {
+      "crop_id": "oregano",
+      "nivel": "distrito",
+      "departamento": "Moquegua",
+      "provincia": "Mariscal Nieto",
+      "distrito": "Cuchumbaya",
+      "periodo": 2025,
+      "precio_chacra": {
+        "valor": 6,
+        "unidad": "PEN/kg"
+      },
+      "fuente_id": "DRA25",
+      "estado": "transcrito_pendiente_cotejo_pdf",
+      "uso": "supuesto_editable_demo",
+      "tipo_en_fuente": null
+    },
+    {
+      "crop_id": "oregano",
+      "nivel": "distrito",
+      "departamento": "Moquegua",
+      "provincia": "General Sánchez Cerro",
+      "distrito": "Coalaque",
+      "periodo": 2025,
+      "precio_chacra": {
+        "valor": 9.2,
+        "unidad": "PEN/kg"
+      },
+      "fuente_id": "DRA25",
+      "estado": "transcrito_pendiente_cotejo_pdf",
+      "uso": "supuesto_editable_demo",
+      "tipo_en_fuente": null
+    },
+    {
+      "crop_id": "oregano",
+      "nivel": "distrito",
+      "departamento": "Moquegua",
+      "provincia": "General Sánchez Cerro",
+      "distrito": "Puquina",
+      "periodo": 2025,
+      "precio_chacra": {
+        "valor": 5.5,
+        "unidad": "PEN/kg"
+      },
+      "fuente_id": "DRA25",
+      "estado": "transcrito_pendiente_cotejo_pdf",
+      "uso": "supuesto_editable_demo",
+      "tipo_en_fuente": null
+    },
+    {
+      "crop_id": "oregano",
+      "nivel": "distrito",
+      "departamento": "Moquegua",
+      "provincia": "General Sánchez Cerro",
+      "distrito": "Chojata",
+      "periodo": 2025,
+      "precio_chacra": {
+        "valor": 5.5,
+        "unidad": "PEN/kg"
+      },
+      "fuente_id": "DRA25",
+      "estado": "transcrito_pendiente_cotejo_pdf",
+      "uso": "supuesto_editable_demo",
+      "tipo_en_fuente": null
+    },
+    {
+      "crop_id": "aji",
+      "nivel": "distrito",
+      "departamento": "Moquegua",
+      "provincia": "Mariscal Nieto",
+      "distrito": "San Antonio",
+      "periodo": 2025,
+      "precio_chacra": {
+        "valor": 2,
+        "unidad": "PEN/kg"
+      },
+      "fuente_id": "DRA25",
+      "estado": "transcrito_pendiente_cotejo_pdf",
+      "uso": "supuesto_editable_demo",
+      "tipo_en_fuente": null
+    },
+    {
+      "crop_id": "tomate",
+      "nivel": "distrito",
+      "departamento": "Moquegua",
+      "provincia": "Mariscal Nieto",
+      "distrito": "Moquegua",
+      "periodo": 2025,
+      "precio_chacra": {
+        "valor": 1.5,
+        "unidad": "PEN/kg"
+      },
+      "fuente_id": "DRA25",
+      "estado": "transcrito_pendiente_cotejo_pdf",
+      "uso": "supuesto_editable_demo",
+      "tipo_en_fuente": null
+    },
+    {
+      "crop_id": "tomate",
+      "nivel": "distrito",
+      "departamento": "Moquegua",
+      "provincia": "Mariscal Nieto",
+      "distrito": "San Antonio",
+      "periodo": 2025,
+      "precio_chacra": {
+        "valor": 1.5,
+        "unidad": "PEN/kg"
+      },
+      "fuente_id": "DRA25",
+      "estado": "transcrito_pendiente_cotejo_pdf",
+      "uso": "supuesto_editable_demo",
+      "tipo_en_fuente": null
+    },
+    {
+      "crop_id": "tomate",
+      "nivel": "distrito",
+      "departamento": "Moquegua",
+      "provincia": "Mariscal Nieto",
+      "distrito": "Samegua",
+      "periodo": 2025,
+      "precio_chacra": {
+        "valor": 1.5,
+        "unidad": "PEN/kg"
+      },
+      "fuente_id": "DRA25",
+      "estado": "transcrito_pendiente_cotejo_pdf",
+      "uso": "supuesto_editable_demo",
+      "tipo_en_fuente": null
+    },
+    {
+      "crop_id": "maiz_choclo",
+      "nivel": "distrito",
+      "departamento": "Moquegua",
+      "provincia": "Mariscal Nieto",
+      "distrito": "Moquegua",
+      "periodo": 2025,
+      "precio_chacra": {
+        "valor": 2.6,
+        "unidad": "PEN/kg"
+      },
+      "fuente_id": "DRA25",
+      "estado": "transcrito_pendiente_cotejo_pdf",
+      "uso": "supuesto_editable_demo",
+      "tipo_en_fuente": null
+    },
+    {
+      "crop_id": "maiz_choclo",
+      "nivel": "distrito",
+      "departamento": "Moquegua",
+      "provincia": "Mariscal Nieto",
+      "distrito": "Samegua",
+      "periodo": 2025,
+      "precio_chacra": {
+        "valor": 1.8,
+        "unidad": "PEN/kg"
+      },
+      "fuente_id": "DRA25",
+      "estado": "transcrito_pendiente_cotejo_pdf",
+      "uso": "supuesto_editable_demo",
+      "tipo_en_fuente": null
+    },
+    {
+      "crop_id": "maiz_choclo",
+      "nivel": "distrito",
+      "departamento": "Moquegua",
+      "provincia": "Mariscal Nieto",
+      "distrito": "Torata",
+      "periodo": 2025,
+      "precio_chacra": {
+        "valor": 3,
+        "unidad": "PEN/kg"
+      },
+      "fuente_id": "DRA25",
+      "estado": "transcrito_pendiente_cotejo_pdf",
+      "uso": "supuesto_editable_demo",
+      "tipo_en_fuente": null
+    },
+    {
+      "crop_id": "vainita",
+      "nivel": "distrito",
+      "departamento": "Moquegua",
+      "provincia": "Mariscal Nieto",
+      "distrito": "Moquegua",
+      "periodo": 2025,
+      "precio_chacra": {
+        "valor": 3,
+        "unidad": "PEN/kg"
+      },
+      "fuente_id": "DRA25",
+      "estado": "transcrito_pendiente_cotejo_pdf",
+      "uso": "supuesto_editable_demo",
+      "tipo_en_fuente": null
+    },
+    {
+      "crop_id": "vainita",
+      "nivel": "distrito",
+      "departamento": "Moquegua",
+      "provincia": "Mariscal Nieto",
+      "distrito": "San Antonio",
+      "periodo": 2025,
+      "precio_chacra": {
+        "valor": 3,
+        "unidad": "PEN/kg"
+      },
+      "fuente_id": "DRA25",
+      "estado": "transcrito_pendiente_cotejo_pdf",
+      "uso": "supuesto_editable_demo",
+      "tipo_en_fuente": null
+    },
+    {
+      "crop_id": "vainita",
+      "nivel": "distrito",
+      "departamento": "Moquegua",
+      "provincia": "Mariscal Nieto",
+      "distrito": "Samegua",
+      "periodo": 2025,
+      "precio_chacra": {
+        "valor": 3.2,
+        "unidad": "PEN/kg"
+      },
+      "fuente_id": "DRA25",
+      "estado": "transcrito_pendiente_cotejo_pdf",
+      "uso": "supuesto_editable_demo",
+      "tipo_en_fuente": null
+    },
+    {
+      "crop_id": "ajo",
+      "nivel": "distrito",
+      "departamento": "Moquegua",
+      "provincia": "Mariscal Nieto",
+      "distrito": "Moquegua",
+      "periodo": 2025,
+      "precio_chacra": {
+        "valor": 4.5,
+        "unidad": "PEN/kg"
+      },
+      "fuente_id": "DRA25",
+      "estado": "transcrito_pendiente_cotejo_pdf",
+      "uso": "supuesto_editable_demo",
+      "tipo_en_fuente": null
+    },
+    {
+      "crop_id": "ajo",
+      "nivel": "distrito",
+      "departamento": "Moquegua",
+      "provincia": "Mariscal Nieto",
+      "distrito": "San Antonio",
+      "periodo": 2025,
+      "precio_chacra": {
+        "valor": 5,
+        "unidad": "PEN/kg"
+      },
+      "fuente_id": "DRA25",
+      "estado": "transcrito_pendiente_cotejo_pdf",
+      "uso": "supuesto_editable_demo",
+      "tipo_en_fuente": null
+    },
+    {
+      "crop_id": "ajo",
+      "nivel": "distrito",
+      "departamento": "Moquegua",
+      "provincia": "General Sánchez Cerro",
+      "distrito": "Chojata",
+      "periodo": 2025,
+      "precio_chacra": {
+        "valor": 5,
+        "unidad": "PEN/kg"
+      },
+      "fuente_id": "DRA25",
+      "estado": "transcrito_pendiente_cotejo_pdf",
+      "uso": "supuesto_editable_demo",
+      "tipo_en_fuente": null
+    },
+    {
+      "crop_id": "ajo",
+      "nivel": "distrito",
+      "departamento": "Moquegua",
+      "provincia": "General Sánchez Cerro",
+      "distrito": "Coalaque",
+      "periodo": 2025,
+      "precio_chacra": {
+        "valor": 7.8,
+        "unidad": "PEN/kg"
+      },
+      "fuente_id": "DRA25",
+      "estado": "transcrito_pendiente_cotejo_pdf",
+      "uso": "supuesto_editable_demo",
+      "tipo_en_fuente": null
+    },
+    {
+      "crop_id": "ajo",
+      "nivel": "distrito",
+      "departamento": "Moquegua",
+      "provincia": "General Sánchez Cerro",
+      "distrito": "Quinistaquillas",
+      "periodo": 2025,
+      "precio_chacra": {
+        "valor": 6,
+        "unidad": "PEN/kg"
+      },
+      "fuente_id": "DRA25",
+      "estado": "transcrito_pendiente_cotejo_pdf",
+      "uso": "supuesto_editable_demo",
+      "tipo_en_fuente": null
+    },
+    {
+      "crop_id": "ajo",
+      "nivel": "distrito",
+      "departamento": "Moquegua",
+      "provincia": "General Sánchez Cerro",
+      "distrito": "Puquina",
+      "periodo": 2025,
+      "precio_chacra": {
+        "valor": 4.8,
+        "unidad": "PEN/kg"
+      },
+      "fuente_id": "DRA25",
+      "estado": "transcrito_pendiente_cotejo_pdf",
+      "uso": "supuesto_editable_demo",
+      "tipo_en_fuente": null
+    },
+    {
+      "crop_id": "ajo",
+      "nivel": "distrito",
+      "departamento": "Moquegua",
+      "provincia": "General Sánchez Cerro",
+      "distrito": "Ubinas",
+      "periodo": 2025,
+      "precio_chacra": {
+        "valor": 4.5,
+        "unidad": "PEN/kg"
+      },
+      "fuente_id": "DRA25",
+      "estado": "transcrito_pendiente_cotejo_pdf",
+      "uso": "supuesto_editable_demo",
+      "tipo_en_fuente": null
+    },
+    {
+      "crop_id": "ajo",
+      "nivel": "distrito",
+      "departamento": "Moquegua",
+      "provincia": "Ilo",
+      "distrito": "Ilo",
+      "periodo": 2025,
+      "precio_chacra": {
+        "valor": 3.5,
+        "unidad": "PEN/kg"
+      },
+      "fuente_id": "DRA25",
+      "estado": "transcrito_pendiente_cotejo_pdf",
+      "uso": "supuesto_editable_demo",
+      "tipo_en_fuente": null
+    },
+    {
+      "crop_id": "sandia",
+      "nivel": "distrito",
+      "departamento": "Moquegua",
+      "provincia": "Mariscal Nieto",
+      "distrito": "Moquegua",
+      "periodo": 2025,
+      "precio_chacra": {
+        "valor": 1,
+        "unidad": "PEN/kg"
+      },
+      "fuente_id": "DRA25",
+      "estado": "transcrito_pendiente_cotejo_pdf",
+      "uso": "supuesto_editable_demo",
+      "tipo_en_fuente": null
+    },
+    {
+      "crop_id": "sandia",
+      "nivel": "distrito",
+      "departamento": "Moquegua",
+      "provincia": "Mariscal Nieto",
+      "distrito": "San Antonio",
+      "periodo": 2025,
+      "precio_chacra": {
+        "valor": 0.8,
+        "unidad": "PEN/kg"
+      },
+      "fuente_id": "DRA25",
+      "estado": "transcrito_pendiente_cotejo_pdf",
+      "uso": "supuesto_editable_demo",
+      "tipo_en_fuente": null
+    },
+    {
+      "crop_id": "sandia",
+      "nivel": "distrito",
+      "departamento": "Moquegua",
+      "provincia": "Ilo",
+      "distrito": "El Algarrobal",
+      "periodo": 2025,
+      "precio_chacra": {
+        "valor": 0.8,
+        "unidad": "PEN/kg"
+      },
+      "fuente_id": "DRA25",
+      "estado": "transcrito_pendiente_cotejo_pdf",
+      "uso": "supuesto_editable_demo",
+      "tipo_en_fuente": null
+    },
+    {
+      "crop_id": "zanahoria",
+      "nivel": "distrito",
+      "departamento": "Moquegua",
+      "provincia": "Mariscal Nieto",
+      "distrito": "Moquegua",
+      "periodo": 2025,
+      "precio_chacra": {
+        "valor": 0.8,
+        "unidad": "PEN/kg"
+      },
+      "fuente_id": "DRA25",
+      "estado": "transcrito_pendiente_cotejo_pdf",
+      "uso": "supuesto_editable_demo",
+      "tipo_en_fuente": null
+    },
+    {
+      "crop_id": "zanahoria",
+      "nivel": "distrito",
+      "departamento": "Moquegua",
+      "provincia": "Mariscal Nieto",
+      "distrito": "San Antonio",
+      "periodo": 2025,
+      "precio_chacra": {
+        "valor": 1,
+        "unidad": "PEN/kg"
+      },
+      "fuente_id": "DRA25",
+      "estado": "transcrito_pendiente_cotejo_pdf",
+      "uso": "supuesto_editable_demo",
+      "tipo_en_fuente": null
+    },
+    {
+      "crop_id": "zanahoria",
+      "nivel": "distrito",
+      "departamento": "Moquegua",
+      "provincia": "Mariscal Nieto",
+      "distrito": "Samegua",
+      "periodo": 2025,
+      "precio_chacra": {
+        "valor": 1.1,
+        "unidad": "PEN/kg"
+      },
+      "fuente_id": "DRA25",
+      "estado": "transcrito_pendiente_cotejo_pdf",
+      "uso": "supuesto_editable_demo",
+      "tipo_en_fuente": null
+    },
+    {
+      "crop_id": "lechuga",
+      "nivel": "distrito",
+      "departamento": "Moquegua",
+      "provincia": "Mariscal Nieto",
+      "distrito": "Moquegua",
+      "periodo": 2025,
+      "precio_chacra": {
+        "valor": 1.5,
+        "unidad": "PEN/kg"
+      },
+      "fuente_id": "DRA25",
+      "estado": "transcrito_pendiente_cotejo_pdf",
+      "uso": "supuesto_editable_demo",
+      "tipo_en_fuente": null
+    },
+    {
+      "crop_id": "lechuga",
+      "nivel": "distrito",
+      "departamento": "Moquegua",
+      "provincia": "Mariscal Nieto",
+      "distrito": "San Antonio",
+      "periodo": 2025,
+      "precio_chacra": {
+        "valor": 1.8,
+        "unidad": "PEN/kg"
+      },
+      "fuente_id": "DRA25",
+      "estado": "transcrito_pendiente_cotejo_pdf",
+      "uso": "supuesto_editable_demo",
+      "tipo_en_fuente": null
+    },
+    {
+      "crop_id": "lechuga",
+      "nivel": "distrito",
+      "departamento": "Moquegua",
+      "provincia": "Mariscal Nieto",
+      "distrito": "Samegua",
+      "periodo": 2025,
+      "precio_chacra": {
+        "valor": 1.2,
+        "unidad": "PEN/kg"
+      },
+      "fuente_id": "DRA25",
+      "estado": "transcrito_pendiente_cotejo_pdf",
+      "uso": "supuesto_editable_demo",
+      "tipo_en_fuente": null
+    },
+    {
+      "crop_id": "beterraga",
+      "nivel": "distrito",
+      "departamento": "Moquegua",
+      "provincia": "Mariscal Nieto",
+      "distrito": "Moquegua",
+      "periodo": 2025,
+      "precio_chacra": {
+        "valor": 1.3,
+        "unidad": "PEN/kg"
+      },
+      "fuente_id": "DRA25",
+      "estado": "transcrito_pendiente_cotejo_pdf",
+      "uso": "supuesto_editable_demo",
+      "tipo_en_fuente": null
+    },
+    {
+      "crop_id": "beterraga",
+      "nivel": "distrito",
+      "departamento": "Moquegua",
+      "provincia": "Mariscal Nieto",
+      "distrito": "San Antonio",
+      "periodo": 2025,
+      "precio_chacra": {
+        "valor": 1.4,
+        "unidad": "PEN/kg"
+      },
+      "fuente_id": "DRA25",
+      "estado": "transcrito_pendiente_cotejo_pdf",
+      "uso": "supuesto_editable_demo",
+      "tipo_en_fuente": null
+    },
+    {
+      "crop_id": "beterraga",
+      "nivel": "distrito",
+      "departamento": "Moquegua",
+      "provincia": "Mariscal Nieto",
+      "distrito": "Samegua",
+      "periodo": 2025,
+      "precio_chacra": {
+        "valor": 1.5,
+        "unidad": "PEN/kg"
+      },
+      "fuente_id": "DRA25",
+      "estado": "transcrito_pendiente_cotejo_pdf",
+      "uso": "supuesto_editable_demo",
+      "tipo_en_fuente": null
+    },
+    {
+      "crop_id": "camote",
+      "nivel": "distrito",
+      "departamento": "Moquegua",
+      "provincia": "Mariscal Nieto",
+      "distrito": "Samegua",
+      "periodo": 2025,
+      "precio_chacra": {
+        "valor": 1,
+        "unidad": "PEN/kg"
+      },
+      "fuente_id": "DRA25",
+      "estado": "transcrito_pendiente_cotejo_pdf",
+      "uso": "supuesto_editable_demo",
+      "tipo_en_fuente": null
+    },
+    {
+      "crop_id": "camote",
+      "nivel": "distrito",
+      "departamento": "Moquegua",
+      "provincia": "Mariscal Nieto",
+      "distrito": "San Antonio",
+      "periodo": 2025,
+      "precio_chacra": {
+        "valor": 1,
+        "unidad": "PEN/kg"
+      },
+      "fuente_id": "DRA25",
+      "estado": "transcrito_pendiente_cotejo_pdf",
+      "uso": "supuesto_editable_demo",
+      "tipo_en_fuente": null
+    },
+    {
+      "crop_id": "camote",
+      "nivel": "distrito",
+      "departamento": "Moquegua",
+      "provincia": "General Sánchez Cerro",
+      "distrito": "Matalaque",
+      "periodo": 2025,
+      "precio_chacra": {
+        "valor": 2,
+        "unidad": "PEN/kg"
+      },
+      "fuente_id": "DRA25",
+      "estado": "transcrito_pendiente_cotejo_pdf",
+      "uso": "supuesto_editable_demo",
+      "tipo_en_fuente": null
+    },
+    {
+      "crop_id": "coliflor",
+      "nivel": "distrito",
+      "departamento": "Moquegua",
+      "provincia": "Mariscal Nieto",
+      "distrito": "Moquegua",
+      "periodo": 2025,
+      "precio_chacra": {
+        "valor": 2.2,
+        "unidad": "PEN/kg"
+      },
+      "fuente_id": "DRA25",
+      "estado": "transcrito_pendiente_cotejo_pdf",
+      "uso": "supuesto_editable_demo",
+      "tipo_en_fuente": null
+    },
+    {
+      "crop_id": "coliflor",
+      "nivel": "distrito",
+      "departamento": "Moquegua",
+      "provincia": "Mariscal Nieto",
+      "distrito": "San Antonio",
+      "periodo": 2025,
+      "precio_chacra": {
+        "valor": 2.1,
+        "unidad": "PEN/kg"
+      },
+      "fuente_id": "DRA25",
+      "estado": "transcrito_pendiente_cotejo_pdf",
+      "uso": "supuesto_editable_demo",
+      "tipo_en_fuente": null
+    },
+    {
+      "crop_id": "coliflor",
+      "nivel": "distrito",
+      "departamento": "Moquegua",
+      "provincia": "Mariscal Nieto",
+      "distrito": "Samegua",
+      "periodo": 2025,
+      "precio_chacra": {
+        "valor": 2,
+        "unidad": "PEN/kg"
+      },
+      "fuente_id": "DRA25",
+      "estado": "transcrito_pendiente_cotejo_pdf",
+      "uso": "supuesto_editable_demo",
+      "tipo_en_fuente": null
+    },
+    {
+      "crop_id": "arveja_verde",
+      "nivel": "distrito",
+      "departamento": "Moquegua",
+      "provincia": "Mariscal Nieto",
+      "distrito": "Moquegua",
+      "periodo": 2025,
+      "precio_chacra": {
+        "valor": 4.5,
+        "unidad": "PEN/kg"
+      },
+      "fuente_id": "DRA25",
+      "estado": "transcrito_pendiente_cotejo_pdf",
+      "uso": "supuesto_editable_demo",
+      "tipo_en_fuente": null
+    },
+    {
+      "crop_id": "arveja_verde",
+      "nivel": "distrito",
+      "departamento": "Moquegua",
+      "provincia": "Mariscal Nieto",
+      "distrito": "San Antonio",
+      "periodo": 2025,
+      "precio_chacra": {
+        "valor": 4,
+        "unidad": "PEN/kg"
+      },
+      "fuente_id": "DRA25",
+      "estado": "transcrito_pendiente_cotejo_pdf",
+      "uso": "supuesto_editable_demo",
+      "tipo_en_fuente": null
+    },
+    {
+      "crop_id": "arveja_verde",
+      "nivel": "distrito",
+      "departamento": "Moquegua",
+      "provincia": "Mariscal Nieto",
+      "distrito": "Samegua",
+      "periodo": 2025,
+      "precio_chacra": {
+        "valor": 3.5,
+        "unidad": "PEN/kg"
+      },
+      "fuente_id": "DRA25",
+      "estado": "transcrito_pendiente_cotejo_pdf",
+      "uso": "supuesto_editable_demo",
+      "tipo_en_fuente": null
+    },
+    {
+      "crop_id": "arveja_verde",
+      "nivel": "distrito",
+      "departamento": "Moquegua",
+      "provincia": "Mariscal Nieto",
+      "distrito": "Torata",
+      "periodo": 2025,
+      "precio_chacra": {
+        "valor": 4,
+        "unidad": "PEN/kg"
+      },
+      "fuente_id": "DRA25",
+      "estado": "transcrito_pendiente_cotejo_pdf",
+      "uso": "supuesto_editable_demo",
+      "tipo_en_fuente": null
+    },
+    {
+      "crop_id": "arveja_verde",
+      "nivel": "distrito",
+      "departamento": "Moquegua",
+      "provincia": "General Sánchez Cerro",
+      "distrito": "Puquina",
+      "periodo": 2025,
+      "precio_chacra": {
+        "valor": 3.5,
+        "unidad": "PEN/kg"
+      },
+      "fuente_id": "DRA25",
+      "estado": "transcrito_pendiente_cotejo_pdf",
+      "uso": "supuesto_editable_demo",
+      "tipo_en_fuente": null
+    },
+    {
+      "crop_id": "pepinillo",
+      "nivel": "distrito",
+      "departamento": "Moquegua",
+      "provincia": "Mariscal Nieto",
+      "distrito": "Moquegua",
+      "periodo": 2025,
+      "precio_chacra": {
+        "valor": 1.8,
+        "unidad": "PEN/kg"
+      },
+      "fuente_id": "DRA25",
+      "estado": "transcrito_pendiente_cotejo_pdf",
+      "uso": "supuesto_editable_demo",
+      "tipo_en_fuente": null
+    },
+    {
+      "crop_id": "pepinillo",
+      "nivel": "distrito",
+      "departamento": "Moquegua",
+      "provincia": "Mariscal Nieto",
+      "distrito": "San Antonio",
+      "periodo": 2025,
+      "precio_chacra": {
+        "valor": 1.5,
+        "unidad": "PEN/kg"
+      },
+      "fuente_id": "DRA25",
+      "estado": "transcrito_pendiente_cotejo_pdf",
+      "uso": "supuesto_editable_demo",
+      "tipo_en_fuente": null
+    },
+    {
+      "crop_id": "pepinillo",
+      "nivel": "distrito",
+      "departamento": "Moquegua",
+      "provincia": "Mariscal Nieto",
+      "distrito": "Samegua",
+      "periodo": 2025,
+      "precio_chacra": {
+        "valor": 1.6,
+        "unidad": "PEN/kg"
+      },
+      "fuente_id": "DRA25",
+      "estado": "transcrito_pendiente_cotejo_pdf",
+      "uso": "supuesto_editable_demo",
+      "tipo_en_fuente": null
+    },
+    {
+      "crop_id": "caigua",
+      "nivel": "distrito",
+      "departamento": "Moquegua",
+      "provincia": "Mariscal Nieto",
+      "distrito": "Moquegua",
+      "periodo": 2025,
+      "precio_chacra": {
+        "valor": 2.1,
+        "unidad": "PEN/kg"
+      },
+      "fuente_id": "DRA25",
+      "estado": "transcrito_pendiente_cotejo_pdf",
+      "uso": "supuesto_editable_demo",
+      "tipo_en_fuente": null
+    },
+    {
+      "crop_id": "caigua",
+      "nivel": "distrito",
+      "departamento": "Moquegua",
+      "provincia": "Mariscal Nieto",
+      "distrito": "San Antonio",
+      "periodo": 2025,
+      "precio_chacra": {
+        "valor": 1.8,
+        "unidad": "PEN/kg"
+      },
+      "fuente_id": "DRA25",
+      "estado": "transcrito_pendiente_cotejo_pdf",
+      "uso": "supuesto_editable_demo",
+      "tipo_en_fuente": null
+    },
+    {
+      "crop_id": "caigua",
+      "nivel": "distrito",
+      "departamento": "Moquegua",
+      "provincia": "Mariscal Nieto",
+      "distrito": "Samegua",
+      "periodo": 2025,
+      "precio_chacra": {
+        "valor": 1.9,
+        "unidad": "PEN/kg"
+      },
+      "fuente_id": "DRA25",
+      "estado": "transcrito_pendiente_cotejo_pdf",
+      "uso": "supuesto_editable_demo",
+      "tipo_en_fuente": null
+    },
+    {
+      "crop_id": "limon",
+      "nivel": "distrito",
+      "departamento": "Moquegua",
+      "provincia": "Mariscal Nieto",
+      "distrito": "Moquegua",
+      "periodo": 2025,
+      "precio_chacra": {
+        "valor": 2.6,
+        "unidad": "PEN/kg"
+      },
+      "fuente_id": "DRA25",
+      "estado": "transcrito_pendiente_cotejo_pdf",
+      "uso": "supuesto_editable_demo",
+      "tipo_en_fuente": null
+    },
+    {
+      "crop_id": "limon",
+      "nivel": "distrito",
+      "departamento": "Moquegua",
+      "provincia": "Mariscal Nieto",
+      "distrito": "San Antonio",
+      "periodo": 2025,
+      "precio_chacra": {
+        "valor": 2.8,
+        "unidad": "PEN/kg"
+      },
+      "fuente_id": "DRA25",
+      "estado": "transcrito_pendiente_cotejo_pdf",
+      "uso": "supuesto_editable_demo",
+      "tipo_en_fuente": null
+    },
+    {
+      "crop_id": "limon",
+      "nivel": "distrito",
+      "departamento": "Moquegua",
+      "provincia": "Mariscal Nieto",
+      "distrito": "Samegua",
+      "periodo": 2025,
+      "precio_chacra": {
+        "valor": 2.3,
+        "unidad": "PEN/kg"
+      },
+      "fuente_id": "DRA25",
+      "estado": "transcrito_pendiente_cotejo_pdf",
+      "uso": "supuesto_editable_demo",
+      "tipo_en_fuente": null
+    },
+    {
+      "crop_id": "limon",
+      "nivel": "distrito",
+      "departamento": "Moquegua",
+      "provincia": "General Sánchez Cerro",
+      "distrito": "Omate",
+      "periodo": 2025,
+      "precio_chacra": {
+        "valor": 3.2,
+        "unidad": "PEN/kg"
+      },
+      "fuente_id": "DRA25",
+      "estado": "transcrito_pendiente_cotejo_pdf",
+      "uso": "supuesto_editable_demo",
+      "tipo_en_fuente": null
+    },
+    {
+      "crop_id": "limon",
+      "nivel": "distrito",
+      "departamento": "Moquegua",
+      "provincia": "General Sánchez Cerro",
+      "distrito": "Coalaque",
+      "periodo": 2025,
+      "precio_chacra": {
+        "valor": 3.5,
+        "unidad": "PEN/kg"
+      },
+      "fuente_id": "DRA25",
+      "estado": "transcrito_pendiente_cotejo_pdf",
+      "uso": "supuesto_editable_demo",
+      "tipo_en_fuente": null
+    },
+    {
+      "crop_id": "limon",
+      "nivel": "distrito",
+      "departamento": "Moquegua",
+      "provincia": "General Sánchez Cerro",
+      "distrito": "Quinistaquillas",
+      "periodo": 2025,
+      "precio_chacra": {
+        "valor": 3.5,
+        "unidad": "PEN/kg"
+      },
+      "fuente_id": "DRA25",
+      "estado": "transcrito_pendiente_cotejo_pdf",
+      "uso": "supuesto_editable_demo",
+      "tipo_en_fuente": null
+    },
+    {
+      "crop_id": "limon",
+      "nivel": "distrito",
+      "departamento": "Moquegua",
+      "provincia": "General Sánchez Cerro",
+      "distrito": "Matalaque",
+      "periodo": 2025,
+      "precio_chacra": {
+        "valor": 2.2,
+        "unidad": "PEN/kg"
+      },
+      "fuente_id": "DRA25",
+      "estado": "transcrito_pendiente_cotejo_pdf",
+      "uso": "supuesto_editable_demo",
+      "tipo_en_fuente": null
+    },
+    {
+      "crop_id": "papa",
+      "nivel": "provincia",
+      "departamento": "Moquegua",
+      "provincia": "Mariscal Nieto",
+      "distrito": null,
+      "periodo": 2025,
+      "precio_chacra": {
+        "valor": 1.43,
+        "unidad": "PEN/kg"
+      },
+      "fuente_id": "DRA25",
+      "estado": "transcrito_pendiente_cotejo_pdf",
+      "uso": "supuesto_editable_demo",
+      "tipo_en_fuente": "Papa color"
+    },
+    {
+      "crop_id": "papa",
+      "nivel": "provincia",
+      "departamento": "Moquegua",
+      "provincia": "General Sánchez Cerro",
+      "distrito": null,
+      "periodo": 2025,
+      "precio_chacra": {
+        "valor": 1.65,
+        "unidad": "PEN/kg"
+      },
+      "fuente_id": "DRA25",
+      "estado": "transcrito_pendiente_cotejo_pdf",
+      "uso": "supuesto_editable_demo",
+      "tipo_en_fuente": "Papa color"
+    },
+    {
+      "crop_id": "papa",
+      "nivel": "provincia",
+      "departamento": "Moquegua",
+      "provincia": "Mariscal Nieto",
+      "distrito": null,
+      "periodo": 2025,
+      "precio_chacra": {
+        "valor": 2.98,
+        "unidad": "PEN/kg"
+      },
+      "fuente_id": "DRA25",
+      "estado": "transcrito_pendiente_cotejo_pdf",
+      "uso": "supuesto_editable_demo",
+      "tipo_en_fuente": "Papa nativa"
+    },
+    {
+      "crop_id": "papa",
+      "nivel": "provincia",
+      "departamento": "Moquegua",
+      "provincia": "General Sánchez Cerro",
+      "distrito": null,
+      "periodo": 2025,
+      "precio_chacra": {
+        "valor": 2.76,
+        "unidad": "PEN/kg"
+      },
+      "fuente_id": "DRA25",
+      "estado": "transcrito_pendiente_cotejo_pdf",
+      "uso": "supuesto_editable_demo",
+      "tipo_en_fuente": "Papa nativa"
+    },
+    {
+      "crop_id": "papa",
+      "nivel": "provincia",
+      "departamento": "Moquegua",
+      "provincia": "Mariscal Nieto",
+      "distrito": null,
+      "periodo": 2025,
+      "precio_chacra": {
+        "valor": 1.4,
+        "unidad": "PEN/kg"
+      },
+      "fuente_id": "DRA25",
+      "estado": "transcrito_pendiente_cotejo_pdf",
+      "uso": "supuesto_editable_demo",
+      "tipo_en_fuente": "Papa mejorada"
+    },
+    {
+      "crop_id": "papa",
+      "nivel": "provincia",
+      "departamento": "Moquegua",
+      "provincia": "General Sánchez Cerro",
+      "distrito": null,
+      "periodo": 2025,
+      "precio_chacra": {
+        "valor": 1.73,
+        "unidad": "PEN/kg"
+      },
+      "fuente_id": "DRA25",
+      "estado": "transcrito_pendiente_cotejo_pdf",
+      "uso": "supuesto_editable_demo",
+      "tipo_en_fuente": "Papa mejorada"
+    },
+    {
+      "crop_id": "maiz_amilaceo",
+      "nivel": "provincia",
+      "departamento": "Moquegua",
+      "provincia": "Mariscal Nieto",
+      "distrito": null,
+      "periodo": 2025,
+      "precio_chacra": {
+        "valor": 5.49,
+        "unidad": "PEN/kg"
+      },
+      "fuente_id": "DRA25",
+      "estado": "transcrito_pendiente_cotejo_pdf",
+      "uso": "supuesto_editable_demo",
+      "tipo_en_fuente": null
+    },
+    {
+      "crop_id": "maiz_amilaceo",
+      "nivel": "provincia",
+      "departamento": "Moquegua",
+      "provincia": "General Sánchez Cerro",
+      "distrito": null,
+      "periodo": 2025,
+      "precio_chacra": {
+        "valor": 6.82,
+        "unidad": "PEN/kg"
+      },
+      "fuente_id": "DRA25",
+      "estado": "transcrito_pendiente_cotejo_pdf",
+      "uso": "supuesto_editable_demo",
+      "tipo_en_fuente": null
+    },
+    {
+      "crop_id": "haba_seca",
+      "nivel": "provincia",
+      "departamento": "Moquegua",
+      "provincia": "Mariscal Nieto",
+      "distrito": null,
+      "periodo": 2025,
+      "precio_chacra": {
+        "valor": 3.11,
+        "unidad": "PEN/kg"
+      },
+      "fuente_id": "DRA25",
+      "estado": "transcrito_pendiente_cotejo_pdf",
+      "uso": "supuesto_editable_demo",
+      "tipo_en_fuente": null
+    },
+    {
+      "crop_id": "haba_seca",
+      "nivel": "provincia",
+      "departamento": "Moquegua",
+      "provincia": "General Sánchez Cerro",
+      "distrito": null,
+      "periodo": 2025,
+      "precio_chacra": {
+        "valor": 3.89,
+        "unidad": "PEN/kg"
+      },
+      "fuente_id": "DRA25",
+      "estado": "transcrito_pendiente_cotejo_pdf",
+      "uso": "supuesto_editable_demo",
+      "tipo_en_fuente": null
+    },
+    {
+      "crop_id": "cebolla",
+      "nivel": "provincia",
+      "departamento": "Moquegua",
+      "provincia": "Mariscal Nieto",
+      "distrito": null,
+      "periodo": 2025,
+      "precio_chacra": {
+        "valor": 0.87,
+        "unidad": "PEN/kg"
+      },
+      "fuente_id": "DRA25",
+      "estado": "transcrito_pendiente_cotejo_pdf",
+      "uso": "supuesto_editable_demo",
+      "tipo_en_fuente": null
+    },
+    {
+      "crop_id": "zapallo",
+      "nivel": "provincia",
+      "departamento": "Moquegua",
+      "provincia": "Mariscal Nieto",
+      "distrito": null,
+      "periodo": 2025,
+      "precio_chacra": {
+        "valor": 2.06,
+        "unidad": "PEN/kg"
+      },
+      "fuente_id": "DRA25",
+      "estado": "transcrito_pendiente_cotejo_pdf",
+      "uso": "supuesto_editable_demo",
+      "tipo_en_fuente": null
+    },
+    {
+      "crop_id": "zapallo",
+      "nivel": "provincia",
+      "departamento": "Moquegua",
+      "provincia": "General Sánchez Cerro",
+      "distrito": null,
+      "periodo": 2025,
+      "precio_chacra": {
+        "valor": 2,
+        "unidad": "PEN/kg"
+      },
+      "fuente_id": "DRA25",
+      "estado": "transcrito_pendiente_cotejo_pdf",
+      "uso": "supuesto_editable_demo",
+      "tipo_en_fuente": null
+    },
+    {
+      "crop_id": "alfalfa",
+      "nivel": "provincia",
+      "departamento": "Moquegua",
+      "provincia": "Mariscal Nieto",
+      "distrito": null,
+      "periodo": 2025,
+      "precio_chacra": {
+        "valor": 0.1,
+        "unidad": "PEN/kg"
+      },
+      "fuente_id": "DRA25",
+      "estado": "transcrito_pendiente_cotejo_pdf",
+      "uso": "supuesto_editable_demo",
+      "tipo_en_fuente": null
+    },
+    {
+      "crop_id": "alfalfa",
+      "nivel": "provincia",
+      "departamento": "Moquegua",
+      "provincia": "General Sánchez Cerro",
+      "distrito": null,
+      "periodo": 2025,
+      "precio_chacra": {
+        "valor": 0.17,
+        "unidad": "PEN/kg"
+      },
+      "fuente_id": "DRA25",
+      "estado": "transcrito_pendiente_cotejo_pdf",
+      "uso": "supuesto_editable_demo",
+      "tipo_en_fuente": null
+    },
+    {
+      "crop_id": "alfalfa",
+      "nivel": "provincia",
+      "departamento": "Moquegua",
+      "provincia": "Ilo",
+      "distrito": null,
+      "periodo": 2025,
+      "precio_chacra": {
+        "valor": 0.17,
+        "unidad": "PEN/kg"
+      },
+      "fuente_id": "DRA25",
+      "estado": "transcrito_pendiente_cotejo_pdf",
+      "uso": "supuesto_editable_demo",
+      "tipo_en_fuente": null
+    },
+    {
+      "crop_id": "palto",
+      "nivel": "provincia",
+      "departamento": "Moquegua",
+      "provincia": "Mariscal Nieto",
+      "distrito": null,
+      "periodo": 2025,
+      "precio_chacra": {
+        "valor": 5.12,
+        "unidad": "PEN/kg"
+      },
+      "fuente_id": "DRA25",
+      "estado": "transcrito_pendiente_cotejo_pdf",
+      "uso": "supuesto_editable_demo",
+      "tipo_en_fuente": null
+    },
+    {
+      "crop_id": "palto",
+      "nivel": "provincia",
+      "departamento": "Moquegua",
+      "provincia": "General Sánchez Cerro",
+      "distrito": null,
+      "periodo": 2025,
+      "precio_chacra": {
+        "valor": 6.14,
+        "unidad": "PEN/kg"
+      },
+      "fuente_id": "DRA25",
+      "estado": "transcrito_pendiente_cotejo_pdf",
+      "uso": "supuesto_editable_demo",
+      "tipo_en_fuente": null
+    },
+    {
+      "crop_id": "palto",
+      "nivel": "provincia",
+      "departamento": "Moquegua",
+      "provincia": "Ilo",
+      "distrito": null,
+      "periodo": 2025,
+      "precio_chacra": {
+        "valor": 4,
+        "unidad": "PEN/kg"
+      },
+      "fuente_id": "DRA25",
+      "estado": "transcrito_pendiente_cotejo_pdf",
+      "uso": "supuesto_editable_demo",
+      "tipo_en_fuente": null
+    },
+    {
+      "crop_id": "tuna",
+      "nivel": "provincia",
+      "departamento": "Moquegua",
+      "provincia": "Mariscal Nieto",
+      "distrito": null,
+      "periodo": 2025,
+      "precio_chacra": {
+        "valor": 2.42,
+        "unidad": "PEN/kg"
+      },
+      "fuente_id": "DRA25",
+      "estado": "transcrito_pendiente_cotejo_pdf",
+      "uso": "supuesto_editable_demo",
+      "tipo_en_fuente": null
+    },
+    {
+      "crop_id": "tuna",
+      "nivel": "provincia",
+      "departamento": "Moquegua",
+      "provincia": "General Sánchez Cerro",
+      "distrito": null,
+      "periodo": 2025,
+      "precio_chacra": {
+        "valor": 2.32,
+        "unidad": "PEN/kg"
+      },
+      "fuente_id": "DRA25",
+      "estado": "transcrito_pendiente_cotejo_pdf",
+      "uso": "supuesto_editable_demo",
+      "tipo_en_fuente": null
+    },
+    {
+      "crop_id": "vid",
+      "nivel": "provincia",
+      "departamento": "Moquegua",
+      "provincia": "Mariscal Nieto",
+      "distrito": null,
+      "periodo": 2025,
+      "precio_chacra": {
+        "valor": 3.34,
+        "unidad": "PEN/kg"
+      },
+      "fuente_id": "DRA25",
+      "estado": "transcrito_pendiente_cotejo_pdf",
+      "uso": "supuesto_editable_demo",
+      "tipo_en_fuente": null
+    },
+    {
+      "crop_id": "vid",
+      "nivel": "provincia",
+      "departamento": "Moquegua",
+      "provincia": "General Sánchez Cerro",
+      "distrito": null,
+      "periodo": 2025,
+      "precio_chacra": {
+        "valor": 3.34,
+        "unidad": "PEN/kg"
+      },
+      "fuente_id": "DRA25",
+      "estado": "transcrito_pendiente_cotejo_pdf",
+      "uso": "supuesto_editable_demo",
+      "tipo_en_fuente": null
+    },
+    {
+      "crop_id": "vid",
+      "nivel": "provincia",
+      "departamento": "Moquegua",
+      "provincia": "Ilo",
+      "distrito": null,
+      "periodo": 2025,
+      "precio_chacra": {
+        "valor": 4.5,
+        "unidad": "PEN/kg"
+      },
+      "fuente_id": "DRA25",
+      "estado": "transcrito_pendiente_cotejo_pdf",
+      "uso": "supuesto_editable_demo",
+      "tipo_en_fuente": null
+    },
+    {
+      "crop_id": "oregano",
+      "nivel": "provincia",
+      "departamento": "Moquegua",
+      "provincia": "Mariscal Nieto",
+      "distrito": null,
+      "periodo": 2025,
+      "precio_chacra": {
+        "valor": 9.67,
+        "unidad": "PEN/kg"
+      },
+      "fuente_id": "DRA25",
+      "estado": "transcrito_pendiente_cotejo_pdf",
+      "uso": "supuesto_editable_demo",
+      "tipo_en_fuente": null
+    },
+    {
+      "crop_id": "oregano",
+      "nivel": "provincia",
+      "departamento": "Moquegua",
+      "provincia": "General Sánchez Cerro",
+      "distrito": null,
+      "periodo": 2025,
+      "precio_chacra": {
+        "valor": 8.45,
+        "unidad": "PEN/kg"
+      },
+      "fuente_id": "DRA25",
+      "estado": "transcrito_pendiente_cotejo_pdf",
+      "uso": "supuesto_editable_demo",
+      "tipo_en_fuente": null
+    },
+    {
+      "crop_id": "aji",
+      "nivel": "provincia",
+      "departamento": "Moquegua",
+      "provincia": "Mariscal Nieto",
+      "distrito": null,
+      "periodo": 2025,
+      "precio_chacra": {
+        "valor": 2,
+        "unidad": "PEN/kg"
+      },
+      "fuente_id": "DRA25",
+      "estado": "transcrito_pendiente_cotejo_pdf",
+      "uso": "supuesto_editable_demo",
+      "tipo_en_fuente": null
+    },
+    {
+      "crop_id": "tomate",
+      "nivel": "provincia",
+      "departamento": "Moquegua",
+      "provincia": "Mariscal Nieto",
+      "distrito": null,
+      "periodo": 2025,
+      "precio_chacra": {
+        "valor": 1.5,
+        "unidad": "PEN/kg"
+      },
+      "fuente_id": "DRA25",
+      "estado": "transcrito_pendiente_cotejo_pdf",
+      "uso": "supuesto_editable_demo",
+      "tipo_en_fuente": null
+    },
+    {
+      "crop_id": "maiz_choclo",
+      "nivel": "provincia",
+      "departamento": "Moquegua",
+      "provincia": "Mariscal Nieto",
+      "distrito": null,
+      "periodo": 2025,
+      "precio_chacra": {
+        "valor": 2.29,
+        "unidad": "PEN/kg"
+      },
+      "fuente_id": "DRA25",
+      "estado": "transcrito_pendiente_cotejo_pdf",
+      "uso": "supuesto_editable_demo",
+      "tipo_en_fuente": null
+    },
+    {
+      "crop_id": "vainita",
+      "nivel": "provincia",
+      "departamento": "Moquegua",
+      "provincia": "Mariscal Nieto",
+      "distrito": null,
+      "periodo": 2025,
+      "precio_chacra": {
+        "valor": 3.07,
+        "unidad": "PEN/kg"
+      },
+      "fuente_id": "DRA25",
+      "estado": "transcrito_pendiente_cotejo_pdf",
+      "uso": "supuesto_editable_demo",
+      "tipo_en_fuente": null
+    },
+    {
+      "crop_id": "ajo",
+      "nivel": "provincia",
+      "departamento": "Moquegua",
+      "provincia": "Mariscal Nieto",
+      "distrito": null,
+      "periodo": 2025,
+      "precio_chacra": {
+        "valor": 4.93,
+        "unidad": "PEN/kg"
+      },
+      "fuente_id": "DRA25",
+      "estado": "transcrito_pendiente_cotejo_pdf",
+      "uso": "supuesto_editable_demo",
+      "tipo_en_fuente": null
+    },
+    {
+      "crop_id": "ajo",
+      "nivel": "provincia",
+      "departamento": "Moquegua",
+      "provincia": "General Sánchez Cerro",
+      "distrito": null,
+      "periodo": 2025,
+      "precio_chacra": {
+        "valor": 6.38,
+        "unidad": "PEN/kg"
+      },
+      "fuente_id": "DRA25",
+      "estado": "transcrito_pendiente_cotejo_pdf",
+      "uso": "supuesto_editable_demo",
+      "tipo_en_fuente": null
+    },
+    {
+      "crop_id": "ajo",
+      "nivel": "provincia",
+      "departamento": "Moquegua",
+      "provincia": "Ilo",
+      "distrito": null,
+      "periodo": 2025,
+      "precio_chacra": {
+        "valor": 3.5,
+        "unidad": "PEN/kg"
+      },
+      "fuente_id": "DRA25",
+      "estado": "transcrito_pendiente_cotejo_pdf",
+      "uso": "supuesto_editable_demo",
+      "tipo_en_fuente": null
+    },
+    {
+      "crop_id": "sandia",
+      "nivel": "provincia",
+      "departamento": "Moquegua",
+      "provincia": "Mariscal Nieto",
+      "distrito": null,
+      "periodo": 2025,
+      "precio_chacra": {
+        "valor": 0.94,
+        "unidad": "PEN/kg"
+      },
+      "fuente_id": "DRA25",
+      "estado": "transcrito_pendiente_cotejo_pdf",
+      "uso": "supuesto_editable_demo",
+      "tipo_en_fuente": null
+    },
+    {
+      "crop_id": "sandia",
+      "nivel": "provincia",
+      "departamento": "Moquegua",
+      "provincia": "Ilo",
+      "distrito": null,
+      "periodo": 2025,
+      "precio_chacra": {
+        "valor": 0.8,
+        "unidad": "PEN/kg"
+      },
+      "fuente_id": "DRA25",
+      "estado": "transcrito_pendiente_cotejo_pdf",
+      "uso": "supuesto_editable_demo",
+      "tipo_en_fuente": null
+    },
+    {
+      "crop_id": "zanahoria",
+      "nivel": "provincia",
+      "departamento": "Moquegua",
+      "provincia": "Mariscal Nieto",
+      "distrito": null,
+      "periodo": 2025,
+      "precio_chacra": {
+        "valor": 1,
+        "unidad": "PEN/kg"
+      },
+      "fuente_id": "DRA25",
+      "estado": "transcrito_pendiente_cotejo_pdf",
+      "uso": "supuesto_editable_demo",
+      "tipo_en_fuente": null
+    },
+    {
+      "crop_id": "lechuga",
+      "nivel": "provincia",
+      "departamento": "Moquegua",
+      "provincia": "Mariscal Nieto",
+      "distrito": null,
+      "periodo": 2025,
+      "precio_chacra": {
+        "valor": 1.68,
+        "unidad": "PEN/kg"
+      },
+      "fuente_id": "DRA25",
+      "estado": "transcrito_pendiente_cotejo_pdf",
+      "uso": "supuesto_editable_demo",
+      "tipo_en_fuente": null
+    },
+    {
+      "crop_id": "beterraga",
+      "nivel": "provincia",
+      "departamento": "Moquegua",
+      "provincia": "Mariscal Nieto",
+      "distrito": null,
+      "periodo": 2025,
+      "precio_chacra": {
+        "valor": 1.4,
+        "unidad": "PEN/kg"
+      },
+      "fuente_id": "DRA25",
+      "estado": "transcrito_pendiente_cotejo_pdf",
+      "uso": "supuesto_editable_demo",
+      "tipo_en_fuente": null
+    },
+    {
+      "crop_id": "camote",
+      "nivel": "provincia",
+      "departamento": "Moquegua",
+      "provincia": "Mariscal Nieto",
+      "distrito": null,
+      "periodo": 2025,
+      "precio_chacra": {
+        "valor": 1,
+        "unidad": "PEN/kg"
+      },
+      "fuente_id": "DRA25",
+      "estado": "transcrito_pendiente_cotejo_pdf",
+      "uso": "supuesto_editable_demo",
+      "tipo_en_fuente": null
+    },
+    {
+      "crop_id": "camote",
+      "nivel": "provincia",
+      "departamento": "Moquegua",
+      "provincia": "General Sánchez Cerro",
+      "distrito": null,
+      "periodo": 2025,
+      "precio_chacra": {
+        "valor": 2,
+        "unidad": "PEN/kg"
+      },
+      "fuente_id": "DRA25",
+      "estado": "transcrito_pendiente_cotejo_pdf",
+      "uso": "supuesto_editable_demo",
+      "tipo_en_fuente": null
+    },
+    {
+      "crop_id": "coliflor",
+      "nivel": "provincia",
+      "departamento": "Moquegua",
+      "provincia": "Mariscal Nieto",
+      "distrito": null,
+      "periodo": 2025,
+      "precio_chacra": {
+        "valor": 2.08,
+        "unidad": "PEN/kg"
+      },
+      "fuente_id": "DRA25",
+      "estado": "transcrito_pendiente_cotejo_pdf",
+      "uso": "supuesto_editable_demo",
+      "tipo_en_fuente": null
+    },
+    {
+      "crop_id": "arveja_verde",
+      "nivel": "provincia",
+      "departamento": "Moquegua",
+      "provincia": "Mariscal Nieto",
+      "distrito": null,
+      "periodo": 2025,
+      "precio_chacra": {
+        "valor": 4.3,
+        "unidad": "PEN/kg"
+      },
+      "fuente_id": "DRA25",
+      "estado": "transcrito_pendiente_cotejo_pdf",
+      "uso": "supuesto_editable_demo",
+      "tipo_en_fuente": null
+    },
+    {
+      "crop_id": "arveja_verde",
+      "nivel": "provincia",
+      "departamento": "Moquegua",
+      "provincia": "General Sánchez Cerro",
+      "distrito": null,
+      "periodo": 2025,
+      "precio_chacra": {
+        "valor": 3.5,
+        "unidad": "PEN/kg"
+      },
+      "fuente_id": "DRA25",
+      "estado": "transcrito_pendiente_cotejo_pdf",
+      "uso": "supuesto_editable_demo",
+      "tipo_en_fuente": null
+    },
+    {
+      "crop_id": "pepinillo",
+      "nivel": "provincia",
+      "departamento": "Moquegua",
+      "provincia": "Mariscal Nieto",
+      "distrito": null,
+      "periodo": 2025,
+      "precio_chacra": {
+        "valor": 1.6,
+        "unidad": "PEN/kg"
+      },
+      "fuente_id": "DRA25",
+      "estado": "transcrito_pendiente_cotejo_pdf",
+      "uso": "supuesto_editable_demo",
+      "tipo_en_fuente": null
+    },
+    {
+      "crop_id": "caigua",
+      "nivel": "provincia",
+      "departamento": "Moquegua",
+      "provincia": "Mariscal Nieto",
+      "distrito": null,
+      "periodo": 2025,
+      "precio_chacra": {
+        "valor": 1.96,
+        "unidad": "PEN/kg"
+      },
+      "fuente_id": "DRA25",
+      "estado": "transcrito_pendiente_cotejo_pdf",
+      "uso": "supuesto_editable_demo",
+      "tipo_en_fuente": null
+    },
+    {
+      "crop_id": "limon",
+      "nivel": "provincia",
+      "departamento": "Moquegua",
+      "provincia": "Mariscal Nieto",
+      "distrito": null,
+      "periodo": 2025,
+      "precio_chacra": {
+        "valor": 2.54,
+        "unidad": "PEN/kg"
+      },
+      "fuente_id": "DRA25",
+      "estado": "transcrito_pendiente_cotejo_pdf",
+      "uso": "supuesto_editable_demo",
+      "tipo_en_fuente": null
+    },
+    {
+      "crop_id": "limon",
+      "nivel": "provincia",
+      "departamento": "Moquegua",
+      "provincia": "General Sánchez Cerro",
+      "distrito": null,
+      "periodo": 2025,
+      "precio_chacra": {
+        "valor": 2.94,
+        "unidad": "PEN/kg"
+      },
+      "fuente_id": "DRA25",
+      "estado": "transcrito_pendiente_cotejo_pdf",
+      "uso": "supuesto_editable_demo",
+      "tipo_en_fuente": null
+    },
+    {
+      "crop_id": "papa",
+      "nivel": "departamento",
+      "departamento": "Moquegua",
+      "provincia": null,
+      "distrito": null,
+      "periodo": 2025,
+      "precio_chacra": {
+        "valor": 1.52,
+        "unidad": "PEN/kg"
+      },
+      "fuente_id": "DRA25",
+      "estado": "transcrito_pendiente_cotejo_pdf",
+      "uso": "supuesto_editable_demo",
+      "tipo_en_fuente": "Papa color"
+    },
+    {
+      "crop_id": "papa",
+      "nivel": "departamento",
+      "departamento": "Moquegua",
+      "provincia": null,
+      "distrito": null,
+      "periodo": 2025,
+      "precio_chacra": {
+        "valor": 2.87,
+        "unidad": "PEN/kg"
+      },
+      "fuente_id": "DRA25",
+      "estado": "transcrito_pendiente_cotejo_pdf",
+      "uso": "supuesto_editable_demo",
+      "tipo_en_fuente": "Papa nativa"
+    },
+    {
+      "crop_id": "papa",
+      "nivel": "departamento",
+      "departamento": "Moquegua",
+      "provincia": null,
+      "distrito": null,
+      "periodo": 2025,
+      "precio_chacra": {
+        "valor": 1.64,
+        "unidad": "PEN/kg"
+      },
+      "fuente_id": "DRA25",
+      "estado": "transcrito_pendiente_cotejo_pdf",
+      "uso": "supuesto_editable_demo",
+      "tipo_en_fuente": "Papa mejorada"
+    },
+    {
+      "crop_id": "maiz_amilaceo",
+      "nivel": "departamento",
+      "departamento": "Moquegua",
+      "provincia": null,
+      "distrito": null,
+      "periodo": 2025,
+      "precio_chacra": {
+        "valor": 6.41,
+        "unidad": "PEN/kg"
+      },
+      "fuente_id": "DRA25",
+      "estado": "transcrito_pendiente_cotejo_pdf",
+      "uso": "supuesto_editable_demo",
+      "tipo_en_fuente": null
+    },
+    {
+      "crop_id": "haba_seca",
+      "nivel": "departamento",
+      "departamento": "Moquegua",
+      "provincia": null,
+      "distrito": null,
+      "periodo": 2025,
+      "precio_chacra": {
+        "valor": 2.73,
+        "unidad": "PEN/kg"
+      },
+      "fuente_id": "DRA25",
+      "estado": "transcrito_pendiente_cotejo_pdf",
+      "uso": "supuesto_editable_demo",
+      "tipo_en_fuente": null
+    },
+    {
+      "crop_id": "cebolla",
+      "nivel": "departamento",
+      "departamento": "Moquegua",
+      "provincia": null,
+      "distrito": null,
+      "periodo": 2025,
+      "precio_chacra": {
+        "valor": 0.87,
+        "unidad": "PEN/kg"
+      },
+      "fuente_id": "DRA25",
+      "estado": "transcrito_pendiente_cotejo_pdf",
+      "uso": "supuesto_editable_demo",
+      "tipo_en_fuente": null
+    },
+    {
+      "crop_id": "zapallo",
+      "nivel": "departamento",
+      "departamento": "Moquegua",
+      "provincia": null,
+      "distrito": null,
+      "periodo": 2025,
+      "precio_chacra": {
+        "valor": 2.06,
+        "unidad": "PEN/kg"
+      },
+      "fuente_id": "DRA25",
+      "estado": "transcrito_pendiente_cotejo_pdf",
+      "uso": "supuesto_editable_demo",
+      "tipo_en_fuente": null
+    },
+    {
+      "crop_id": "alfalfa",
+      "nivel": "departamento",
+      "departamento": "Moquegua",
+      "provincia": null,
+      "distrito": null,
+      "periodo": 2025,
+      "precio_chacra": {
+        "valor": 0.12,
+        "unidad": "PEN/kg"
+      },
+      "fuente_id": "DRA25",
+      "estado": "transcrito_pendiente_cotejo_pdf",
+      "uso": "supuesto_editable_demo",
+      "tipo_en_fuente": null
+    },
+    {
+      "crop_id": "palto",
+      "nivel": "departamento",
+      "departamento": "Moquegua",
+      "provincia": null,
+      "distrito": null,
+      "periodo": 2025,
+      "precio_chacra": {
+        "valor": 5.81,
+        "unidad": "PEN/kg"
+      },
+      "fuente_id": "DRA25",
+      "estado": "transcrito_pendiente_cotejo_pdf",
+      "uso": "supuesto_editable_demo",
+      "tipo_en_fuente": null
+    },
+    {
+      "crop_id": "tuna",
+      "nivel": "departamento",
+      "departamento": "Moquegua",
+      "provincia": null,
+      "distrito": null,
+      "periodo": 2025,
+      "precio_chacra": {
+        "valor": 2.4,
+        "unidad": "PEN/kg"
+      },
+      "fuente_id": "DRA25",
+      "estado": "transcrito_pendiente_cotejo_pdf",
+      "uso": "supuesto_editable_demo",
+      "tipo_en_fuente": null
+    },
+    {
+      "crop_id": "vid",
+      "nivel": "departamento",
+      "departamento": "Moquegua",
+      "provincia": null,
+      "distrito": null,
+      "periodo": 2025,
+      "precio_chacra": {
+        "valor": 3.34,
+        "unidad": "PEN/kg"
+      },
+      "fuente_id": "DRA25",
+      "estado": "transcrito_pendiente_cotejo_pdf",
+      "uso": "supuesto_editable_demo",
+      "tipo_en_fuente": null
+    },
+    {
+      "crop_id": "oregano",
+      "nivel": "departamento",
+      "departamento": "Moquegua",
+      "provincia": null,
+      "distrito": null,
+      "periodo": 2025,
+      "precio_chacra": {
+        "valor": 9.26,
+        "unidad": "PEN/kg"
+      },
+      "fuente_id": "DRA25",
+      "estado": "transcrito_pendiente_cotejo_pdf",
+      "uso": "supuesto_editable_demo",
+      "tipo_en_fuente": null
+    },
+    {
+      "crop_id": "aji",
+      "nivel": "departamento",
+      "departamento": "Moquegua",
+      "provincia": null,
+      "distrito": null,
+      "periodo": 2025,
+      "precio_chacra": {
+        "valor": 2,
+        "unidad": "PEN/kg"
+      },
+      "fuente_id": "DRA25",
+      "estado": "transcrito_pendiente_cotejo_pdf",
+      "uso": "supuesto_editable_demo",
+      "tipo_en_fuente": null
+    },
+    {
+      "crop_id": "tomate",
+      "nivel": "departamento",
+      "departamento": "Moquegua",
+      "provincia": null,
+      "distrito": null,
+      "periodo": 2025,
+      "precio_chacra": {
+        "valor": 1.5,
+        "unidad": "PEN/kg"
+      },
+      "fuente_id": "DRA25",
+      "estado": "transcrito_pendiente_cotejo_pdf",
+      "uso": "supuesto_editable_demo",
+      "tipo_en_fuente": null
+    },
+    {
+      "crop_id": "maiz_choclo",
+      "nivel": "departamento",
+      "departamento": "Moquegua",
+      "provincia": null,
+      "distrito": null,
+      "periodo": 2025,
+      "precio_chacra": {
+        "valor": 2.29,
+        "unidad": "PEN/kg"
+      },
+      "fuente_id": "DRA25",
+      "estado": "transcrito_pendiente_cotejo_pdf",
+      "uso": "supuesto_editable_demo",
+      "tipo_en_fuente": null
+    },
+    {
+      "crop_id": "vainita",
+      "nivel": "departamento",
+      "departamento": "Moquegua",
+      "provincia": null,
+      "distrito": null,
+      "periodo": 2025,
+      "precio_chacra": {
+        "valor": 3.07,
+        "unidad": "PEN/kg"
+      },
+      "fuente_id": "DRA25",
+      "estado": "transcrito_pendiente_cotejo_pdf",
+      "uso": "supuesto_editable_demo",
+      "tipo_en_fuente": null
+    },
+    {
+      "crop_id": "ajo",
+      "nivel": "departamento",
+      "departamento": "Moquegua",
+      "provincia": null,
+      "distrito": null,
+      "periodo": 2025,
+      "precio_chacra": {
+        "valor": 5.86,
+        "unidad": "PEN/kg"
+      },
+      "fuente_id": "DRA25",
+      "estado": "transcrito_pendiente_cotejo_pdf",
+      "uso": "supuesto_editable_demo",
+      "tipo_en_fuente": null
+    },
+    {
+      "crop_id": "sandia",
+      "nivel": "departamento",
+      "departamento": "Moquegua",
+      "provincia": null,
+      "distrito": null,
+      "periodo": 2025,
+      "precio_chacra": {
+        "valor": 0.87,
+        "unidad": "PEN/kg"
+      },
+      "fuente_id": "DRA25",
+      "estado": "transcrito_pendiente_cotejo_pdf",
+      "uso": "supuesto_editable_demo",
+      "tipo_en_fuente": null
+    },
+    {
+      "crop_id": "zanahoria",
+      "nivel": "departamento",
+      "departamento": "Moquegua",
+      "provincia": null,
+      "distrito": null,
+      "periodo": 2025,
+      "precio_chacra": {
+        "valor": 1,
+        "unidad": "PEN/kg"
+      },
+      "fuente_id": "DRA25",
+      "estado": "transcrito_pendiente_cotejo_pdf",
+      "uso": "supuesto_editable_demo",
+      "tipo_en_fuente": null
+    },
+    {
+      "crop_id": "lechuga",
+      "nivel": "departamento",
+      "departamento": "Moquegua",
+      "provincia": null,
+      "distrito": null,
+      "periodo": 2025,
+      "precio_chacra": {
+        "valor": 1.68,
+        "unidad": "PEN/kg"
+      },
+      "fuente_id": "DRA25",
+      "estado": "transcrito_pendiente_cotejo_pdf",
+      "uso": "supuesto_editable_demo",
+      "tipo_en_fuente": null
+    },
+    {
+      "crop_id": "beterraga",
+      "nivel": "departamento",
+      "departamento": "Moquegua",
+      "provincia": null,
+      "distrito": null,
+      "periodo": 2025,
+      "precio_chacra": {
+        "valor": 1.4,
+        "unidad": "PEN/kg"
+      },
+      "fuente_id": "DRA25",
+      "estado": "transcrito_pendiente_cotejo_pdf",
+      "uso": "supuesto_editable_demo",
+      "tipo_en_fuente": null
+    },
+    {
+      "crop_id": "camote",
+      "nivel": "departamento",
+      "departamento": "Moquegua",
+      "provincia": null,
+      "distrito": null,
+      "periodo": 2025,
+      "precio_chacra": {
+        "valor": 1.47,
+        "unidad": "PEN/kg"
+      },
+      "fuente_id": "DRA25",
+      "estado": "transcrito_pendiente_cotejo_pdf",
+      "uso": "supuesto_editable_demo",
+      "tipo_en_fuente": null
+    },
+    {
+      "crop_id": "coliflor",
+      "nivel": "departamento",
+      "departamento": "Moquegua",
+      "provincia": null,
+      "distrito": null,
+      "periodo": 2025,
+      "precio_chacra": {
+        "valor": 2.08,
+        "unidad": "PEN/kg"
+      },
+      "fuente_id": "DRA25",
+      "estado": "transcrito_pendiente_cotejo_pdf",
+      "uso": "supuesto_editable_demo",
+      "tipo_en_fuente": null
+    },
+    {
+      "crop_id": "arveja_verde",
+      "nivel": "departamento",
+      "departamento": "Moquegua",
+      "provincia": null,
+      "distrito": null,
+      "periodo": 2025,
+      "precio_chacra": {
+        "valor": 4.21,
+        "unidad": "PEN/kg"
+      },
+      "fuente_id": "DRA25",
+      "estado": "transcrito_pendiente_cotejo_pdf",
+      "uso": "supuesto_editable_demo",
+      "tipo_en_fuente": null
+    },
+    {
+      "crop_id": "pepinillo",
+      "nivel": "departamento",
+      "departamento": "Moquegua",
+      "provincia": null,
+      "distrito": null,
+      "periodo": 2025,
+      "precio_chacra": {
+        "valor": 1.6,
+        "unidad": "PEN/kg"
+      },
+      "fuente_id": "DRA25",
+      "estado": "transcrito_pendiente_cotejo_pdf",
+      "uso": "supuesto_editable_demo",
+      "tipo_en_fuente": null
+    },
+    {
+      "crop_id": "caigua",
+      "nivel": "departamento",
+      "departamento": "Moquegua",
+      "provincia": null,
+      "distrito": null,
+      "periodo": 2025,
+      "precio_chacra": {
+        "valor": 1.96,
+        "unidad": "PEN/kg"
+      },
+      "fuente_id": "DRA25",
+      "estado": "transcrito_pendiente_cotejo_pdf",
+      "uso": "supuesto_editable_demo",
+      "tipo_en_fuente": null
+    },
+    {
+      "crop_id": "limon",
+      "nivel": "departamento",
+      "departamento": "Moquegua",
+      "provincia": null,
+      "distrito": null,
+      "periodo": 2025,
+      "precio_chacra": {
+        "valor": 2.81,
+        "unidad": "PEN/kg"
+      },
+      "fuente_id": "DRA25",
+      "estado": "transcrito_pendiente_cotejo_pdf",
+      "uso": "supuesto_editable_demo",
+      "tipo_en_fuente": null
+    }
+  ]
+}

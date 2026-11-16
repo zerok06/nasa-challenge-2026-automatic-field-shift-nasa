@@ -7,6 +7,7 @@ from dataclasses import dataclass
 class Guardrail:
     answer: str
     phase: str
+    kind: str = "safety"
 
 
 def match_guardrail(message: str) -> Guardrail | None:
@@ -20,8 +21,9 @@ def match_guardrail(message: str) -> Guardrail | None:
         )
     if any(key in text for key in ("llover", "lluvia", "clima", "pronóstico", "pronostico")):
         return Guardrail(
-            "No predigo el clima. La tarjeta “Clima de tu zona” es referencia, no pronóstico.",
+            "No predigo el clima. Mira “Riego de la semana” para la lluvia y la demanda de referencia de 7 días.",
             "comparar",
+            "info",
         )
     if any(
         key in text
@@ -39,15 +41,13 @@ def match_guardrail(message: str) -> Guardrail | None:
             "datos",
         )
     if any(
-        key in text for key in ("abogado", "juicio", "legal", "médico", "medico", "doctor", "salud")
+        key in text for key in ("abogado", "juicio", "legal", "médico", "medico", "doctor")
     ):
         return Guardrail(
             "No doy consejos médicos ni legales. Consulta a un profesional.",
             "comparar",
         )
-    if any(
-        key in text for key in ("partido", "fútbol", "futbol", "política", "politica", "chiste")
-    ):
+    if any(key in text for key in ("partido", "fútbol", "futbol", "chiste", "noticia", "noticias", "actualidad", "últimas noticias", "ultimas noticias")):
         return Guardrail(
             "Solo puedo ayudarte con tu parcela y tus planes de siembra.",
             "comparar",
@@ -59,10 +59,16 @@ def next_step_for(message: str, tools: list[str]) -> str:
     text = message.lower()
     if "propose_save_plan" in tools:
         return "listo"
+    if "propose_capture" in tools:
+        return "guardar"
     if "simulate_scenario" in tools:
         return "guardar"
+    if "rank_plans" in tools or "explain_plan" in tools:
+        return "probar"
     if "compare_rotations" in tools:
         return "probar"
+    if "get_next_questions" in tools or "audit_parcel" in tools:
+        return "datos"
     if any(key in text for key in ("qué datos", "que datos", "datos faltan", "faltan datos")):
         return "datos"
     return "comparar"

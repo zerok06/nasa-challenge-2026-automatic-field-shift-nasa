@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Linking } from 'react-native';
 import { Check, ExternalLink } from 'lucide-react-native';
 import { router } from 'expo-router';
+import Constants from 'expo-constants';
 import { useTranslation } from 'react-i18next';
 
 import { AppAlert } from '@/components/app/AppAlert';
@@ -230,7 +231,8 @@ export function SettingsScreen() {
 
       <SectionCard title={t('Acerca de Anden')}>
         <Text className="text-base leading-6 text-foreground">
-          {t('Hecho para agricultores de Moquegua')}. Anden 0.1.0 · datos abiertos de NASA.
+          {t('Hecho para agricultores de Moquegua')}. Anden{' '}
+          {Constants.expoConfig?.version ?? '0.2.0'} · datos abiertos de NASA.
         </Text>
         <Text className="text-sm leading-5 text-muted-foreground">
           {t('Quechua y aimara están en revisión con hablantes nativos.')}

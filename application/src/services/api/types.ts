@@ -149,6 +149,7 @@ export type Comparison = {
   parcel_id: string;
   analysis_period: { start: string; end: string };
   plans: Plan[];
+  pending_plans?: Plan[];
   source_snapshots: string[];
   scenario_type: string;
   warnings: string[];
@@ -176,6 +177,9 @@ export type AgentMessage = {
   thread_id: string;
   status: string;
   answer: string;
+  /** Stable i18n key to render `answer` in the user's language (spec 036). */
+  answer_key: string | null;
+  answer_params: Record<string, unknown>;
   tool_trace: AgentToolTrace[];
   evidence_refs: string[];
   ui_actions: AgentAction[];
@@ -184,12 +188,50 @@ export type AgentMessage = {
   next_step: AgentNextStep | null;
 };
 
+export type SavedPlanSnapshotPlan = {
+  plan_id: string;
+  label: string;
+  kind: string;
+  status: string;
+  crop_sequence: string[];
+  water: Plan['water'];
+  economics: Plan['economics'];
+};
+
 export type SavedPlan = {
   id: string;
   parcel_id: string;
   name: string;
   status: string;
   created_at?: string | null;
+  rotation_plan_id?: string | null;
+  analysis_run_id?: string | null;
+  comparison_id?: string | null;
+  preferred_plan_id?: string | null;
+  fallback_plan_id?: string | null;
+  preferred?: SavedPlanSnapshotPlan | null;
+  fallback?: SavedPlanSnapshotPlan | null;
+  thresholds?: Record<string, unknown>;
+  reviewed_at?: string | null;
+};
+
+export type SavedPlanReviewAlert = {
+  code: string;
+  severity: 'info' | 'warning' | 'critical';
+  message: string;
+};
+
+export type SavedPlanReview = {
+  saved_plan_id: string;
+  changed: boolean;
+  checked_at: string;
+  alerts: SavedPlanReviewAlert[];
+  saved_preferred: SavedPlanSnapshotPlan | null;
+  current_preferred: SavedPlanSnapshotPlan | null;
+  saved_available_mm: number | null;
+  current_available_mm: number | null;
+  saved_margin_pen: number | null;
+  current_margin_pen: number | null;
 };
 
 export type IrrigationDay = {
@@ -287,6 +329,21 @@ export type BundleClimateMonth = {
   eto_mm: number | null;
 };
 
+export type CatalogPriceReference = {
+  crop_id?: string;
+  cultivo_id?: string;
+  nivel: string;
+  departamento: string;
+  provincia: string | null;
+  distrito: string | null;
+  periodo: number;
+  precio_chacra: { valor: number; unidad: string };
+  fuente_id: string;
+  estado: string;
+  uso: string;
+  tipo_en_fuente: string;
+};
+
 export type ParcelBundle = {
   bundle_id: string;
   parcel_id: string;
@@ -301,6 +358,7 @@ export type ParcelBundle = {
     version: string;
     review_status: string;
     crops: Record<string, unknown>[];
+    prices_chacra_2025: CatalogPriceReference[];
   };
   comparison: Comparison;
   assumptions: Record<string, unknown>;

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { router } from 'expo-router';
 import { ClipboardList, Coins, Droplets, FileText, Settings } from 'lucide-react-native';
 import { useQuery } from '@tanstack/react-query';
@@ -8,45 +8,125 @@ import { ActionCard } from '@/components/app/ActionCard';
 import { AppAlert } from '@/components/app/AppAlert';
 import { AppButton } from '@/components/app/AppButton';
 import { AppHeader } from '@/components/app/AppHeader';
+import { FormField } from '@/components/app/FormField';
 import { MetricRow } from '@/components/app/Metric';
 import { Screen } from '@/components/app/Screen';
 import { SectionCard } from '@/components/app/SectionCard';
 import { StatusBadge } from '@/components/app/StatusBadge';
-import { Illustration } from '@/components/illustrations/Illustration';
 import { HStack } from '@/components/ui/hstack';
 import { Text } from '@/components/ui/text';
 import { VStack } from '@/components/ui/vstack';
 import { testIDs } from '@/design-system/testIDs';
-import { formatCompleteness, formatDate, formatMissing, formatNumber } from '@/lib/format';
+import { formatCompleteness, formatCropSequence, formatDate, formatMissing, formatNumber } from '@/lib/format';
+import { parseEsNumber } from '@/lib/parse';
 import { useOffline } from '@/providers/OfflineProvider';
 import { useParcel } from '@/providers/ParcelProvider';
-import { getSavedPlans, type Parcel } from '@/services/api';
+import { useComparison } from '@/providers/ComparisonProvider';
+import { getSavedPlans, type Parcel, type ParcelGeometryInput } from '@/services/api';
 import { BundleCard } from '@/features/parcel/BundleCard';
 import { profileProgress } from '@/features/parcel/profileStatus';
+import { parcelCoverFor } from '@/features/parcel/parcelCovers';
 
-function locationLabel(parcel: Parcel): string {
+function locationCoordinates(parcel: Parcel): { lat: number; lon: number } | null {
   const geometry = parcel.geometry;
   const coordinates = geometry?.coordinates;
-  if (!Array.isArray(coordinates) || coordinates.length < 2) return '';
+  if (!Array.isArray(coordinates) || coordinates.length < 2) return null;
   if (geometry.type === 'Point') {
-    return `${Number(coordinates[1]).toFixed(4)}, ${Number(coordinates[0]).toFixed(4)}`;
+    return { lat: Number(coordinates[1]), lon: Number(coordinates[0]) };
   }
   if (geometry.type === 'Polygon' && Array.isArray(coordinates[0])) {
     const ring = coordinates[0] as number[][];
     const points =
       ring.length > 1 && ring[0][0] === ring[ring.length - 1][0] ? ring.slice(0, -1) : ring;
-    if (points.length === 0) return '';
+    if (points.length === 0) return null;
     const lat = points.reduce((sum, point) => sum + point[1], 0) / points.length;
     const lon = points.reduce((sum, point) => sum + point[0], 0) / points.length;
-    return `${lat.toFixed(4)}, ${lon.toFixed(4)}`;
+    return { lat, lon };
   }
-  return '';
+  return null;
+}
+
+function movedGeometry(parcel: Parcel, lat: number, lon: number): ParcelGeometryInput {
+  const current = locationCoordinates(parcel);
+  if (parcel.geometry.type !== 'Polygon' || !current) {
+    return { type: 'Point', coordinates: [lon, lat] };
+  }
+  const deltaLon = lon - current.lon;
+  const deltaLat = lat - current.lat;
+  const rings = parcel.geometry.coordinates as number[][][];
+  return {
+    type: 'Polygon',
+    coordinates: rings.map((ring) =>
+      ring.map((point) => [point[0] + deltaLon, point[1] + deltaLat, ...point.slice(2)]),
+    ),
+  };
+}
+
+function locationLabel(parcel: Parcel): string {
+  const location = locationCoordinates(parcel);
+  return location ? `${location.lat.toFixed(4)}, ${location.lon.toFixed(4)}` : '';
 }
 
 export function ParcelScreen() {
   const { t } = useTranslation();
   const { online, bundle } = useOffline();
-  const { parcel, context, loading, error, refresh } = useParcel();
+  const { parcel, context, loading, error, refresh, updateMeta } = useParcel();
+  const { markStale } = useComparison();
+  const [editing, setEditing] = useState(false);
+  const [editName, setEditName] = useState(parcel?.name ?? '');
+  const [editArea, setEditArea] = useState(
+    parcel?.area_ha != null ? String(parcel.area_ha) : '',
+  );
+  const [editDistrict, setEditDistrict] = useState(parcel?.district ?? '');
+  const [editLat, setEditLat] = useState(() => {
+    const location = parcel ? locationCoordinates(parcel) : null;
+    return location ? String(location.lat) : '';
+  });
+  const [editLon, setEditLon] = useState(() => {
+    const location = parcel ? locationCoordinates(parcel) : null;
+    return location ? String(location.lon) : '';
+  });
+  const [editBusy, setEditBusy] = useState(false);
+  const [editError, setEditError] = useState<string | null>(null);
+
+  const handleSaveMeta = async () => {
+    const name = editName.trim();
+    if (!name) {
+      setEditError(t('Escribe un nombre para la parcela.'));
+      return;
+    }
+    const area = editArea.trim() ? parseEsNumber(editArea) : null;
+    if (editArea.trim() && (area === null || area <= 0)) {
+      setEditError(
+        t('“{{value}}” no es una superficie válida. Usa hectáreas, por ejemplo 1.2.', {
+          value: editArea.trim(),
+        }),
+      );
+      return;
+    }
+    const lat = parseEsNumber(editLat);
+    const lon = parseEsNumber(editLon);
+    if (lat === null || lon === null || lat < -90 || lat > 90 || lon < -180 || lon > 180) {
+      setEditError(t('Revisa la latitud y longitud de tu parcela.'));
+      return;
+    }
+    setEditBusy(true);
+    setEditError(null);
+    try {
+      await updateMeta({
+        name,
+        areaHa: area,
+        district: editDistrict.trim() || null,
+        geometry: movedGeometry(parcel!, lat, lon),
+      });
+      markStale();
+      setEditing(false);
+    } catch (cause) {
+      setEditError(cause instanceof Error ? cause.message : t('No se pudo guardar.'));
+    } finally {
+      setEditBusy(false);
+    }
+  };
 
   const savedPlans = useQuery({
     queryKey: ['saved-plans', parcel?.id],
@@ -94,14 +174,61 @@ export function ParcelScreen() {
         title={parcel.name}
         subtitle={parcel.district ?? t('Moquegua')}
         testID={testIDs.parcelSummary}
+        coverImage={parcelCoverFor(parcel.id)}
+        coverLabel={t('Portada ilustrativa')}
+        coverAccessibilityLabel={t('Portada ilustrativa de una chacra agrícola')}
+        action={
+          <AppButton
+            tone="ghost"
+            size="sm"
+            onPress={() => {
+              if (!editing) {
+                const currentLocation = locationCoordinates(parcel);
+                setEditName(parcel.name);
+                setEditArea(parcel.area_ha != null ? String(parcel.area_ha) : '');
+                setEditDistrict(parcel.district ?? '');
+                setEditLat(currentLocation ? String(currentLocation.lat) : '');
+                setEditLon(currentLocation ? String(currentLocation.lon) : '');
+              }
+              setEditing((value) => !value);
+            }}
+          >
+            {t('Editar')}
+          </AppButton>
+        }
       >
-        <Illustration name="parcel" size={64} />
-        <MetricRow
-          label={t('Superficie')}
-          value={parcel.area_ha ? formatNumber(parcel.area_ha, t('ha'), 2) : t('No disponible')}
-        />
-        <MetricRow label={t('Distrito')} value={parcel.district ?? t('No disponible')} />
-        <MetricRow label={t('Ubicación')} value={location || t('No disponible')} />
+        {editing ? (
+          <>
+            <FormField
+              label={t('Nombre de la parcela')}
+              value={editName}
+              onChangeText={setEditName}
+            />
+            <FormField
+              label={t('Superficie (ha, opcional)')}
+              value={editArea}
+              onChangeText={setEditArea}
+              keyboardType="decimal-pad"
+              placeholder={t('Ej. 1.2 — acepta coma o punto')}
+            />
+            <FormField label={t('Distrito')} value={editDistrict} onChangeText={setEditDistrict} placeholder={t('Ej. Moquegua')} />
+            <FormField label={t('Latitud')} value={editLat} onChangeText={setEditLat} keyboardType="numbers-and-punctuation" placeholder="-17.19" />
+            <FormField label={t('Longitud')} value={editLon} onChangeText={setEditLon} keyboardType="numbers-and-punctuation" placeholder="-70.93" />
+            {editError ? <AppAlert tone="error">{editError}</AppAlert> : null}
+            <AppButton loading={editBusy} onPress={() => void handleSaveMeta()}>
+              {t('Guardar cambios')}
+            </AppButton>
+          </>
+        ) : (
+          <>
+            <MetricRow
+              label={t('Superficie')}
+              value={parcel.area_ha ? formatNumber(parcel.area_ha, t('ha'), 2) : t('No disponible')}
+            />
+            <MetricRow label={t('Distrito')} value={parcel.district ?? t('No disponible')} />
+            <MetricRow label={t('Ubicación')} value={location || t('No disponible')} />
+          </>
+        )}
       </SectionCard>
 
       <ActionCard
@@ -130,9 +257,10 @@ export function ParcelScreen() {
         icon={Droplets}
         illustration="water"
         title={t('Riego de la semana')}
-        subtitle={t('Lluvia, demanda y pendiente con datos reales')}
+        subtitle={online ? t('Lluvia, demanda y pendiente con datos reales') : t('Necesita internet para consultar la semana')}
         tone="water"
         onPress={() => router.push('/parcel-irrigation')}
+        disabled={!online}
         testID={testIDs.parcelIrrigation}
       />
 
@@ -156,9 +284,11 @@ export function ParcelScreen() {
             {t('Ya tienes lo necesario para comparar tus planes.')}
           </Text>
         )}
-        <Text className="text-sm leading-5 text-muted-foreground">
-          {t('Aún no declaraste precios y costos. Ingrésalos para calcular tu margen real.')}
-        </Text>
+        {context?.completeness?.margin === null || context?.completeness?.margin === undefined ? (
+          <Text className="text-sm leading-5 text-muted-foreground">
+            {t('Aún no declaraste precios y costos. Ingrésalos para calcular tu margen real.')}
+          </Text>
+        ) : null}
         <AppButton tone="outline" loading={loading} onPress={() => void refresh()}>
           {t('Actualizar datos')}
         </AppButton>
@@ -187,8 +317,24 @@ export function ParcelScreen() {
                       {formatDate(plan.created_at)}
                     </Text>
                   ) : null}
+                  {plan.preferred ? (
+                    <Text className="text-sm text-muted-foreground">
+                      {formatCropSequence(plan.preferred.crop_sequence)}
+                    </Text>
+                  ) : null}
                 </VStack>
-                <StatusBadge status={plan.status} />
+                <VStack className="items-end gap-1">
+                  <StatusBadge status={plan.status} />
+                  <AppButton
+                    tone="ghost"
+                    size="sm"
+                    onPress={() =>
+                      router.push({ pathname: '/plan-review', params: { id: plan.id } })
+                    }
+                  >
+                    {t('Revisar')}
+                  </AppButton>
+                </VStack>
               </HStack>
             ))}
           </VStack>

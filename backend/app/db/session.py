@@ -55,3 +55,74 @@ def init_db() -> None:
                 "terrain_json JSONB NOT NULL DEFAULT '{}'::jsonb"
             )
         )
+        conn.execute(
+            text(
+                "ALTER TABLE agent_threads ADD COLUMN IF NOT EXISTS "
+                "state_json JSONB NOT NULL DEFAULT '{}'::jsonb"
+            )
+        )
+        conn.execute(
+            text(
+                "ALTER TABLE crops ADD COLUMN IF NOT EXISTS "
+                "catalog_id VARCHAR(40)"
+            )
+        )
+        conn.execute(
+            text(
+                "ALTER TABLE crops ADD COLUMN IF NOT EXISTS "
+                "crop_type VARCHAR(20)"
+            )
+        )
+        conn.execute(
+            text(
+                "ALTER TABLE crops ADD COLUMN IF NOT EXISTS "
+                "duration_min_days INTEGER"
+            )
+        )
+        conn.execute(
+            text(
+                "ALTER TABLE crops ADD COLUMN IF NOT EXISTS "
+                "duration_max_days INTEGER"
+            )
+        )
+        conn.execute(
+            text(
+                "CREATE INDEX IF NOT EXISTS ix_crops_catalog_id ON crops (catalog_id)"
+            )
+        )
+        conn.execute(
+            text(
+                "ALTER TABLE saved_decisions ADD COLUMN IF NOT EXISTS "
+                "comparison_id VARCHAR(36)"
+            )
+        )
+        conn.execute(
+            text(
+                "ALTER TABLE saved_decisions ADD COLUMN IF NOT EXISTS "
+                "preferred_plan_id VARCHAR(36)"
+            )
+        )
+        conn.execute(
+            text(
+                "ALTER TABLE saved_decisions ADD COLUMN IF NOT EXISTS "
+                "fallback_plan_id VARCHAR(36)"
+            )
+        )
+        conn.execute(
+            text(
+                "ALTER TABLE saved_decisions ADD COLUMN IF NOT EXISTS "
+                "snapshot_json JSONB NOT NULL DEFAULT '{}'::jsonb"
+            )
+        )
+        conn.execute(
+            text(
+                "ALTER TABLE saved_decisions ADD COLUMN IF NOT EXISTS "
+                "thresholds_json JSONB NOT NULL DEFAULT '{}'::jsonb"
+            )
+        )
+        conn.execute(
+            text(
+                "ALTER TABLE saved_decisions ADD COLUMN IF NOT EXISTS "
+                "reviewed_at TIMESTAMPTZ"
+            )
+        )

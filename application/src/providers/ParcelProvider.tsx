@@ -8,6 +8,7 @@ import {
   getContext,
   getIndicators,
   getParcels,
+  updateParcelMeta as updateParcelMetaRequest,
   type Context,
   type IndicatorResponse,
   type Parcel,
@@ -30,6 +31,7 @@ type ParcelState = {
     district?: string | null;
     geometry?: ParcelGeometryInput;
   }) => Promise<Parcel>;
+  updateMeta: (input: { name: string; areaHa: number | null; district: string | null; geometry: ParcelGeometryInput }) => Promise<Parcel>;
   selectParcel: (parcel: Parcel) => void;
   refresh: () => Promise<void>;
   clearError: () => void;
@@ -123,6 +125,25 @@ export function ParcelProvider({ children }: { children: React.ReactNode }) {
     [createMutation],
   );
 
+  const updateMeta = useCallback(
+    async (input: { name: string; areaHa: number | null; district: string | null; geometry: ParcelGeometryInput }) => {
+      if (!selected) throw new Error('No hay una parcela activa');
+      try {
+        const updated = await updateParcelMetaRequest(selected.id, input);
+        setSelectedOverride(updated);
+        setManualError(null);
+        queryClient.invalidateQueries({ queryKey: ['parcels'] });
+        await Promise.all([contextQuery.refetch(), indicatorsQuery.refetch()]);
+        return updated;
+      } catch (cause) {
+        const message = cause instanceof Error ? cause.message : 'No se pudo actualizar la parcela';
+        setManualError(message);
+        throw cause;
+      }
+    },
+    [contextQuery, indicatorsQuery, queryClient, selected],
+  );
+
   const refresh = useCallback(async () => {
     await Promise.all([
       parcelsQuery.refetch(),
@@ -156,6 +177,7 @@ export function ParcelProvider({ children }: { children: React.ReactNode }) {
       loading,
       error,
       createParcel,
+      updateMeta,
       selectParcel,
       refresh,
       clearError: () => setManualError(null),
@@ -168,6 +190,7 @@ export function ParcelProvider({ children }: { children: React.ReactNode }) {
       loading,
       error,
       createParcel,
+      updateMeta,
       selectParcel,
       refresh,
     ],

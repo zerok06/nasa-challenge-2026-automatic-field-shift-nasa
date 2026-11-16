@@ -1,8 +1,8 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { RefreshControl, ScrollView } from 'react-native';
 import { router } from 'expo-router';
 import { CloudSun, Sprout } from 'lucide-react-native';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 
 import { AppAlert } from '@/components/app/AppAlert';
@@ -23,13 +23,14 @@ import { Text } from '@/components/ui/text';
 import { VStack } from '@/components/ui/vstack';
 import { colors } from '@/design-system/tokens';
 import { testIDs } from '@/design-system/testIDs';
-import { formatDate, formatMoney, formatNumber } from '@/lib/format';
+import { formatCropSequence, formatDate, formatMissing, formatMoney, formatNumber } from '@/lib/format';
 import { useComparison } from '@/providers/ComparisonProvider';
 import { useOffline } from '@/providers/OfflineProvider';
 import { useParcel } from '@/providers/ParcelProvider';
 import { useProfile } from '@/providers/ProfileProvider';
-import { getCrops, getSavedPlans, type Crop, type Parcel } from '@/services/api';
+import { createDemoParcel, getCrops, getSavedPlans, type Crop, type Parcel } from '@/services/api';
 import { profileProgress } from '@/features/parcel/profileStatus';
+import { PlanReviewInline } from '@/features/plan/PlanReviewInline';
 
 type CropEconomics = {
   yield_kg_ha?: number | null;
@@ -58,6 +59,9 @@ function parcelLocation(parcel: Parcel): string {
 export function DashboardScreen() {
   const { t } = useTranslation();
   const { parcel, parcels, context, indicators, loading, error, refresh, selectParcel } = useParcel();
+  const queryClient = useQueryClient();
+  const [demoBusy, setDemoBusy] = useState(false);
+  const [demoError, setDemoError] = useState<string | null>(null);
   const { comparison, createComparison, busy } = useComparison();
   const { online, bundle } = useOffline();
   const { profile } = useProfile();
@@ -76,6 +80,27 @@ export function DashboardScreen() {
     profile?.display_name && profile.display_name !== 'Agricultor' ? profile.display_name : null;
   const greeting = displayName ? t('Hola, {{name}}', { name: displayName }) : t('Hola');
 
+  const handleDemo = async () => {
+    setDemoBusy(true);
+    setDemoError(null);
+    try {
+      const created = await createDemoParcel();
+      selectParcel(created);
+      await Promise.all([
+        queryClient.invalidateQueries({ queryKey: ['parcels'] }),
+        queryClient.invalidateQueries({ queryKey: ['crop-history', created.id] }),
+        queryClient.invalidateQueries({ queryKey: ['context', created.id] }),
+        queryClient.invalidateQueries({ queryKey: ['indicators', created.id] }),
+      ]);
+    } catch (cause) {
+      setDemoError(
+        cause instanceof Error ? cause.message : t('No pudimos cargar los datos de ejemplo.'),
+      );
+    } finally {
+      setDemoBusy(false);
+    }
+  };
+
   if (!parcel && loading) {
     return (
       <Screen header={<AppHeader subtitle={t('Inicio')} />}>
@@ -92,6 +117,7 @@ export function DashboardScreen() {
     return (
       <Screen header={<AppHeader subtitle={t('Inicio')} onSettings={() => router.push('/settings')} />}>
         {error ? <AppAlert tone="error">{error}</AppAlert> : null}
+        {demoError ? <AppAlert tone="error">{demoError}</AppAlert> : null}
         <HeroCard
           eyebrow={greeting}
           title={t('Bienvenido a Anden')}
@@ -106,6 +132,18 @@ export function DashboardScreen() {
           >
             {t('Crear mi parcela')}
           </AppButton>
+          <AppButton
+            tone="outline"
+            onPress={() => void handleDemo()}
+            loading={demoBusy}
+            className="min-h-14"
+            testID={testIDs.dashboardDemo}
+          >
+            {t('Probar con datos de ejemplo')}
+          </AppButton>
+          <Text className="text-sm leading-5 text-muted-foreground">
+            {t('Carga una parcela de demostración con cultivos, agua y precios.')}
+          </Text>
         </HeroCard>
         <SectionCard title={t('Cómo funciona')} subtitle={t('Tres pasos, sin complicaciones')}>
           <VStack className="gap-3">
@@ -145,8 +183,7 @@ export function DashboardScreen() {
     (cropsQuery.data?.crops ?? []).map((crop) => [crop.id, crop]),
   );
   const priceRows = Object.entries(economics)
-    .filter(([, value]) => value && (value.price_pen_kg != null || value.yield_kg_ha != null))
-    .slice(0, 3);
+    .filter(([, value]) => value && (value.price_pen_kg != null || value.yield_kg_ha != null));
   const completePrices = Object.values(economics).filter(
     (value) =>
       value?.yield_kg_ha != null && value?.price_pen_kg != null && value?.costs_pen != null,
@@ -268,8 +305,14 @@ export function DashboardScreen() {
           title={t('Tu campaña')}
           subtitle={t('La decisión que guardaste')}
           action={
-            <AppButton tone="ghost" size="sm" onPress={() => router.push('/parcel')}>
-              {t('Ver plan')}
+            <AppButton
+              tone="ghost"
+              size="sm"
+              onPress={() =>
+                router.push({ pathname: '/plan-review', params: { id: latestPlan.id } })
+              }
+            >
+              {t('Revisar plan')}
             </AppButton>
           }
         >
@@ -280,8 +323,14 @@ export function DashboardScreen() {
               <Text className="text-sm text-muted-foreground">
                 {latestPlan.created_at ? formatDate(latestPlan.created_at) : t('Guardado')}
               </Text>
+              {latestPlan.preferred ? (
+                <Text className="text-sm text-muted-foreground">
+                  {formatCropSequence(latestPlan.preferred.crop_sequence)}
+                </Text>
+              ) : null}
             </VStack>
           </HStack>
+          <PlanReviewInline plan={latestPlan} comparisonId={comparison?.comparison_id} />
         </SectionCard>
       ) : null}
 
@@ -391,7 +440,7 @@ export function DashboardScreen() {
       {context?.missing_inputs?.length ? (
         <AppAlert tone="warning">
           {t('Faltan datos: {{missing}}. Los números que dependen de ellos se muestran como no disponibles.', {
-            missing: context.missing_inputs.join(', '),
+            missing: formatMissing(context.missing_inputs),
           })}
         </AppAlert>
       ) : null}

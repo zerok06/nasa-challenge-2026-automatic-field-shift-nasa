@@ -153,5 +153,46 @@ def test_economics_are_farmer_declared_and_produce_margin(
     )
     assert comparison.status_code == 201, comparison.text
     margins = [plan["economics"]["margin_pen"] for plan in comparison.json()["plans"]]
-    assert all(margin is not None for margin in margins)
+    assert any(margin is not None for margin in margins)
+    assert any(margin is None for margin in margins)
     assert comparison.json()["plans"][0]["economics"]["price_assumption_type"] == "farmer"
+
+def test_partial_economics_returns_null_margin_without_500(
+    client, auth, monkeypatch
+):
+    monkeypatch.setattr(
+        "app.use_cases.climate.fetch_power_daily",
+        lambda lat, lon, start, end: _fake_power(lat, lon, start, end),
+    )
+    parcel = _new_parcel(client, auth)
+    patched = client.patch(
+        f"/api/v1/parcels/{parcel['id']}",
+        headers=auth,
+        json={
+            "preferences": {
+                "economics": {
+                    "onion": {
+                        "yield_kg_ha": None,
+                        "price_pen_kg": 1.2,
+                        "costs_pen": None,
+                    },
+                },
+                "price_assumption_type": "farmer",
+            }
+        },
+    )
+    assert patched.status_code == 200, patched.text
+
+    comparison = client.post(
+        "/api/v1/comparisons",
+        headers=auth,
+        json={"parcel_id": parcel["id"]},
+    )
+    assert comparison.status_code == 201, comparison.text
+    plans = comparison.json()["plans"]
+    assert all(plan["economics"]["margin_pen"] is None for plan in plans)
+    assert any(
+        "economics.onion" in missing
+        for plan in plans
+        for missing in plan["economics"]["missing_inputs"]
+    )

@@ -41,6 +41,7 @@ def calculate_economics(
     assert price_pen_kg is not None and costs_pen is not None
     production_kg = yield_kg_ha * area_ha
     income = production_kg * price_pen_kg
+    # costs_pen is the total cost for the plan. The app label must say so.
     margin = income - costs_pen
     break_even = costs_pen / production_kg if production_kg > 0 else None
     return EconomicsResultOut(

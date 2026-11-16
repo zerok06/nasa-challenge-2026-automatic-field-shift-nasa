@@ -15,6 +15,7 @@ import type {
   Parcel,
   ParcelBundle,
   SavedPlan,
+  SavedPlanReview,
   SoilEntry,
   WaterEntry,
 } from './types';
@@ -46,7 +47,16 @@ export async function getParcels(): Promise<Parcel[]> {
   return request('/api/v1/parcels');
 }
 
-export async function getCrops(): Promise<{ catalog_version: string; review_status: string; crops: Crop[] }> {
+export async function createDemoParcel(): Promise<Parcel> {
+  return request('/api/v1/demo/parcel', { method: 'POST' });
+}
+
+export async function getCrops(): Promise<{
+  catalog_version: string;
+  review_status: string;
+  crops: Crop[];
+  prices_chacra_2025: import('./types').CatalogPriceReference[];
+}> {
   return request('/api/v1/catalog/crops');
 }
 
@@ -140,10 +150,24 @@ export async function addSoil(
   });
 }
 
+export async function updateParcelMeta(
+  parcelId: string,
+  input: { name?: string; areaHa?: number | null; district?: string | null; geometry?: ParcelGeometryInput },
+): Promise<Parcel> {
+  return request(`/api/v1/parcels/${parcelId}`, {
+    method: 'PATCH',
+    body: JSON.stringify({
+      name: input.name,
+      area_ha: input.areaHa ?? null,
+      district: input.district,
+      geometry: input.geometry,
+    }),
+  });
+}
+
 export async function updateParcelPreferences(
   parcelId: string,
-  preferences: {
-    priorities?: Record<string, number>;
+  preferences: {    priorities?: Record<string, number>;
     constraints?: Record<string, unknown>;
     economics?: Record<
       string,
@@ -179,7 +203,7 @@ export async function createParcel(input: {
       area_ha: input.areaHa,
       district: input.district ?? 'Moquegua',
       preferences: {
-        weights: { water: 0.5, soil: 0.3, margin: 0.2 },
+        weights: { water: 0.5, margin: 0.3, budget: 0.2 },
       },
       is_simulated: false,
     }),
@@ -233,13 +257,14 @@ export async function createThread(parcelId: string): Promise<{ thread_id: strin
 export async function sendAgentMessage(
   threadId: string,
   message: string,
+  uiContext: Record<string, unknown> = { screen: 'agent' },
 ): Promise<AgentMessage> {
   // Vertex can take close to the server timeout before deterministic fallback.
   return request(
     `/api/v1/agent/threads/${threadId}/messages`,
     {
       method: 'POST',
-      body: JSON.stringify({ message, ui_context: { screen: 'agent' } }),
+      body: JSON.stringify({ message, ui_context: uiContext }),
     },
     true,
     60000,
@@ -274,6 +299,35 @@ export async function sendFeedback(input: {
 
 export async function getSavedPlans(): Promise<SavedPlan[]> {
   return request('/api/v1/saved-plans');
+}
+
+export async function savePlan(input: {
+  parcelId: string;
+  comparisonId: string;
+  preferredPlanId: string;
+  fallbackPlanId: string;
+  name: string;
+}): Promise<SavedPlan> {
+  return request('/api/v1/saved-plans', {
+    method: 'POST',
+    body: JSON.stringify({
+      parcel_id: input.parcelId,
+      comparison_id: input.comparisonId,
+      preferred_plan_id: input.preferredPlanId,
+      fallback_plan_id: input.fallbackPlanId,
+      name: input.name,
+    }),
+  });
+}
+
+export async function reviewSavedPlan(
+  savedPlanId: string,
+  comparisonId?: string | null,
+): Promise<SavedPlanReview> {
+  const query = comparisonId
+    ? `?comparison_id=${encodeURIComponent(comparisonId)}`
+    : '';
+  return request(`/api/v1/saved-plans/${savedPlanId}/review${query}`);
 }
 
 export async function discoverSources(lat: number, lon: number): Promise<GeoDiscovery> {

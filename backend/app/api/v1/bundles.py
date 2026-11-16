@@ -10,6 +10,7 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from app.api.deps import get_current_user, get_parcel_or_404
+from app.agent.price_catalog import list_price_references
 from app.db.session import get_db
 from app.models.entities import Crop, Parcel, User
 from app.use_cases.climate import store_power_snapshot
@@ -48,6 +49,7 @@ def _catalog(db: Session) -> dict[str, Any]:
     return {
         "version": CATALOG_VERSION,
         "review_status": "needs_review",
+        "prices_chacra_2025": list_price_references(),
         "crops": [
             {
                 "id": crop.id,

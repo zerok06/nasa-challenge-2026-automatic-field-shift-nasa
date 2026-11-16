@@ -4,7 +4,7 @@
 **WIP:** máximo 3 specs activas. Se redacta la spec N+2 mientras se implementa la N.  
 **Leyenda de test:** U unitario · I integración · C contrato · P paridad · E E2E Maestro · S smoke · M manual.
 
-## Estado de implementación (14-nov-2026)
+## Estado de implementación (15-nov-2026)
 
 - **P0 implementado:** backend FastAPI/PostGIS, app Anden/Expo Go, Gemini en
   Vertex AI y demo público en GCP.
@@ -12,6 +12,8 @@
 - **Parcial:** Maestro requiere dispositivo; 013 NDVI fuera de la UI 028.
 - **No implementado:** 023 offline; APK/dev build; validación agronómica;
   revisión nativa de quechua/aimara.
+- **Documentado, sin implementar:** 035 PWA web (spec, plan y tasks completos;
+  espera aprobación para iniciar código).
 - **Desviación:** RNUI → gluestack v5 + NativeWind 5; ver ADR-0004.
 - Los estados "escrita" de la tabla son de la fase SDD; el estado real de código está en esta sección.
 
@@ -82,8 +84,14 @@
 | 026 | Campaña y precios | P2 | ✅ escrita | 015, 019 | U, I | 2 |
 | 027 | Release y entrega | P0 | ✅ escrita | todos P0 | E, S, M | 1 |
 
-**P0:** 000–012 + 014–022 + 027 + 029 (**24 specs**). **P1:** 013, 023.
-**P2:** 024–026.
+## Web (PWA)
+
+| ID | Spec | Prioridad | Estado | Depende | Test | Días |
+|---|---|---|---|---|---|---|
+| 035 | PWA web: instalación, offline y cierre de precios | P2 | 📝 escrita (lista para aprobación) | 018, 019, 026, 028, 030–034 | U, I, C, P, E, M | 3 |
+
+**P0:** 000–012 + 014–022 + 027–029 + 030–034 (**30 specs**). **P1:** 013, 023.
+**P2:** 024–026, 035.
 
 ## Backlog P2 sin spec (no entra en la primera semana)
 
@@ -92,7 +100,7 @@
 - Mapas/tiles offline.
 - Predicción de precios verificada (hoy: solo escenarios).
 - SMAP/ECOSTRESS y series satelitales adicionales.
-- iOS y app web.
+- iOS nativo (la web queda cubierta por 035).
 - Colaboración multiusuario/roles.
 - Analítica de uso y panel administrativo.
 
@@ -123,7 +131,7 @@ Cada spec usa:
 
 ## Chequeo de coherencia
 
-- [x] 29 specs, cada una con `spec.md`, `plan.md`, `tasks.md`.
+- [x] 36 specs en total: 35 con `spec.md`, `plan.md` y `tasks.md`; 033 solo tiene `spec.md`.
 - [x] RF únicos por spec y matriz de pruebas.
 - [x] Endpoints unificados en `docs/architecture/api-surface.md`.
 - [x] Enums y tablas en `docs/architecture/data-model.md`.

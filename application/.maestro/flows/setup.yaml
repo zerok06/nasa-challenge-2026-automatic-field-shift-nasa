@@ -9,6 +9,11 @@ appId: com.anden.app
 - runFlow:
     when:
       visible:
+        id: "intro.brand"
+    file: intro-skip.yaml
+- runFlow:
+    when:
+      visible:
         id: "onboarding.language.es-PE"
     file: onboarding-profile.yaml
 - runFlow:

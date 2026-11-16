@@ -57,6 +57,6 @@ def send_message(
     if thread is None or thread.owner_user_id != user.id:
         raise HTTPException(status_code=404, detail={"code": "not_found", "message": "Hilo no encontrado"})
     try:
-        return run_agent(db, user, thread, payload.message, payload.ui_context)
+        return run_agent(db, user, thread, payload.message, payload.ui_context, mode=payload.mode)
     except LookupError as exc:
         raise HTTPException(status_code=404, detail={"code": "not_found", "message": "Parcela no encontrada"}) from exc

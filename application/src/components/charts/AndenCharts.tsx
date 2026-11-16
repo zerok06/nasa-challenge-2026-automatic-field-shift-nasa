@@ -27,14 +27,17 @@ export type AndenBarDatum = {
 export function AndenBarChart({
   data,
   formatValue = (value) => String(Math.round(value)),
+  negativeColor,
 }: {
   data: AndenBarDatum[];
   formatValue?: (value: number) => string;
+  negativeColor?: string;
 }) {
   const { t } = useTranslation();
   const dark = useColorScheme() === 'dark';
   const palette = dark ? darkChartColors : chartColors;
   const track = dark ? darkColors.border : colors.border;
+  const danger = negativeColor ?? (dark ? darkColors.error : colors.error);
   const clean = data.filter(
     (item): item is { label: string; value: number; color?: string } =>
       item.value !== null && Number.isFinite(item.value),
@@ -53,12 +56,17 @@ export function AndenBarChart({
   return (
     <VStack className="gap-3">
       {clean.map((item) => {
-        const width = Math.max(2, Math.round((Math.abs(item.value) / max) * 100));
+        const isNegative = item.value < 0;
+        const absValue = Math.abs(item.value);
+        const width = Math.max(2, Math.round((absValue / max) * 100));
+        const barColor = isNegative ? danger : (item.color ?? palette.primary);
         return (
           <VStack key={item.label} className="gap-1">
             <HStack className="items-center justify-between gap-3">
               <Text className="flex-1 text-sm font-medium text-foreground">{item.label}</Text>
-              <Text className="text-sm font-semibold text-foreground">
+              <Text
+                className={`text-sm font-semibold ${isNegative ? 'text-red-600 dark:text-red-400' : 'text-foreground'}`}
+              >
                 {formatValue(item.value)}
               </Text>
             </HStack>
@@ -69,9 +77,9 @@ export function AndenBarChart({
               <View
                 style={{
                   width: `${width}%`,
-                  backgroundColor: item.color ?? palette.primary,
+                  backgroundColor: barColor,
                 }}
-                className="h-3 rounded-full"
+                className={`h-3 rounded-full ${isNegative ? 'self-end' : ''}`}
               />
             </View>
           </VStack>

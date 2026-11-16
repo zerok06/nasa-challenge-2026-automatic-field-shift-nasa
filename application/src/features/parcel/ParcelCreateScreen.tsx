@@ -18,17 +18,18 @@ import { Text } from '@/components/ui/text';
 import { VStack } from '@/components/ui/vstack';
 import { colors } from '@/design-system/tokens';
 import { testIDs } from '@/design-system/testIDs';
+import { parseEsNumber } from '@/lib/parse';
 import { useParcel } from '@/providers/ParcelProvider';
 import { useProfile } from '@/providers/ProfileProvider';
 
 const STEP_COUNT = 2;
 
 function validCoordinate(lat: string, lon: string): boolean {
-  const latitude = Number(lat);
-  const longitude = Number(lon);
+  const latitude = parseEsNumber(lat);
+  const longitude = parseEsNumber(lon);
   return (
-    Number.isFinite(latitude) &&
-    Number.isFinite(longitude) &&
+    latitude !== null &&
+    longitude !== null &&
     latitude >= -90 &&
     latitude <= 90 &&
     longitude >= -180 &&
@@ -97,11 +98,27 @@ export function ParcelCreateScreen() {
     setBusy(true);
     setError(null);
     try {
+      const parsedArea = area.trim() ? parseEsNumber(area) : null;
+      if (area.trim() && (parsedArea === null || parsedArea <= 0)) {
+        setError(
+          t('“{{value}}” no es una superficie válida. Usa hectáreas, por ejemplo 1.2.', {
+            value: area.trim(),
+          }),
+        );
+        setStep(0);
+        return;
+      }
+      const parsedLat = parseEsNumber(lat);
+      const parsedLon = parseEsNumber(lon);
+      if (parsedLat === null || parsedLon === null) {
+        setError(t('Necesitamos una latitud y longitud válidas para buscar el clima.'));
+        return;
+      }
       await createParcel({
         name: name.trim(),
-        areaHa: Number(area) > 0 ? Number(area) : null,
-        lat: Number(lat),
-        lon: Number(lon),
+        areaHa: parsedArea,
+        lat: parsedLat,
+        lon: parsedLon,
         district,
       });
       // The next onboarding is the parcel ficha: it collects the data the
@@ -114,8 +131,9 @@ export function ParcelCreateScreen() {
     }
   };
 
+  const parsedArea = area.trim() ? parseEsNumber(area) : null;
   const locationSummary = validCoordinate(lat, lon)
-    ? `${Number(lat).toFixed(4)}, ${Number(lon).toFixed(4)}`
+    ? `${(parseEsNumber(lat) ?? 0).toFixed(4)}, ${(parseEsNumber(lon) ?? 0).toFixed(4)}`
     : t('Sin ubicación todavía');
   const speakText =
     step === 0
@@ -282,7 +300,7 @@ export function ParcelCreateScreen() {
             <HStack className="items-center gap-2">
               <Ruler size={18} color={colors.water} />
               <Text className="flex-1 text-sm text-muted-foreground">
-                {Number(area) > 0 ? `${area} ha` : t('Superficie no disponible')}
+                {parsedArea && parsedArea > 0 ? `${area.trim()} ha` : t('Superficie no disponible')}
               </Text>
             </HStack>
             <HStack className="items-center gap-2">

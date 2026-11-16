@@ -35,6 +35,7 @@ export function ActionCard({
   onPress,
   testID,
   badge,
+  disabled = false,
 }: {
   icon: React.ComponentType<{ size?: number; color?: string }>;
   illustration?: IllustrationName;
@@ -44,6 +45,7 @@ export function ActionCard({
   onPress: () => void;
   testID?: string;
   badge?: string;
+  disabled?: boolean;
 }) {
   const scheme = useColorScheme();
   const dark = scheme === 'dark';
@@ -54,10 +56,12 @@ export function ActionCard({
     <Pressable
       testID={testID}
       onPress={onPress}
+      disabled={disabled}
       accessibilityRole="button"
+      accessibilityState={{ disabled }}
       accessibilityLabel={subtitle ? `${title}. ${subtitle}` : title}
       style={({ pressed }) => ({ transform: [{ scale: pressed ? 0.985 : 1 }] })}
-      className="min-h-[88px] flex-row items-center gap-3 rounded-2xl border border-border bg-card p-4"
+      className={`min-h-[88px] flex-row items-center gap-3 rounded-2xl border border-border bg-card p-4 ${disabled ? 'opacity-50' : ''}`}
     >
       {illustration ? (
         <Illustration name={illustration} size={48} />

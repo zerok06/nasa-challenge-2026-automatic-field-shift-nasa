@@ -1,5 +1,13 @@
+# Anden — mismo dominio para el PWA y la API (ADR-0010).
+#
+# El PWA se sirve como archivos estáticos desde /srv; /api/* va al contenedor api.
+# Caddy emite y renueva el certificado TLS automáticamente (HTTP-01), así que el
+# dominio debe resolver a esta VM y los puertos 80/443 deben estar abiertos.
+#
+# Producción: DOMAIN=anden.duckdns.org  (o <ip-con-guiones>.sslip.io)
+# Local:      DOMAIN=:80
 {$DOMAIN} {
-	encode gzip
+	encode gzip zstd
 
 	header {
 		Strict-Transport-Security "max-age=31536000; includeSubDomains"
@@ -12,5 +20,25 @@
 		max_size 2MB
 	}
 
-	reverse_proxy api:8000
+	# Service worker y manifest: siempre revalidar para entregar versiones nuevas.
+	@sw path /sw.js /registerSW.js /manifest.webmanifest
+	header @sw Cache-Control "no-cache"
+
+	# API: mismo origen, sin CORS entre el PWA y el backend.
+	handle /api/* {
+		reverse_proxy {$API_UPSTREAM:api:8000}
+	}
+
+	# Documentos legales/health del backend que no viven bajo /api.
+	handle /ready {
+		reverse_proxy {$API_UPSTREAM:api:8000}
+	}
+
+	# SPA: cualquier ruta desconocida devuelve index.html (los deep links
+	# /parcela/ficha, /comparar/guardar, etc. funcionan al recargar).
+	handle {
+		root * /srv
+		try_files {path} /index.html
+		file_server
+	}
 }

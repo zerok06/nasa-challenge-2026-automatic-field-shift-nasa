@@ -12,17 +12,27 @@ from app.schemas.agent import ToolTrace, UiAction
 logger = logging.getLogger("automatic.agent")
 
 SYSTEM_PROMPT = """Eres Anden, copiloto agrícola para una parcela piloto en Moquegua, Perú.
-Habla en español peruano simple, de tú, en 1 o 2 frases (máximo 220 caracteres).
-Usa las herramientas para obtener datos antes de responder.
+Trabaja como un agente ReAct: en cada turno piensa qué dato necesitas, ejecuta UNA herramienta, observa el resultado y decide si necesitas otra o ya puedes responder. No muestres tu razonamiento interno; entrega solo el resultado útil.
+Habla simple, de tú, en 1 a 3 frases. Termina con una pregunta o un siguiente paso cuando ayude.
+Eres libre de elegir que herramienta usar y en que orden, y de encadenarlas hasta resolver lo que pide el agricultor.
+Empieza consultando get_parcel_snapshot para hablar de ESTA parcela con datos exactos.
+Usa get_power_trend para sequías y tendencias pasadas, get_forecast para la semana (di que es estimación, no SENAMHI), get_terrain para pendiente, estimate_water y convert_units para lo que el agricultor sí sabe (horas, turnos, arrobas, sacos).
+Usa get_next_questions para guiar la captura de a un dato por vez; usa propose_capture para proponer guardar agua, suelo, precio o historial (nunca guardes directo, siempre propone y pide confirmacion).
+Si el hilo es nuevo y la parcela tiene datos faltantes, abre con un saludo y ofrece capturar UN solo dato por vez; no guardes sin confirmar.
+Usa compare_rotations y simulate_scenario para planes, rank_plans para ordenar por sus prioridades, explain_plan para explicar cifras, audit_parcel para revisar datos raros, get_saved_plans para lo guardado.
 No inventes cifras: cada número debe venir de una herramienta.
-No calcules, no redondees ni sumes números nuevos.
-Si falta un dato, dilo como "no disponible" o "no calculable"; nunca lo reemplaces por 0.
-No predigas el clima ni los precios; no des consejos médicos ni legales.
+Si preguntan por el precio de un cultivo, consulta get_catalog_price_reference usando el cultivo mencionado. Presenta el precio como referencia hist\u00f3rica con su a\u00f1o, zona, fuente y estado de cotejo; invita a corregirlo y no lo llames precio previsto.
+Cuando recomiendes un plan o un cultivo, consulta get_catalog_price_reference para el cultivo principal y ofrece ese precio como primer dato editable.
+No calcules ni conviertas por tu cuenta: usa las herramientas.
+Si falta un dato, dilo como "no disponible"; nunca lo reemplaces por 0.
+No predigas precios; no des consejos médicos ni legales.
 No pidas IDs ni datos que el sistema ya conoce.
 No muestres IDs, SQL, URLs, nombres de herramientas ni detalles internos.
 No des una recomendación agronómica definitiva; apoya la decisión con evidencia.
 Usa palabras simples: no digas "rotación", "margen", "déficit", "factibilidad", "baseline" ni "ETc".
+Si preguntan qué guardas o dónde, explica que solo se guarda lo que el agricultor declara y confirma, y que sus datos quedan en su cuenta y en su teléfono para consultarlos sin señal.
 """
+MAX_HISTORY_TURNS = 6
 
 
 @dataclass
@@ -135,22 +145,64 @@ def _generate(client: Any, contents: list[Any], config: Any) -> Any:
     raise last_error
 
 
-def run_gemini_turn(tools: AgentTools, message: str) -> GeminiTurn:
+LOCALE_INSTRUCTIONS = {
+    "es-PE": "Responde en español peruano simple.",
+    "en": "Answer in simple English.",
+    "qu-PE": "Responde en español simple. No escribas en quechua salvo saludo breve.",
+    "ay-PE": "Responde en español simple. No escribas en aimara salvo saludo breve.",
+}
+
+MODE_INSTRUCTIONS = {
+    "guided": (
+        "Modo guiado: si falta un dato, ofrece capturar UNO solo por vez y espera la respuesta."
+    ),
+    "chat": (
+        "Modo conversación: responde la pregunta concreta que hizo el agricultor con sus datos, "
+        "sin repetir un menú ni una lista de opciones. Puedes encadenar varias herramientas para "
+        "responder bien. Si la pregunta es ambigua, pide una aclaración corta. Cuando propongas "
+        "guardar algo, di en una frase qué dato guardarás y para qué sirve; recuerda que nada se "
+        "guarda sin su confirmación. Si no tiene datos suficientes, dilo y ofrece el siguiente "
+        "paso más útil, sin inventar cifras."
+    ),
+}
+
+
+def run_gemini_turn(
+    tools: AgentTools,
+    message: str,
+    *,
+    locale: str = "es-PE",
+    history: list[tuple[str, str]] | None = None,
+    mode: str = "guided",
+) -> GeminiTurn:
     """Run one Gemini turn with function calling over the allow-listed tools."""
     from google import genai
     from google.genai import types
 
     client = _client(genai, types)
+    language = LOCALE_INSTRUCTIONS.get(locale, LOCALE_INSTRUCTIONS["es-PE"])
+    style = MODE_INSTRUCTIONS.get(mode, MODE_INSTRUCTIONS["guided"])
     config = _config(types, with_tools=True)
-    contents: list[Any] = [
-        types.Content(role="user", parts=[types.Part.from_text(text=message)])
-    ]
+    try:
+        config.system_instruction = f"{SYSTEM_PROMPT}\n{language}\n{style}"
+    except AttributeError:
+        pass
+    contents: list[Any] = []
+    for role, text in (history or [])[-MAX_HISTORY_TURNS * 2 :]:
+        contents.append(
+            types.Content(
+                role="model" if role == "assistant" else "user",
+                parts=[types.Part.from_text(text=text)],
+            )
+        )
+    contents.append(types.Content(role="user", parts=[types.Part.from_text(text=message)]))
 
     turn = GeminiTurn(answer="")
     usage: dict[str, int] = {}
     started = time.perf_counter()
+    max_steps = max(1, settings.agent_max_steps)
 
-    for _ in range(max(1, settings.gemini_max_tool_calls)):
+    for step in range(1, max_steps + 1):
         response = _generate(client, contents, config)
         for key, value in _usage(response).items():
             usage[key] = usage.get(key, 0) + value
@@ -162,7 +214,7 @@ def run_gemini_turn(tools: AgentTools, message: str) -> GeminiTurn:
         parts = []
         for call in calls:
             outcome = tools.execute(call.name, _args(call))
-            turn.traces.append(outcome.trace)
+            turn.traces.append(outcome.trace.model_copy(update={"step": step}))
             turn.evidence.extend(outcome.evidence)
             turn.actions.extend(outcome.actions)
             turn.evidence_payload.append({"tool": call.name, "result": outcome.data})
@@ -176,7 +228,7 @@ def run_gemini_turn(tools: AgentTools, message: str) -> GeminiTurn:
             )
         contents.append(types.Content(role="tool", parts=parts))
     else:
-        # Tool budget exhausted: ask for a final answer without tools.
+        # ReAct budget exhausted: ask for a final answer without tools.
         response = _generate(client, contents, _config(types, with_tools=False))
         for key, value in _usage(response).items():
             usage[key] = usage.get(key, 0) + value
